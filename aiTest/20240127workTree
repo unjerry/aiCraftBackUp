@@ -1,0 +1,26 @@
+the
+'saveModuleTest.py' file is a copy from the tutorial of the pytorch official document[1].
+'orderedDict.py' shows how to use OrderedDict from the module 'collections' which can use for the nn.Sequential and track the layers name[2].
+'LSTMPricePredict.py' is a retyped version of a YouTube tutorial[3], that use the price predict of the stock market to show how to use the LSTM from TensowFlow, however I can only retype the first part of the project, which include the 'yfinance' module that can extract the stock data use its ticker from YaHoo and 'pandas_ta' module which is a techque analysis indicater generator for stock.
+
+then the story hooked on the MNIST & FashionMNIST dataset and the classification tasks demo in
+the
+'/MINIST'
+init the
+'dataLoader.py' are a copied version of the pytorch official document tutorial[4],mainly in 'Row16-67', but was extended to a start training program in 'Row10-13&70-100'.
+in 'Row94-100' it use the module save tech which is test in the 'saveModuleTest.py'[1]
+'module.py' is a plain version ANN which can use super pramater to change its hidden layer number.
+in this file it requies the tech in the 'orderedDict.py'[2] with several tests.
+'continuedToTrain.py' is a resume training program which contains the tech of the load module from the 'orderedDict.py'[2] in 'Row11-20'
+in 'Row38-68'& in file 'dataLoader.py Row70-92' are tech from the pytorch official tutorial project[5] which contains the "epoch"+"batch" method to fast train.
+'testTheModel.py' is the test for the model performance program it mainly composed by the module load tech from[1] in 'Row10-19' and the extened version of the dataLoader from[4] in 'Row21-end'
+
+Besides in the[6] this blog I learned how to fetch all the branch from the origin github repo
+it include a command called "git branch --all" or "git branch -a"
+
+[1]SAVING AND LOADING MODELS https://pytorch.org/tutorials/beginner/saving_loading_models.html#:~:text=Saving%20the%20model's%20state_dict%20with,pt%20or%20.pth%20file%20extension.
+[2]SEQUENTIAL https://pytorch.org/docs/stable/generated/torch.nn.Sequential.html#torch.nn.Sequential
+[3]Recurrent Neural Networks | LSTM Price Movement Predictions For Trading Algorithms https://www.youtube.com/watch?v=hpfQE0bTeA4
+[4]DATASETS & DATALOADERS https://pytorch.org/tutorials/beginner/basics/data_tutorial.html
+[5]TRAINING A CLASSIFIER https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#sphx-glr-beginner-blitz-cifar10-tutorial-py
+[6]https://www.freecodecamp.org/chinese/news/git-clone-branch-how-to-clone-a-specific-branch/
