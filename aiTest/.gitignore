@@ -1,2 +1,5 @@
 module/
 data/
+new*/
+*.png
+*.ipynb
