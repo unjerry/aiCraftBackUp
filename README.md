@@ -9,6 +9,9 @@ This is a game that tries to employ ai as its building block.
 
 ## GameModule
 
+## Mus
+[cordDaily](./mainBlog/Mus/cordDaily.md)
+
 # Logs
 ## Log20240127
 [Log20240127](./mainBlog/Logs/20240127workTree.md)
