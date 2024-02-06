@@ -1,0 +1,30 @@
+so far, i have created several individual neural network project and they share some common work flow to be united.
+
+1. i hard coded
+the file
+'parameter.py' that contains the hyperOrhyperhyperParameters the hole work flow will work.
+
+2. the file
+'buildNet.py' will use the path from the 'parameter.py' as a hyperParameter CHECKPOINT_PATH(str) which cursed to a folder which
+the file
+'epoch.log' that store the number of current activated checkPoint
+and create the file
+'checkPoint0.ckpt' the initial checkPoint
+
+!Note:
+before use 'buildNet.py' make sure the folder required by the CHECKPOINT_PATH(str) exist, or it will not work and go wrong.
+and also make sure that
+the file
+'model.py' which contains a derived nn.Module class, this will be the net you want to create
+the dataLoader file should also be in this folder
+
+3. the file
+'startTrain.py' basically just read and build the net from the 'model.py' and load the initial checkPoint stored in the 'checkPoint0.ckpt'
+and use the hyperparameter EPOCH_NUM(int) in 'parameter.py' to determine how many epoch to train in this single run
+it will create totol num of EPOCH_NUM(int) new checkPoint named 'checkPoint{(epoch+1)-(epoch+EPOCH_NUM)}' inwhich the epoch is the current activated checkPoint number stored in 'epoch.log'
+
+4. the file
+'testTheModel.py' would also read from the CHECKPOINT_PATH(str) but should not change things in CHECKPOINT_PATH(str)
+and the test in this file could be slightly different
+but at basic it would load the model and set it in the model.eval() state and test some sample and lable and calculate the correct rate of the current ctivated checkPoint
+

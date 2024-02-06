@@ -1,0 +1,13 @@
+'Topic20240203-20240204':standardWorkFlowContainer
+
+dynamic import module use the tech from[1]
+this tech was use to rebuild the ai standardWorkFlowContainer.
+
+the main task to finish is to build the standardWorkFlowContainer
+contains
+the file
+'standardWorkFlowExplainer.mlog' stored the main file and construction of the standardWorkFlowContainer
+
+
+[1]Python Import: Using The Module Import Statement https://ioflood.com/blog/python-import/
+
