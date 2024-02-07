@@ -1,0 +1,47 @@
+'Topic20240206-20240207':some thought and study direction and some experiment
+
+the folder
+'autoEncoder' is a place for experiments that carry out by myself to develope my own network and algorithm
+
+exp1 the hyperSpectrum photo CV(computer vision)
+this is a project for both study and also can be use as (com)
+(1)the experiment before taken
+'hyperSpectrumCV' will be a CV AI project to train a model to correctly label the image mask to a hyperSpectrum photo
+basically this study is self restricted in a restricted problem that is to increase the correct rate of the mask label to be labeled
+'hyperSpectrumAndShareData' this is a (com)-(sci) project that i think that the hyperSpectrum photo will reveal the truth of the economy if the authority can give me the real time remote images from the satellite
+
+exp2 the clustering of the MNIST and FashionMNIST
+this is a project for both (sci(scientific research)) and for (fex(free explore))
+the experiment already been taken
+in the folder 'autoEncoder' the file
+(2)'cluster.py' and 'clustertest.py' are already verified that this idea is valid
+this idea is simple, when we clustering point in space with respect to the euclidean distance
+we can use the mean standard deviation of each cluster to rate how well the clustering works(if the standard deviation is small we consider it to be nice and vice versa)
+and we can preset the hyperParameter to define a W_ij matrix to represent the portion that one point belong to each class
+the i is the totol number of the pointDataSet and j is the number of the class
+and we assume that if we sum over j we get sW_i and for all i the sW_i=1 which the total portion of one point is one
+and we can calculate the mean_j and the std_dev_j of each j
+and we want to minimize the sum of the std_dev_j and we can use the gradient descent
+which is totally base on the nerual network approach to the clustering problem
+further more this model under the test in the 'clustertest.py' has already been verfied worked very well when j in range 2
+which is when it used in a bisection problem it can find a unique solution(this need more theoritical proof)
+
+another sight in clustering problem is that the correct number of the class number happens when the std_dev dramatically decreased
+but for some other weired dataSet such as constructed use the fractals that could be continuously step to decrease this need to take an experiment
+i hope in the fractal case is can obey the power law which is in this video[1] in time {23:48}
+so 
+(3)the experiment before taken
+'curveInSimpleDataSet' will construct an obviously how to clustering pointset and to findout the dramatically change in the (std_dev) verse (class number) curver
+'curveInFractalDataSet' will construct an fractal pointset and dras the same curve above, to find the difference with respect to the previous curve
+'powerLawCheck' if can take a check that the power law is indeed in the fractal dataset and how can use this to illustrate the curve dont fit the power law so that we can find the correct class number
+
+
+
+in the folder 'autoEncoder' the file
+'autoEncoder.py' is a autoEncoder trained in the MNIST dataSet and it down the dimension of the original image of 28*28 component
+to the code vector in 9 dimension use the tech[2]
+
+[1]Brain Criticality - Optimizing Neural Computations https://www.youtube.com/watch?v=vwLb3XlPCB4&list=PLrbMfgZRtJQHFxOO0VurG5EEZUXU8-12h&index=431
+[2]Implementing an Autoencoder in PyTorch https://www.geeksforgeeks.org/implementing-an-autoencoder-in-pytorch/
+
+
