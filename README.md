@@ -30,3 +30,6 @@ This is a game that tries to employ ai as its building block.
 ## Log20240206-07
 [Log20240206-07](./mainBlog/Logs/20240207workTree.md)
 
+## Log20240208
+[Log20240208](./mainBlog/Logs/20240208workTree.md)
+
