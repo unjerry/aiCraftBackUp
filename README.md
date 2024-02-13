@@ -33,3 +33,15 @@ This is a game that tries to employ ai as its building block.
 ## Log20240208
 [Log20240208](./mainBlog/Logs/20240208workTree.md)
 
+## Log20240209
+[Log20240209](./mainBlog/Logs/20240209workTree.md)
+
+## Log20240210
+[Log20240210](./mainBlog/Logs/20240210workTree.md)
+
+## Log20240211
+[Log20240211](./mainBlog/Logs/20240211workTree.md)
+
+## Log20240212
+[Log20240212](./mainBlog/Logs/20240212workTree.md)
+
