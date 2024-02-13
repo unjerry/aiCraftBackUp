@@ -1,0 +1,15 @@
+'Topic20240208-?':about pygame and compute shaders
+'Topic20240209':maxwell equation on compute shaders
+
+
+in the PDF essay[1] we know that the maxwell equation is only depends on the 'Faraday's law' and the 'Ampère's law' with respect to the time update.
+this is also suggested in the[2] which applied a web electromagnetism simulation and in a git repository
+
+i derive the exact update from the two formula mensioned above
+
+
+[1]The Uniqueness of Maxwell's Equations https://www.wtamu.edu/~cbaird/SuppMaxwellUniqueness.pdf
+[2]https://github.com/RobinKa/maxwell-simulation?tab=readme-ov-file
+[3]https://github.com/RobinKa/maxwell-simulation/blob/master/src/em/kernels/simulation.ts
+
+

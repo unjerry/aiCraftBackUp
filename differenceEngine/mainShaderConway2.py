@@ -12,6 +12,7 @@ pygame.camera.init()
 
 screen = pygame.display.set_mode((800, 600), pygame.OPENGL | pygame.DOUBLEBUF)
 display = pygame.Surface((800, 600))
+disp = pygame.Surface((800, 600), pygame.OPENGL | pygame.DOUBLEBUF)
 clock = pygame.time.Clock()
 
 ctx = moderngl.create_context()
@@ -133,7 +134,7 @@ while True:
     x, y = pygame.mouse.get_pos()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.image.save(pygame.transform.flip(display, 0, 1), "./rrr.png")
+            # pygame.image.save(pygame.transform.flip(display, 0, 1), "./rrr.png")
             sys.exit()
         if event.type == pygame.MOUSEBUTTONDOWN:
             draw = 1
@@ -168,7 +169,7 @@ while True:
     # print(render_object.ctx.fbo)
     # render_object.ctx.fbo.read_into(frame_tex.ctx.fbo.read())
     # print(frame_tex)
-    # pygame.image.save(display, "./rrr.png")
+    # pygame.image.save(disp, "./rrr.png")
     # cam.start()
     # image = cam.get_image()
     # pygame.image.save(pygame.display.get_surface(), "./rrl.png")

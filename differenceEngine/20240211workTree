@@ -1,0 +1,64 @@
+midLog
+
+the compute shader mainlly isolated from others
+use the
+'layout(rgba8,binding=1) uniform image2D pre_screen;'
+'layout(rgba32f,binding=0) uniform image2D screen;'
+to declare the binding position the texture data format
+i decide mainly to store every data in image use the opencv cv2 module[1]
+it has no vao and vbo and it can be in a standalone moderngl context
+
+import numpy as np
+raa = np.frombuffer(tex.read(),dtype=np.uint8)
+import cv2
+cv2.imwrite("./first.png",np.reshape(raa,(500*2,500*2,-1)))
+raa=cv2.imread("./first.png",cv2.IMREAD_UNCHANGED)
+tex.write(raa)
+
+these code in the file
+'computeShaderFinally.py' which contains the most tech instance of the compute shader and its read and write in '20240210workTree' required
+the file
+'beforeComputeShader.py' is a file that recape the normal pipline of the opengl mainly include the 'fragmentShader' and the 'vertexShader' and their correspond program
+'keyBoardTest.py' is a file that test the key board of the pygame
+the files
+'mainComputeShaderConway.py'
+'mainShaderConway.py'
+'mainShaderConway2.py'
+are a shader realization of the conway game of life
+and both the fragment shader and the compute shader can do
+
+but in the file
+'mainPlayGround.py' which i want to simulate the maxwell equation
+and the 0-255 range of the normal texture that proccess in the fragment shader are not enought
+and i need the 'rgba32f' in the compute shader to do the simulation and use the normal pipline to render freely on to the screen
+
+
+'pleaseGiveMeTime.py' is a game that deal with the fonts and text in the pygame and i fond the courier new 'COURE.FON' in
+the folder
+'fonts' that i collected some fonts
+
+
+the file
+'vaoTest1.py' and
+'standAloneContextModerngl.py' are not so important and the idea in these files are explore more in
+the file
+'computeShaderFinally.py'
+
+in general the vbo is the vertex buffer object which load the vertex data
+and the vao is the vertex array object is the normal pipline program dispatched with the proper vbo
+and the normal pipline will render directely to the context's windows vbo which is the ctx.vbo as output
+the compute shader however is play itself isolate relatively basically its texture in and texture out and maybe some matrix in and out in the future
+and the uv.xy is replaced by the 
+'ivec2 pixel_coords=ivec2(gl_GlobalInvocationID.xy);'
+which gives the integer coordinates of the texutre
+
+
+the two source of learn folder are
+'compute_shader_render_texture'
+'ComputeShaderTutorial'
+the reference link are in the main file of each learn project file
+
+[1]['20240210workTree'.[2]]Numpy array to and from ModernGL buffer (open and save with cv2) https://stackoverflow.com/questions/65056007/numpy-array-to-and-from-moderngl-buffer-open-and-save-with-cv2
+
+
+

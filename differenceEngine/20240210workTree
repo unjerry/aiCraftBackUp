@@ -1,0 +1,14 @@
+'Topic20240208-?':about pygame and compute shaders
+'Topic20240210':to make the maxwell simulation I need to read and load any data format
+especially the float32 
+1. use compute shader to manipulate these data[1]
+2. use the opencv to read and load the data[2]
+
+
+
+
+[1]compute_shader_render_texture.py https://github.com/moderngl/moderngl/blob/main/examples/compute_shader_render_texture.py
+
+[2]Numpy array to and from ModernGL buffer (open and save with cv2) https://stackoverflow.com/questions/65056007/numpy-array-to-and-from-moderngl-buffer-open-and-save-with-cv2
+
+
