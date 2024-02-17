@@ -23,37 +23,71 @@ void main()
     ivec2 pixel_coords=ivec2(gl_GlobalInvocationID.xy);
     
     vec4 col = imageLoad(pre_screen, pixel_coords);
+    vec4 ucol = imageLoad(pre_screen, ivec2(pixel_coords.x,pixel_coords.y-1));
+    vec4 dcol = imageLoad(pre_screen, ivec2(pixel_coords.x,pixel_coords.y+1));
     float a = col.r;
+    float u = ucol.r;
+    float d = dcol.r;
     
-    float num = 0.0;
-    for(int i = -1; i < 2; i++) {
-        for(int j = -1; j < 2; j++) {
-        int x = pixel_coords.x+i ;
-        int y = pixel_coords.y+j  ;
-        x=(x+500)%500;
-        y=(y+500)%500;
-        num += imageLoad(pre_screen, ivec2(x, y)).b;
+    float num=((a<0.9)?(0.0):(1.0));
+    float um =((u<0.9)?(0.0):(1.0));
+    float dm =((d<0.9)?(0.0):(1.0));
+    
+    float ll;
+    if(um>0.8)
+    {
+        if(num>0.8&&dm<0.8)
+        {
+            ll=0.0;
+        }
+        else
+        {
+            
+            ll=1.0;
         }
     }
-    num -= a;
-  
-    if(a > 0.5) {
-        if(num < 1.5) {
-            a = 0.0;
+    else
+    {
+        if(num>0.8&&dm>0.8)
+        {
+            
+            ll=1.0;
         }
-        if(num > 3.5) {
-            a = 0.0;
-        }
-    } else {
-        if(num > 2.5 && num < 3.5) {
-            a = 1.0;
+        else
+        {
+            ll=0.0;
         }
     }
-    vec4 pixel=vec4(a,a,a,1.0);
-    imageStore(screen,pixel_coords,pixel);
+    if(num>0.8&&dm>0.8)
+    {
+        vec4 ldcol = imageLoad(pre_screen, ivec2(pixel_coords.x-1,pixel_coords.y+1));
+        vec4 rdcol = imageLoad(pre_screen, ivec2(pixel_coords.x+1,pixel_coords.y+1));
+        float ld = ldcol.r;
+        float rd = rdcol.r;
+        float ldm =((ld<0.9)?(0.0):(1.0));
+        float rdm =((rd<0.9)?(0.0):(1.0));
+
+        if(ldm<0.8&&rdm<0.8)
+        {
+//            float noise1 nz;
+  //          if(nz<0.0)
+    //        {
+                
+      //      }
+        }
+    }
+    if(pixel_coords.y==499&&num>0.8)
+    {
+        ll=1.0;
+    }
+    
+    imageStore(screen,pixel_coords,vec4(ll,ll,ll,1.0));
+    
+    
 }
 """
 cps = ctx1.compute_shader(comp_shader_source)
+
 cps.run(500, 500, 1)
 import numpy as np
 
@@ -76,12 +110,12 @@ while is_running:
     main_screen.fill((0, 0, 0))
     cps.run(500, 500, 1)
     tex_image = pygame.image.frombuffer(pre_tex.read(), tex.size, "BGRA")
-    # raa = np.frombuffer(pre_tex.read(), dtype=np.uint8)
-    # cv2.imwrite("./first.png", np.reshape(raa, (500, 500, -1)))
+    raa = np.frombuffer(pre_tex.read(), dtype=np.uint8)
+    # cv2.imwrite(f"./outputs/first{i}.png", np.reshape(raa, (500, 500, -1)))
     # main_screen.blit(pygame.transform.scale_by(tex_image,5), pygame.mouse.get_pos())
-    main_screen.blit(tex_image, (10,10))
+    main_screen.blit(tex_image, (10, 10))
     pygame.display.flip()
-    delta_time = main_clock.tick(60)
+    delta_time = main_clock.tick()
     dtime = main_clock.get_time()
     time = pygame.time.get_ticks()
     # cps["time"] = time
