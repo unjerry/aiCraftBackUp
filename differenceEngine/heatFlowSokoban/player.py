@@ -4,7 +4,7 @@ import cv2
 
 
 class player:
-    def __init__(self, game, scene, tileMap, initialLocation=(15, 7)) -> None:
+    def __init__(self, game, scene, tileMap, initialLocation=(15, 8)) -> None:
         self.location = initialLocation
         self.tileMap = tileMap
         self.game = game

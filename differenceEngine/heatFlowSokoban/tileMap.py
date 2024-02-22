@@ -28,6 +28,12 @@ class tileMap:
             "pos": (15, 6),
             "heatType": True,
         }
+        self.tileMap["15_7"] = {
+            "type": "heatBox",
+            "variant": 0,
+            "pos": (15, 7),
+            "heatType": True,
+        }
         self.checkPoint["5_5"] = {
             "type": "base",
             "variant": 0,
