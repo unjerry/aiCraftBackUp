@@ -11,8 +11,8 @@ computeShaderProgram = ctx.compute_shader(computeShaderSource)
 
 inField = ctx.texture((50 * 16, 50 * 16), 1, dtype="f4")
 outField = ctx.texture((50 * 16, 50 * 16), 1, dtype="f4")
-inField.use(0)
-outField.use(1)
+# inField.use(0)
+# outField.use(1)
 inField.bind_to_image(0, read=True, write=False)
 outField.bind_to_image(1, read=False, write=True)
 # NP = 300 * np.ones((10, 10), dtype=np.float32)
@@ -27,9 +27,17 @@ print(np.reshape(rrr, (50 * 16, 50 * 16)))
 rrr = np.frombuffer(outField.read(), dtype=np.float32)
 print(np.reshape(rrr, (50 * 16, 50 * 16)))
 
-for i in range(10000):
+import time
+
+T = 0
+st = time.time()
+for i in range(1000000):
+    inField.bind_to_image((i) % 2, read=(i + 1) % 2, write=(i) % 2)
+    outField.bind_to_image((i + 1) % 2, read=(i) % 2, write=(i + 1) % 2)
     computeShaderProgram.run(50, 50, 1)
-    inField.write(outField.read())
+    # inField.write(outField.read())
+ed = time.time()
+print("asdasd", ed - st)
 rrr = np.frombuffer(inField.read(), dtype=np.float32)
 rri = np.frombuffer(inField.read(), dtype=np.uint8)
 print(np.reshape(rrr, (50 * 16, 50 * 16)))
