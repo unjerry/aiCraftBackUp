@@ -1,6 +1,7 @@
 import pygame as pg
 from utilities import loadImages
 from scene import scene
+from menue import menue
 import glcontext
 
 
@@ -20,6 +21,8 @@ class mainGame:
             "heatBox": loadImages("heatBox"),
         }
         self.scene = scene(self)
+        self.renderType = 1
+        self.menue = menue(self)
 
     def checkEvents(self):
         for event in pg.event.get():
@@ -28,13 +31,22 @@ class mainGame:
                 event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE
             ):
                 self.isRunning = 0
+            if event.type == pg.MOUSEBUTTONDOWN:
+                self.menue.update()
             self.scene.checkEvents(event)
             if self.scene.isPass:
                 print("scene passed")
 
     def render(self):
         self.mainScreen.fill(color=(0, 0, 0))
-        self.scene.render(self.mainScreen)
+        if self.renderType == 0:
+            self.scene.render(self.mainScreen)
+        if self.renderType == 1:
+            self.menue.render(self.mainScreen)
+        if self.renderType == 3:
+            ff = pg.Surface((100, 100))
+            ff.fill((100, 1, 1))
+            self.mainScreen.blit(ff, (0, 0))
         pg.display.set_caption(f"fps:{self.mainClock.get_fps():.0f}")
         pg.display.flip()
 
