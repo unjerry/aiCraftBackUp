@@ -31,7 +31,7 @@ import time
 
 T = 0
 st = time.time()
-for i in range(1000000):
+for i in range(100):
     inField.bind_to_image((i) % 2, read=(i + 1) % 2, write=(i) % 2)
     outField.bind_to_image((i + 1) % 2, read=(i) % 2, write=(i + 1) % 2)
     computeShaderProgram.run(50, 50, 1)

@@ -22,6 +22,30 @@ class menue:
                 "size": (100, 100),
                 "rect": None,
             },
+            {
+                "title": "level:1",
+                "font": pg.font.Font(size=20),
+                "func": partial(self.setNum, n=1),
+                "pos": (220, 0),
+                "size": (100, 100),
+                "rect": None,
+            },
+            {
+                "title": "level:2",
+                "font": pg.font.Font(size=20),
+                "func": partial(self.setNum, n=2),
+                "pos": (110 * 3, 0),
+                "size": (100, 100),
+                "rect": None,
+            },
+            {
+                "title": "level:3",
+                "font": pg.font.Font(size=20),
+                "func": partial(self.setNum, n=3),
+                "pos": (110 * 4, 0),
+                "size": (100, 100),
+                "rect": None,
+            },
         ]
 
     def exitt(self):
@@ -30,7 +54,8 @@ class menue:
 
     def setNum(self, n):
         print(f"{n}")
-        self.game.renderType = n
+        self.game.scene.load(n)
+        self.game.renderType = 0
 
     def update(self):
         for but in self.buttonList:

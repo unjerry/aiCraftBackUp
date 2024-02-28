@@ -21,7 +21,7 @@ class mainGame:
             "heatBox": loadImages("heatBox"),
         }
         self.scene = scene(self)
-        self.renderType = 1
+        self.renderType = -1
         self.menue = menue(self)
 
     def checkEvents(self):
@@ -36,12 +36,14 @@ class mainGame:
             self.scene.checkEvents(event)
             if self.scene.isPass:
                 print("scene passed")
+                self.renderType = -1
+                self.scene.isPass = 0
 
     def render(self):
         self.mainScreen.fill(color=(0, 0, 0))
         if self.renderType == 0:
             self.scene.render(self.mainScreen)
-        if self.renderType == 1:
+        if self.renderType == -1:
             self.menue.render(self.mainScreen)
         if self.renderType == 3:
             ff = pg.Surface((100, 100))

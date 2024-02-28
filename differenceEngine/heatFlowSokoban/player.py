@@ -1,5 +1,6 @@
 import pygame as pg
 import numpy as np
+import json
 import cv2
 
 
@@ -106,3 +107,8 @@ class player:
 
     def render(self, surf):
         self.tileMap.putSqare(self.game.assets["player"][0], self.location, surf)
+
+    def load(self, n):
+        with open(f"assets/levelsInfo/player{n}.json", "r") as file:
+            dcc = json.load(file)
+        self.location = dcc["pos"]

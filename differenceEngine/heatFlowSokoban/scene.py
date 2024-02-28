@@ -90,3 +90,7 @@ class scene:
     def render(self, surf):
         self.tileMap.render(surf)
         self.player.render(surf)
+
+    def load(self, n):
+        self.player.load(n)
+        self.tileMap.load(n)

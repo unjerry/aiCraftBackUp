@@ -1,3 +1,6 @@
+import json
+
+
 class tileMap:
     def __init__(self, game, tileSize=16) -> None:
         self.tileSize = tileSize
@@ -34,11 +37,15 @@ class tileMap:
             "pos": (15, 7),
             "heatType": True,
         }
-        self.checkPoint["5_5"] = {
+        self.checkPoint["2_5"] = {
             "type": "base",
             "variant": 0,
-            "pos": (5, 5),
+            "pos": (2, 5),
         }
+        # self.tileMap["playerInitialLocation"] = (2, 2)
+        # print(self.baseTile, self.checkPoint, self.tileMap, sep="\n")
+        # with open("level0.json", "w") as file:
+        #     json.dump(self.tileMap, file)
 
     def putSqare(self, sqare, location, surf):
         surf.blit(
@@ -67,3 +74,14 @@ class tileMap:
             self.putSqare(
                 self.game.assets[tile["type"]][tile["variant"]], tile["pos"], surf
             )
+
+    def load(self, n):
+        with open(f"assets/levelsInfo/level{n}.json", "r") as file:
+            dcc = json.load(file)
+        # print(dcc)
+        del self.tileMap
+        self.tileMap = dcc
+        with open(f"assets/levelsInfo/checkPoint{n}.json", "r") as file:
+            dcl = json.load(file)
+        del self.checkPoint
+        self.checkPoint = dcl
