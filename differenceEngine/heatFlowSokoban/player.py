@@ -32,7 +32,26 @@ class player:
                     # print(self.tileMap.tileMap[nextPosKey])
                     if "heatType" in self.tileMap.tileMap[nextPosKey]:
                         # print("sdfsd")
-                        self.scene.heatTexture.write(
+                        radd = [None, None]
+                        radd[0] = np.reshape(
+                            np.frombuffer(
+                                self.scene.heatTexture[
+                                    (self.scene.textureIndex + 0) % 2
+                                ].read(),
+                                dtype=np.float32,
+                            ),
+                            (50 * 16, 50 * 16),
+                        )
+                        radd[1] = np.reshape(
+                            np.frombuffer(
+                                self.scene.heatTexture[
+                                    (self.scene.textureIndex + 1) % 2
+                                ].read(),
+                                dtype=np.float32,
+                            ),
+                            (50 * 16, 50 * 16),
+                        )
+                        self.scene.heatTexture[(self.scene.textureIndex + 0) % 2].write(
                             # np.reshape(
                             0 * np.ones(16 * 16, dtype=np.float32),  # (1, 1, -1)
                             # ),
@@ -43,9 +62,47 @@ class player:
                                 self.tileMap.tileSize,
                             ),
                         )
-                        self.scene.heatTexture.write(
+                        self.scene.heatTexture[(self.scene.textureIndex + 1) % 2].write(
                             # np.reshape(
-                            273.5 * np.ones(16 * 16, dtype=np.float32),  # (1, 1, -1)
+                            0 * np.ones(16 * 16, dtype=np.float32),  # (1, 1, -1)
+                            # ),
+                            (
+                                nextPos[0] * self.tileMap.tileSize,
+                                nextPos[1] * self.tileMap.tileSize,
+                                self.tileMap.tileSize,
+                                self.tileMap.tileSize,
+                            ),
+                        )
+                        self.scene.heatTexture[(self.scene.textureIndex + 0) % 2].write(
+                            # np.reshape(
+                            radd[0][
+                                nextPos[1]
+                                * self.tileMap.tileSize : (nextPos[1] + 1)
+                                * self.tileMap.tileSize,
+                                nextPos[0]
+                                * self.tileMap.tileSize : (nextPos[0] + 1)
+                                * self.tileMap.tileSize,
+                            ]
+                            + 273.5 / 2,  # (1, 1, -1)
+                            # ),
+                            (
+                                nextNextPos[0] * self.tileMap.tileSize,
+                                nextNextPos[1] * self.tileMap.tileSize,
+                                self.tileMap.tileSize,
+                                self.tileMap.tileSize,
+                            ),
+                        )
+                        self.scene.heatTexture[(self.scene.textureIndex + 1) % 2].write(
+                            # np.reshape(
+                            radd[1][
+                                nextPos[1]
+                                * self.tileMap.tileSize : (nextPos[1] + 1)
+                                * self.tileMap.tileSize,
+                                nextPos[0]
+                                * self.tileMap.tileSize : (nextPos[0] + 1)
+                                * self.tileMap.tileSize,
+                            ]
+                            + 273.5 / 2,  # (1, 1, -1)
                             # ),
                             (
                                 nextNextPos[0] * self.tileMap.tileSize,
@@ -55,7 +112,8 @@ class player:
                             ),
                         )
                         raa = np.frombuffer(
-                            self.scene.heatTexture.read(), dtype=np.uint8
+                            self.scene.heatTexture[0].read(),
+                            dtype=np.uint8,
                         )
                         raa = np.reshape(
                             raa,

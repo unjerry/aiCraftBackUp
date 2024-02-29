@@ -51,9 +51,11 @@ class mainGame:
             self.mainScreen.blit(ff, (0, 0))
         pg.display.set_caption(f"fps:{self.mainClock.get_fps():.0f}")
         pg.display.flip()
+        # self.mainClock.tick(10)
 
     def update(self):
         # self.scene.update()
+        # self.scene.textureIndex = (self.scene.textureIndex + 1) % 2
         pass
 
     def run(self):
