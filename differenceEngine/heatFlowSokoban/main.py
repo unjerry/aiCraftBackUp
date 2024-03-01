@@ -23,6 +23,7 @@ class mainGame:
         self.scene = scene(self)
         self.renderType = -1
         self.menue = menue(self)
+        self.deltaTime = 0
 
     def checkEvents(self):
         for event in pg.event.get():
@@ -51,19 +52,19 @@ class mainGame:
             self.mainScreen.blit(ff, (0, 0))
         pg.display.set_caption(f"fps:{self.mainClock.get_fps():.0f}")
         pg.display.flip()
-        # self.mainClock.tick(10)
 
     def update(self):
-        # self.scene.update()
-        # self.scene.textureIndex = (self.scene.textureIndex + 1) % 2
+        self.checkEvents()
+        self.scene.update()
+        self.scene.textureIndex = (self.scene.textureIndex + 1) % 2
         pass
 
     def run(self):
         while self.isRunning:
-            self.checkEvents()
             self.update()
             self.render()
-            self.mainClock.tick()
+            self.deltaTime = self.mainClock.tick() / 1000
+            print(self.deltaTime)
         pg.quit()
 
 

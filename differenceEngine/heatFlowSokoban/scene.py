@@ -18,6 +18,14 @@ class scene:
         self.ctx = mgl.create_context(standalone=True, require=460)
         with open(f"assets/shaders/heatSimulator.glsl") as file:
             computeShaderSource = file.read()
+        with open(f"assets/shaders/heatSimulator0.glsl") as file:
+            computeShaderSource0 = file.read()
+        with open(f"assets/shaders/heatSimulator1.glsl") as file:
+            computeShaderSource1 = file.read()
+        self.computeShaderProgramList = [
+            self.ctx.compute_shader(computeShaderSource0),
+            self.ctx.compute_shader(computeShaderSource1),
+        ]
         self.computeShaderProgram = self.ctx.compute_shader(computeShaderSource)
         self.FrameBuffer = [None, None]
         self.heatTexture = [self.getTexture(code=0), self.getTexture(code=1)]
@@ -66,7 +74,7 @@ class scene:
         self.checkPass()
 
     def update(self):
-        print("scene update")
+        # print("scene update")
         self.heatTexture[0].bind_to_image(
             (self.textureIndex + 0) % 2,
             read=(self.textureIndex + 1) % 2,
@@ -77,30 +85,44 @@ class scene:
             read=(self.textureIndex + 0) % 2,
             write=(self.textureIndex + 1) % 2,
         )
+        self.computeShaderProgram["dt"] = self.game.deltaTime
+        # self.FrameBuffer[0] = self.ctx.framebuffer(self.heatTexture[0])
+        # self.FrameBuffer[1] = self.ctx.framebuffer(self.heatTexture[1])
+        # self.computeShaderProgramList[self.textureIndex].run(50, 50, 1)
         self.computeShaderProgram.run(50, 50, 1)
-        # raa = np.frombuffer(
-        #     self.heatTexture[0].read(),
-        #     dtype=np.uint8,
-        # )
-        # raa = np.reshape(
-        #     raa,
-        #     (
-        #         self.size[0] * self.tileMap.tileSize,
-        #         self.size[0] * self.tileMap.tileSize,
-        #         4,
-        #     ),
-        # )
-        # cv2.imwrite(
-        #     f"./first.png",
-        #     np.reshape(
-        #         raa,
-        #         (
-        #             self.size[0] * self.tileMap.tileSize,
-        #             self.size[1] * self.tileMap.tileSize,
-        #             -1,
-        #         ),
-        #     ),
-        # )
+        temp = self.FrameBuffer[(self.textureIndex + 1) % 2].read(
+            (
+                0,
+                0,
+                self.tileMap.tileSize,
+                self.tileMap.tileSize,
+            ),
+            components=1,
+            dtype="f4",
+        )
+        raa = np.frombuffer(
+            self.heatTexture[0].read(),
+            dtype=np.uint8,
+        )
+        raa = np.reshape(
+            raa,
+            (
+                self.size[0] * self.tileMap.tileSize,
+                self.size[0] * self.tileMap.tileSize,
+                4,
+            ),
+        )
+        cv2.imwrite(
+            f"./first.png",
+            np.reshape(
+                raa,
+                (
+                    self.size[0] * self.tileMap.tileSize,
+                    self.size[1] * self.tileMap.tileSize,
+                    -1,
+                ),
+            ),
+        )
 
         # for location in self.tileMap.tileMap:
         #     tile = self.tileMap.tileMap[location]

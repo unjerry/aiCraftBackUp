@@ -33,23 +33,36 @@ class player:
                     if "heatType" in self.tileMap.tileMap[nextPosKey]:
                         # print("sdfsd")
                         radd = [None, None]
-                        radd[0] = np.reshape(
-                            np.frombuffer(
-                                self.scene.heatTexture[
-                                    (self.scene.textureIndex + 0) % 2
-                                ].read(),
-                                dtype=np.float32,
+                        radd[0] = np.frombuffer(
+                            self.scene.FrameBuffer[
+                                (self.scene.textureIndex + 0) % 2
+                            ].read(
+                                (
+                                    nextPos[0] * self.tileMap.tileSize,
+                                    nextPos[1] * self.tileMap.tileSize,
+                                    self.tileMap.tileSize,
+                                    self.tileMap.tileSize,
+                                ),
+                                components=1,
+                                dtype="f4",
                             ),
-                            (50 * 16, 50 * 16),
+                            dtype=np.float32,
                         )
-                        radd[1] = np.reshape(
-                            np.frombuffer(
-                                self.scene.heatTexture[
-                                    (self.scene.textureIndex + 1) % 2
-                                ].read(),
-                                dtype=np.float32,
+
+                        radd[1] = np.frombuffer(
+                            self.scene.FrameBuffer[
+                                (self.scene.textureIndex + 1) % 2
+                            ].read(
+                                (
+                                    nextPos[0] * self.tileMap.tileSize,
+                                    nextPos[1] * self.tileMap.tileSize,
+                                    self.tileMap.tileSize,
+                                    self.tileMap.tileSize,
+                                ),
+                                components=1,
+                                dtype="f4",
                             ),
-                            (50 * 16, 50 * 16),
+                            dtype=np.float32,
                         )
                         self.scene.heatTexture[(self.scene.textureIndex + 0) % 2].write(
                             # np.reshape(
@@ -75,15 +88,7 @@ class player:
                         )
                         self.scene.heatTexture[(self.scene.textureIndex + 0) % 2].write(
                             # np.reshape(
-                            radd[0][
-                                nextPos[1]
-                                * self.tileMap.tileSize : (nextPos[1] + 1)
-                                * self.tileMap.tileSize,
-                                nextPos[0]
-                                * self.tileMap.tileSize : (nextPos[0] + 1)
-                                * self.tileMap.tileSize,
-                            ]
-                            + 273.5 / 2,  # (1, 1, -1)
+                            radd[0] + 273.5 / 2,  # (1, 1, -1)
                             # ),
                             (
                                 nextNextPos[0] * self.tileMap.tileSize,
@@ -94,15 +99,7 @@ class player:
                         )
                         self.scene.heatTexture[(self.scene.textureIndex + 1) % 2].write(
                             # np.reshape(
-                            radd[1][
-                                nextPos[1]
-                                * self.tileMap.tileSize : (nextPos[1] + 1)
-                                * self.tileMap.tileSize,
-                                nextPos[0]
-                                * self.tileMap.tileSize : (nextPos[0] + 1)
-                                * self.tileMap.tileSize,
-                            ]
-                            + 273.5 / 2,  # (1, 1, -1)
+                            radd[1] + 273.5 / 2,  # (1, 1, -1)
                             # ),
                             (
                                 nextNextPos[0] * self.tileMap.tileSize,
@@ -111,18 +108,18 @@ class player:
                                 self.tileMap.tileSize,
                             ),
                         )
-                        raa = np.frombuffer(
-                            self.scene.heatTexture[0].read(),
-                            dtype=np.uint8,
-                        )
-                        raa = np.reshape(
-                            raa,
-                            (
-                                self.scene.size[0] * self.tileMap.tileSize,
-                                self.scene.size[0] * self.tileMap.tileSize,
-                                4,
-                            ),
-                        )
+                        # raa = np.frombuffer(
+                        #     self.scene.heatTexture[0].read(),
+                        #     dtype=np.uint8,
+                        # )
+                        # raa = np.reshape(
+                        #     raa,
+                        #     (
+                        #         self.scene.size[0] * self.tileMap.tileSize,
+                        #         self.scene.size[0] * self.tileMap.tileSize,
+                        #         4,
+                        #     ),
+                        # )
                         # print(
                         #     raa[
                         #         nextNextPos[1]
@@ -137,17 +134,17 @@ class player:
                         #     ]
                         # )
                         # print(nextNextPos[0], nextNextPos[1])
-                        cv2.imwrite(
-                            f"./first.png",
-                            np.reshape(
-                                raa,
-                                (
-                                    self.scene.size[0] * self.tileMap.tileSize,
-                                    self.scene.size[1] * self.tileMap.tileSize,
-                                    -1,
-                                ),
-                            ),
-                        )
+                        # cv2.imwrite(
+                        #     f"./first.png",
+                        #     np.reshape(
+                        #         raa,
+                        #         (
+                        #             self.scene.size[0] * self.tileMap.tileSize,
+                        #             self.scene.size[1] * self.tileMap.tileSize,
+                        #             -1,
+                        #         ),
+                        #     ),
+                        # )
 
                     self.tileMap.tileMap.pop(nextPosKey)
                     self.tileMap.tileMap[nextNextPosKey]["pos"] = nextNextPos

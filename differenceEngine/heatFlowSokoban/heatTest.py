@@ -21,6 +21,8 @@ NP = np.frombuffer(cv2.imread("./first.png", cv2.IMREAD_UNCHANGED), dtype=np.flo
 print(NP[: 16 * 3])
 print(np.reshape(NP, (50 * 16, 50 * 16, -1)).shape)
 inField.write(NP)
+fb = ctx.framebuffer(inField)
+print(np.frombuffer(fb.read((0, 0, 16, 16), dtype="f4"), dtype=np.float32))
 
 rrr = np.frombuffer(inField.read(), dtype=np.float32)
 print(np.reshape(rrr, (50 * 16, 50 * 16)))

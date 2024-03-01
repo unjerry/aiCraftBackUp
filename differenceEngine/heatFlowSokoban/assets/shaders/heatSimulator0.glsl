@@ -3,9 +3,9 @@
 layout(local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
 layout(r32f, binding = 0) uniform image2D inField;
 layout(r32f, binding = 1) uniform image2D outField;
-uniform float dt;
 
 void main() {
+  float dt = 0.01;
   ivec2 pixel_coords = ivec2(gl_GlobalInvocationID.xy);
   float pixel = imageLoad(inField, pixel_coords).r;
   float pixelxm1 =
