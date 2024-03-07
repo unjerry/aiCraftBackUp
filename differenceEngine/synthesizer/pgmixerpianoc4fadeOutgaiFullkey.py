@@ -9,7 +9,7 @@ mainClock = pg.time.Clock()
 
 soundDict = {}
 for i in range(-36, 36):
-    soundDict[i] = mixer.Sound(f"saw/{i}.wav")
+    soundDict[i] = mixer.Sound(f"saw{i}.wav")
 s0 = mixer.Sound("sine0.wav")
 
 SHIFT = 12
