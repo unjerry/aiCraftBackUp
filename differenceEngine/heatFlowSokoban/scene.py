@@ -1,8 +1,10 @@
 from tileMap import tileMap
 from player import player
+from heatViewPort import ppline
 import moderngl as mgl
 import numpy as np
 import cv2
+import pygame as pg
 
 
 class scene:
@@ -29,6 +31,8 @@ class scene:
         self.computeShaderProgram = self.ctx.compute_shader(computeShaderSource)
         self.FrameBuffer = [None, None]
         self.heatTexture = [self.getTexture(code=0), self.getTexture(code=1)]
+        self.renderWindow = pg.Surface((50 * 16, 50 * 16))
+        self.Pp = ppline(self.ctx)
 
     def getTexture(self, code):
         tex = self.ctx.texture(
@@ -39,23 +43,23 @@ class scene:
             1,
             dtype="f4",
         )
-        # tex.use(code)
+        tex.use(code)
         tex.bind_to_image(code, read=True, write=True)
 
-        raa = np.frombuffer(tex.read(), dtype=np.uint8)
+        # raa = np.frombuffer(tex.read(), dtype=np.uint8)
 
-        # print(np.reshape(raa,(500,500,-1)).shape)
-        cv2.imwrite(
-            f"./first{code}.png",
-            np.reshape(
-                raa,
-                (
-                    self.size[0] * self.tileMap.tileSize,
-                    self.size[1] * self.tileMap.tileSize,
-                    -1,
-                ),
-            ),
-        )
+        # # print(np.reshape(raa,(500,500,-1)).shape)
+        # cv2.imwrite(
+        #     f"./first{code}.png",
+        #     np.reshape(
+        #         raa,
+        #         (
+        #             self.size[0] * self.tileMap.tileSize,
+        #             self.size[1] * self.tileMap.tileSize,
+        #             -1,
+        #         ),
+        #     ),
+        # )
         self.FrameBuffer[code] = self.ctx.framebuffer(tex)
         return tex
 
@@ -86,6 +90,7 @@ class scene:
             write=(self.textureIndex + 1) % 2,
         )
         self.computeShaderProgram["dt"] = self.game.deltaTime
+        self.computeShaderProgram["conductionRate"] = 30
         # self.FrameBuffer[0] = self.ctx.framebuffer(self.heatTexture[0])
         # self.FrameBuffer[1] = self.ctx.framebuffer(self.heatTexture[1])
         # self.computeShaderProgramList[self.textureIndex].run(50, 50, 1)
@@ -100,29 +105,29 @@ class scene:
             components=1,
             dtype="f4",
         )
-        raa = np.frombuffer(
-            self.heatTexture[0].read(),
-            dtype=np.uint8,
-        )
-        raa = np.reshape(
-            raa,
-            (
-                self.size[0] * self.tileMap.tileSize,
-                self.size[0] * self.tileMap.tileSize,
-                4,
-            ),
-        )
-        cv2.imwrite(
-            f"./first.png",
-            np.reshape(
-                raa,
-                (
-                    self.size[0] * self.tileMap.tileSize,
-                    self.size[1] * self.tileMap.tileSize,
-                    -1,
-                ),
-            ),
-        )
+        # raa = np.frombuffer(
+        #     self.heatTexture[0].read(),
+        #     dtype=np.uint8,
+        # )
+        # raa = np.reshape(
+        #     raa,
+        #     (
+        #         self.size[0] * self.tileMap.tileSize,
+        #         self.size[0] * self.tileMap.tileSize,
+        #         4,
+        #     ),
+        # )
+        # cv2.imwrite(
+        #     f"./first.png",
+        #     np.reshape(
+        #         raa,
+        #         (
+        #             self.size[0] * self.tileMap.tileSize,
+        #             self.size[1] * self.tileMap.tileSize,
+        #             -1,
+        #         ),
+        #     ),
+        # )
 
         # for location in self.tileMap.tileMap:
         #     tile = self.tileMap.tileMap[location]
@@ -152,8 +157,11 @@ class scene:
         # )
 
     def render(self, surf):
-        self.tileMap.render(surf)
-        self.player.render(surf)
+        self.renderWindow.fill((120, 130, 90))
+        self.tileMap.render(self.renderWindow)
+        self.player.render(self.renderWindow)
+        surf.blit(self.renderWindow, (0, 10))
+        self.Pp.render(surf)
 
     def load(self, n):
         self.player.load(n)

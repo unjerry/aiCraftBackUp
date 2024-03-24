@@ -41,7 +41,7 @@ class mainGame:
                 self.scene.isPass = 0
 
     def render(self):
-        self.mainScreen.fill(color=(0, 0, 0))
+        self.mainScreen.fill(color=(100, 120, 132))
         if self.renderType == 0:
             self.scene.render(self.mainScreen)
         if self.renderType == -1:

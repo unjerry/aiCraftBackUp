@@ -88,7 +88,7 @@ class player:
                         )
                         self.scene.heatTexture[(self.scene.textureIndex + 0) % 2].write(
                             # np.reshape(
-                            radd[0] + 273.5 / 2,  # (1, 1, -1)
+                            radd[0] + 27.35 / 2,  # (1, 1, -1)
                             # ),
                             (
                                 nextNextPos[0] * self.tileMap.tileSize,
@@ -99,7 +99,7 @@ class player:
                         )
                         self.scene.heatTexture[(self.scene.textureIndex + 1) % 2].write(
                             # np.reshape(
-                            radd[1] + 273.5 / 2,  # (1, 1, -1)
+                            radd[1] + 27.35 / 2,  # (1, 1, -1)
                             # ),
                             (
                                 nextNextPos[0] * self.tileMap.tileSize,
