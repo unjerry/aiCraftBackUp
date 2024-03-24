@@ -1,0 +1,74 @@
+'Topic20240308-20240313':about blender and animation in blender
+
+
+1.the basic workFlow right now im using in blender
+
+the basic workFlow contains as follow
+1.get the model mesh and retopology it use the addon quadMesher or whatever retopology tool(this step is to make the model can be calculate to a rig), maybe this can be done by using the new addon auto-rig.
+
+2.create the rig armature.
+
+3.create the motion or import the motion use the tech below
+
+4.bind the mesh to the armature
+
+(5.)maybe more steps including the bake texture uv need to be consider to be done.
+
+
+2.the animation techFlow so far
+use mmRig addon to import the mixamo animation into a mmd like rigify armature[1][2]
+so far the vmp that is the mmd animation file cannot be import use the mmRig addon to import
+
+the vmp to mixamo and finally to rigify is seems to be in this resource[3]
+
+
+[1]【【Blender自制插件】傻瓜式MMD K帧插件 MikuMikuRig (简称MMR）-哔哩哔哩】 https://b23.tv/TtAoUwc
+[2]【傻瓜K帧 or 无须K帧？一切尽在MMR插件-哔哩哔哩】 https://b23.tv/ebM5Jn8
+[3]【【Blender自制插件】你的动作很不错，但下一秒就是我的了！-哔哩哔哩】 https://b23.tv/wjpcAQ5
+
+
+
+
+all the addon been used
+1.mmd_tools 2.10.2 https://github.com/UuuNyaa/blender_mmd_tools https://github.com/powroupi/blender_mmd_tools
+2.mmrig 0.56 https://github.com/LaoBro/Miku_Miku_Rig
+3.mmd_uuunyaa_tools 1.7.2 https://github.com/UuuNyaa/blender_mmd_uuunyaa_tools
+
+4.rigify
+5.remesher
+7.epx-rig
+
+6.autorig
+
+
+this handbook is about mmd&blender
+i mean use the blender to make a mmd animation
+so this handbook are include things as follows.
+0.preset
+    1.blender collection append and link
+    2.bpy and how to understand script
+1.model search and modify
+    1.where to find model:model site&pmx fbx xpn
+    2.model convertion and recommand model asset workFLow
+2.animation
+    1.where to find motion,bowroll&mixamo &vmd fbx and the epxtools
+    2.rigify:bind&generate rig controlls
+    3.mmd_tools&mmd_uuunyaa_tools vmd assets centered workFLow
+    4.mmd software little usage
+3.render:material&shaders&light
+    1.
+
+
+
+1.1.where to find model:model site&pmx fbx xpn
+https://www.deviantart.com/xnalaraitalia/gallery/
+bowroll
+mixamo
+sketchfab
+1.2.model convertion and recommand model asset workFLow
+https://www.youtube.com/watch?v=RzCgtYqP7nM
+
+2.2.rigify:bind&generate rig controllss
+https://www.youtube.com/watch?v=snvlZcQUoXs
+
+
