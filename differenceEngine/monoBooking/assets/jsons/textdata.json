@@ -1,0 +1,24 @@
+{
+    "textList": [
+        {
+            "content": "hello",
+            "startTime": 2,
+            "lastTime": 2
+        },
+        {
+            "content": "hello, world!",
+            "startTime": 4,
+            "lastTime": 10
+        },
+        {
+            "content": "hello, you f*** world!",
+            "startTime": 10,
+            "lastTime": 10
+        },
+        {
+            "content": "bye!",
+            "startTime": 60,
+            "lastTime": 10
+        }
+    ]
+}
