@@ -1,0 +1,3 @@
+q           quit
+setup       setUp the epoch to 0 to start train
+start       start train loop
