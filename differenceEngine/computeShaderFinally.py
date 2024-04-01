@@ -92,7 +92,7 @@ void main()
 """
 
 imgg = pygame.transform.flip(
-    pygame.transform.scale_by(pygame.image.load("./img.png"), (1.0, 1.0)),
+    pygame.transform.scale_by(pygame.image.load("images/img.png"), (1.0, 1.0)),
     flip_x=0,
     flip_y=1,
 )

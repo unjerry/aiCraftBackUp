@@ -7,6 +7,8 @@ mixer.init()
 mainScreen = pg.display.set_mode((400, 400))
 mainClock = pg.time.Clock()
 
+kk=1
+
 soundDict = {}
 for i in range(-36, 36):
     soundDict[i] = mixer.Sound(f"piano_c4/{i}.wav")
@@ -65,6 +67,28 @@ while isRunning:
             if event.key == pg.K_BACKSLASH:
                 S.add(-5 + SHIFT)
                 soundDict[-5 + SHIFT].play()
+            
+            if event.key == pg.K_DELETE:
+                S.add(-3 + SHIFT)
+                soundDict[-3 + SHIFT].play()
+            if event.key == pg.K_END:
+                S.add(-1 + SHIFT)
+                soundDict[-1 + SHIFT].play()
+            if event.key == pg.K_PAGEDOWN:
+                S.add(0 + SHIFT)
+                soundDict[0 + SHIFT].play()
+            if event.key == pg.K_KP_7:
+                S.add(2 + SHIFT)
+                soundDict[2 + SHIFT].play()
+            if event.key == pg.K_KP_8:
+                S.add(4 + SHIFT)
+                soundDict[4 + SHIFT].play()
+            if event.key == pg.K_KP_9:
+                S.add(5 + SHIFT)
+                soundDict[5 + SHIFT].play()
+            if event.key == pg.K_KP_PLUS:
+                S.add(7 + SHIFT)
+                soundDict[7 + SHIFT].play()
 
             if event.key == pg.K_LSHIFT:
                 S.add(-12 + SHIFT)
@@ -100,6 +124,9 @@ while isRunning:
             if event.key == pg.K_SLASH:
                 S.add(5 + SHIFT)
                 soundDict[5 + SHIFT].play()
+
+
+
             if event.key == pg.K_RSHIFT:
                 S.add(7 + SHIFT)
                 soundDict[7 + SHIFT].play()
@@ -176,6 +203,30 @@ while isRunning:
                 S.remove(-5 + SHIFT)
                 soundDict[-5 + SHIFT].fadeout(100)
 
+
+            if event.key == pg.K_DELETE:
+                S.remove(-3 + SHIFT)
+                soundDict[-3 + SHIFT].fadeout(100)
+            if event.key == pg.K_END:
+                S.remove(-1 + SHIFT)
+                soundDict[-1 + SHIFT].fadeout(100)
+            if event.key == pg.K_PAGEDOWN:
+                S.remove(0 + SHIFT)
+                soundDict[0 + SHIFT].fadeout(100)
+            if event.key == pg.K_KP_7:
+                S.remove(2 + SHIFT)
+                soundDict[2 + SHIFT].fadeout(100)
+            if event.key == pg.K_KP_8:
+                S.remove(4 + SHIFT)
+                soundDict[4 + SHIFT].fadeout(100)
+            if event.key == pg.K_KP_9:
+                S.remove(5 + SHIFT)
+                soundDict[5 + SHIFT].fadeout(100)
+            if event.key == pg.K_KP_PLUS:
+                S.remove(7 + SHIFT)
+                soundDict[7 + SHIFT].fadeout(100)
+
+
             if event.key == pg.K_LSHIFT:
                 S.remove(-12 + SHIFT)
                 soundDict[-12 + SHIFT].fadeout(100)
@@ -242,7 +293,7 @@ while isRunning:
             #     soundDict[23+SHIFT].fadeout(100)
     print(S, len(S))
     for i in S:
-        soundDict[i].set_volume(1 / np.log(len(S) + 2))
+        soundDict[i].set_volume(kk / np.log(len(S) + 2))
     pg.display.flip()
     mainClock.tick(240)
 

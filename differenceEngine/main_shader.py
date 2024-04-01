@@ -17,7 +17,7 @@ clock = pygame.time.Clock()
 ctx = moderngl.create_context()
 ctx.gc_mode = "auto"
 
-img = pygame.transform.scale_by(pygame.image.load("./img.png"), (0.5, 0.5))
+img = pygame.transform.scale_by(pygame.image.load("images/img.png"), (0.5, 0.5))
 quad_buffer = ctx.buffer(
     data=array.array(
         "f",

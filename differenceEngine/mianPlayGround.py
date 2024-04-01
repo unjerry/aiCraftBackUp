@@ -235,7 +235,7 @@ for i in range(5):
     BUdp = pygame.image.frombuffer(
         render_object_B.ctx.fbo.read(components=4), render_object_E.ctx.fbo.size, "RGBA"
     )
-    pygame.image.save(pygame.transform.flip(BUdp, 0, 1), f"./BUdp{i}.png")
+    pygame.image.save(pygame.transform.flip(BUdp, 0, 1), f"outputs/BUdp{i}.png")
     # render_object_simp.render(mode=moderngl.TRIANGLE_STRIP)
     # render_object_B.render(mode=moderngl.TRIANGLE_STRIP)
     # EUdp = pygame.image.frombuffer(

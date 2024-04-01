@@ -19,7 +19,7 @@ ctx = moderngl.create_context()
 ctx.gc_mode = "auto"
 
 img = pygame.transform.flip(
-    pygame.transform.scale_by(pygame.image.load("./1.png"), (0.5, 0.5)),
+    pygame.transform.scale_by(pygame.image.load("images/1.png"), (0.5, 0.5)),
     flip_x=0,
     flip_y=1,
 )
