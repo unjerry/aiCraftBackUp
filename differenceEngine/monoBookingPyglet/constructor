@@ -1,0 +1,26 @@
+the main strategy now contains followings
+
+1. the decentralized identification system that can be the Void that provide money for my monoploy game
+
+in short i need something to be the coins in my game
+
+this tech is mainly the same as bitcoin, but somehow different, maybe it can have unlimited ammount of credit, because overall its a game.
+
+but it should carefully chose the algorithm to calculate credit for everyone.
+because the credit itself is the currency
+
+you need to learn
+
+    the study of currency and solve the trusthood problem, you need to clarify the problem more clearly.
+
+2. the window and visualization method for the game
+
+this part can contain several different tech work at the same time
+
+    the pyglet
+    the moderngl
+    the pygame
+
+
+
+
