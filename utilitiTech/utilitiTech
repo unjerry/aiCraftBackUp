@@ -1,0 +1,17 @@
+20240402
+python
+python virtual environment
+1.use the "py -3.11 venv vvvv" to create a folder called vvvv to contain the virtrual environment
+2.use the activate.bat to activate the virtual environment
+3.use the "pip install -r requires.txt" to load all the requirement lib
+
+
+python
+multiple version
+the multiple version work as follows
+1.there is C:/Windows/py.exe that can check and decide which python to run.
+2.the PY_PYTHON environment paramter is in the system path 3.11 or 3.10 to decide the defult version to run.
+3.use "py -0" to check the available versions
+4.use "py -3.11" to run the python 3.11
+5.use "py -3.11 -m pip [command]" to run pip in certian version
+
