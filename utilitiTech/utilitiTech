@@ -4,7 +4,7 @@ python virtual environment
 1.use the "py -3.11 venv vvvv" to create a folder called vvvv to contain the virtrual environment
 2.use the activate.bat to activate the virtual environment
 3.use the "pip install -r requires.txt" to load all the requirement lib
-
+REF https://www.youtube.com/watch?v=KxvKCSwlUv8
 
 python
 multiple version
