@@ -1,0 +1,11 @@
+20240404
+linux virtual machine ubuntu set up
+"sudo apt update"
+"sudo apt install -y build-essential linux-headers-$(uname -r)"
+use these above two commands to make the virtual machine can fit the window size. [REF1]
+"sudo usermod -a -G vboxsf {username}"
+use the above one command to make the virtual machine can actrually authenticed by the virtual box
+it also make the shared folder can be accessed by the virtual machine. [REF2]
+[REF1] https://www.youtube.com/watch?v=YjG1yG2l9v0
+[REF2] https://blog.csdn.net/QCZL_CC/article/details/134974657
+
