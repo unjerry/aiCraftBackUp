@@ -26,10 +26,10 @@ void main()
 """
 
 config = pyglet.gl.Config(minor_version=6,major_version=4)
-window = pyglet.window.Window(width=500, height=500, caption="test2gai",resizable=True,config=config)
-window.set_location(10, 10)
+windoww = pyglet.window.Window(width=500, height=500, caption="test2gai",resizable=True,config=config)
+windoww.set_location(10, 10)
 icon_image=pyglet.image.load("../images/compositionIcon.png")
-window.set_icon(icon_image)
+windoww.set_icon(icon_image)
 
 ctx=mgl.create_context(require=460)
 quad_buffer = ctx.buffer(
@@ -73,9 +73,9 @@ vao.render(mgl.TRIANGLE_STRIP)
 
 
 
-@window.event
+@windoww.event
 def on_draw():
-    window.clear()
+    windoww.clear()
     vao.render(mgl.TRIANGLE_STRIP)
     # batch.draw()
 
