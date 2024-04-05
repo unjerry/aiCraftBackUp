@@ -15,3 +15,16 @@ the multiple version work as follows
 4.use "py -3.11" to run the python 3.11
 5.use "py -3.11 -m pip [command]" to run pip in certian version
 
+
+20240405
+socket module
+in files differenceEngine/P2Ptest/testp2p*.py
+i can transfer data between two computers through ipv6 using python socket [REF1]
+[REF1] https://blog.csdn.net/qq_46480020/article/details/125462828
+
+email checking emails
+using the modules
+email & poplib
+in the file differenceEngine/P2Ptest/testemail.py i can check webemail using python [REF1]
+[REF1] https://stackoverflow.com/questions/1225586/checking-email-with-python
+

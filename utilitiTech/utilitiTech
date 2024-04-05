@@ -27,3 +27,18 @@ use the above one command to make the virtual machine can actrually authenticed 
 it also make the shared folder can be accessed by the virtual machine. [REF2]
 [REF1] https://www.youtube.com/watch?v=YjG1yG2l9v0
 [REF2] https://blog.csdn.net/QCZL_CC/article/details/134974657
+
+
+20240405
+python
+socket module
+in files differenceEngine/P2Ptest/testp2p*.py
+i can transfer data between two computers through ipv6 using python socket [REF1]
+[REF1] https://blog.csdn.net/qq_46480020/article/details/125462828
+
+python
+email checking emails
+using the modules
+email & poplib
+in the file differenceEngine/P2Ptest/testemail.py i can check webemail using python [REF1]
+[REF1] https://stackoverflow.com/questions/1225586/checking-email-with-python
