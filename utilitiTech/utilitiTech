@@ -14,7 +14,7 @@ the multiple version work as follows
 3.use "py -0" to check the available versions
 4.use "py -3.11" to run the python 3.11
 5.use "py -3.11 -m pip [command]" to run pip in certian version
-
+pip freeze > reqs.txt 
 
 20240404
 system
@@ -42,3 +42,17 @@ using the modules
 email & poplib
 in the file differenceEngine/P2Ptest/testemail.py i can check webemail using python [REF1]
 [REF1] https://stackoverflow.com/questions/1225586/checking-email-with-python
+
+
+20240409
+cuda
+requires on windows
+cuda toolkit "Program Files\\NVIDIA GPU Computing Toolkit"
+the cl.exe compiler from microsoft, this thing need to install the MSVC entire develope package from Visual Studio
+use "nvcc -o libglb.dll --shared glb.cu" to compile a dll for general c++ usage
+use "gcc .\vectorAddTest.cpp -L. -lvctadd -o .\main -I." to link, this dll also can be linked with CMake but the generate process only can be taken by nvcc
+the glb.cu shoud have a c extern socket for it
+the .h file should have the certain format [REF1][REF2]
+[REF1] https://stackoverflow.com/questions/16423643/creating-dll-from-cuda-using-nvcc
+[REF2] https://zhuanlan.zhihu.com/p/646734746
+

@@ -8,7 +8,7 @@ mainScreen = pg.display.set_mode((400, 400))
 mainClock = pg.time.Clock()
 
 kk = 1
-ss="piano_c4/"
+ss="saw"
 soundDict = {}
 yanyin=100
 for i in range(-36, 36):

@@ -1,0 +1,8 @@
+q           quit
+addFriend   add friend to friend list
+openChat    try to chat with firend
+checkFriend show the current status of certain friend
+
+auto do
+setListen
+tellFriendMyIp
