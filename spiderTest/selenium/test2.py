@@ -14,7 +14,7 @@ header = {
 company_url = "https://s.weibo.com/weibo?"
 url = "https://stock.xueqiu.com/v5/stock/chart/kline.json?"
 company_parameter = {
-    "q": "达嘉维康",
+    "q": "泰达股份",
     "typeall": 1,
     "suball": 1,
     "timescope": "custom:2018-01-01:2018-01-01",
@@ -22,14 +22,14 @@ company_parameter = {
     "page": 1,
 }
 response = requests.get(company_url, headers=header, params=company_parameter)
-sdt = 1685548800  # 20230601
-# sdt = 1704038400  # 20240101
+# sdt = 1685548800  # 20230601
+sdt = 1704038400  # 20240101
 # sdt = 1514736000  # 20180101
 dle = 86400
 L = []
 T = []
 """ 12 * 30 * 6 + 6 * 30 """
-for dt in range(12 * 30):
+for dt in range(6 * 30):
     # sleep(0.1 + 0.1 * random.random())
     tm = sdt + dt * dle
     T.append(tm)

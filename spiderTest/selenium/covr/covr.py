@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import datetime
 
-with open("SZ301126.json", "r") as file:
+with open("SZ652.json", "r") as file:
     share_data_dict = json.load(file)
 
-name = "达嘉维康"
+name = "泰达股份"
 L = np.load(name + "LL.npy")
 T = np.load(name + "TT.npy")
 TL = []
@@ -24,11 +24,15 @@ NL = []
 DT = []
 DTT = []
 PL = []
-rate=1000
+rate = 10000
 for it in share_data_np:
     if it[0] / 1000 >= sttime and it[0] / 1000 <= endtime:
         # print(it[7])
-        DL.append(np.abs(np.log(it[7] / 100 + 1) * rate))
+        # print(np.abs(np.log(it[7] / 100 + 1) * rate))
+        if np.abs(np.log(it[7] / 100 + 1) * rate) > 0.03 * rate:
+            DL.append(np.abs(np.log(it[7] / 100 + 1) * rate))
+        else:
+            DL.append(0)
         NL.append((np.log(it[7] / 100 + 1) * rate))
         DT.append(datetime.strftime(datetime.fromtimestamp(it[0] / 1000), "%Y-%m-%d"))
 
