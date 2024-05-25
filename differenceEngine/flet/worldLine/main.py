@@ -2,6 +2,7 @@ import requests
 import flet as ft
 import socket
 import json
+import shutil
 
 
 def get_ipv6_addresses(host):
@@ -58,15 +59,60 @@ def main(page: ft.Page):
         print("pubemaillskdjfksldjf")
         ipv6_list.email_tex = data_struct.data["PubEmail"]
 
-    def change_email(e):
+    # def select_file():
+    #     root = tk.Tk()
+    #     root.withdraw()  # 隐藏主窗口
+    #     file_path = filedialog.askopenfilename()
+    #     print(f"选择的文件路径是: {file_path}")
+
+    # select_file()
+    # select_file()
+
+    def change_email(e: ft.ControlEvent):
+        print(type(e))
         print(e.control.value)
         data_struct.data["PubEmail"] = e.control.value
         data_struct.save()
 
+    def on_dialog_result(e: ft.FilePickerResultEvent):
+        print("Selected files:", e.files)
+        print("Selected file or directory:", e.path)
+
+    def get_directory_result(e: ft.FilePickerResultEvent):
+        if e.path:
+            with open(e.path + "/loggg.iii", "w") as file:
+                file.write(f"{1}sldkfjlsdkfjhellollllleeeeeeeeeee\n")
+            shutil.copy("logs.iii",e.path+"/logs.iii")
+        # print(e.path + "\\loggg.iii")
+
+        directory_path.value = e.path if e.path else "Cancelled!"
+        directory_path.update()
+
+    get_directory_dialog = ft.FilePicker(on_result=get_directory_result)
+    page.overlay.append(get_directory_dialog)
+    directory_path = ft.Text()
+
+    file_picker = ft.FilePicker(on_result=on_dialog_result)
+    # file_picker = ft.FilePicker()
+    page.overlay.append(file_picker)
+    page.update()
+
+    def open_file(e: ft.Control):
+        print("sldkfjskldf")
+        # select_file()
+        # root = tk.Tk()
+        # root.withdraw()
+
+        # file_path = filedialog.askopenfilenames()
+        # print(file_path)
+
     email_text = ft.TextField(
         label="your public email", value=ipv6_list.email_tex, on_change=change_email
     )
-
+    but = ft.ElevatedButton(
+        "Choose files...",
+        on_click=lambda _: file_picker.pick_files(allow_multiple=True),
+    )
     # try:
     #     with open("logs.in", "r") as file:
     #         file.read()
@@ -95,6 +141,13 @@ def main(page: ft.Page):
                     ft.Text("press refresh to get ipv6/按fresh按钮获取ipv6"),
                     ip_column,
                     ft.ElevatedButton(text="refresh", on_click=update_ipv6),
+                    ft.ElevatedButton(text="export", on_click=open_file),
+                    but,
+                    ft.ElevatedButton(
+                        text="dir",
+                        on_click=lambda _: get_directory_dialog.get_directory_path(),
+                    ),
+                    directory_path,
                 ]
             )
         )
