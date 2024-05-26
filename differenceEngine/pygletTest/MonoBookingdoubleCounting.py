@@ -68,13 +68,13 @@ class Account:
 
     def save(self) -> None:
         print(self.transactionIdList)
-        np.save("./Accounts/"+self.filename, self.transactionIdList)
+        np.save("./Accounts/" + self.filename, self.transactionIdList)
 
     def load(self) -> list[Transaction] | list:
         print(self.accountname, self.filename)
         try:
             print("dt")
-            dt = np.load("./Accounts/"+self.filename, allow_pickle=True).tolist()
+            dt = np.load("./Accounts/" + self.filename, allow_pickle=True).tolist()
             print(dt)
             # dt["self.currentId"]
         except:
@@ -211,7 +211,7 @@ UniData = UniLedger(UniLedgeName)
 # UniData.add(103, "2024-05-25")
 UniData.export_list()
 
-window = pyglet.window.Window(resizable=True, width=400)
+window = pyglet.window.Window(width=400)
 # Twindow = pyglet.window.Window(resizable=True, width=600)
 window.switch_to()
 batch = pyglet.graphics.Batch()
@@ -219,12 +219,24 @@ pyglet.resource.path = [f"{absPath}", ".", f"{os.path.dirname(__file__)}", *sys.
 pyglet.resource.reindex()
 print(pyglet.resource.path)
 # pyglet.resource.add_path("./artAssets")
-ball_image = pyglet.image.load("./artAssets/but.png")
-print(type(ball_image))
+# ball_image = pyglet.image.load("./artAssets/but.png")
+# print(type(ball_image))
 # ball = pyglet.sprite.Sprite(ball_image, x=50, y=50, batch=batch)
+
+backgroung_image = pyglet.image.load("artAssets/Designer3.png")
+
+image = pyglet.resource.image("artAssets/Chara_PAYDAY.png")
+sprite = pyglet.sprite.Sprite(
+    image, x=0 + margin, y=window.height - margin, batch=batch
+)
+sprite.y -= sprite.height
 
 pressed_img = pyglet.resource.image("artAssets/greenPress.png")
 depressed_img = pyglet.resource.image("artAssets/greenRelease.png")
+check_pressed_img = pyglet.resource.image("artAssets/checksPressed.png")
+check_depressed_img = pyglet.resource.image("artAssets/checks.png")
+batsu_pressed_img = pyglet.resource.image("artAssets/batsuPressed.png")
+batsu_depressed_img = pyglet.resource.image("artAssets/batsu.png")
 print(type(pressed_img))
 pressed_img.height = 40
 pressed_img.width = 40
@@ -238,11 +250,45 @@ pushbutton = pyglet.gui.PushButton(
     depressed=depressed_img,
     batch=batch,
 )
+check_pushbutton = pyglet.gui.PushButton(
+    x=128 + margin,
+    y=window.height - margin,
+    pressed=check_pressed_img,
+    depressed=check_depressed_img,
+    batch=batch,
+)
+check_pushbutton.y -= check_pushbutton.height
+batsu_pushbutton = pyglet.gui.PushButton(
+    x=128 + margin + 64,
+    y=window.height - margin,
+    pressed=batsu_pressed_img,
+    depressed=batsu_depressed_img,
+    batch=batch,
+)
+batsu_pushbutton.y -= batsu_pushbutton.height
 # datepushbutton = pyglet.gui.PushButton(
 #     x=350, y=20, pressed=pressed_img, depressed=depressed_img, batch=batch
 # )
 
 UniAccountNameDict: dict[str, Account] = {}
+
+
+def checks_on_press():
+    sprite.batch = None
+    print("checksPressed")
+
+
+def checks_on_unpress():
+    print("checksReleased")
+
+
+def batsu_on_press():
+    sprite.batch = batch
+    print("batsuPressed")
+
+
+def batsu_on_unpress():
+    print("batsuReleased")
 
 
 def my_on_press_handler():
@@ -275,7 +321,13 @@ def my_on_release_handler():
 
 pushbutton.set_handler("on_press", my_on_press_handler)
 pushbutton.set_handler("on_release", my_on_release_handler)
+check_pushbutton.set_handler("on_press", checks_on_press)
+check_pushbutton.set_handler("on_release", checks_on_unpress)
+batsu_pushbutton.set_handler("on_press", batsu_on_press)
+batsu_pushbutton.set_handler("on_release", batsu_on_unpress)
 window.push_handlers(pushbutton)
+window.push_handlers(check_pushbutton)
+window.push_handlers(batsu_pushbutton)
 
 # sliddd=pyglet.gui.Slider(100,100,pressed_img,depressed_img,100,batch=batch)
 # window.push_handlers(sliddd)
@@ -303,6 +355,7 @@ window.push_handlers(datetxen)
 @window.event
 def on_draw():
     window.clear()
+    backgroung_image.blit(0, 0)
     batch.draw()
 
 
