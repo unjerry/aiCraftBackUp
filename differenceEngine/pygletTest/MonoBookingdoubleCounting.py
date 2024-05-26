@@ -68,13 +68,13 @@ class Account:
 
     def save(self) -> None:
         print(self.transactionIdList)
-        np.save(self.filename, self.transactionIdList)
+        np.save("./Accounts/"+self.filename, self.transactionIdList)
 
     def load(self) -> list[Transaction] | list:
         print(self.accountname, self.filename)
         try:
             print("dt")
-            dt = np.load(self.filename, allow_pickle=True).tolist()
+            dt = np.load("./Accounts/"+self.filename, allow_pickle=True).tolist()
             print(dt)
             # dt["self.currentId"]
         except:
@@ -212,7 +212,7 @@ UniData = UniLedger(UniLedgeName)
 UniData.export_list()
 
 window = pyglet.window.Window(resizable=True, width=400)
-Twindow = pyglet.window.Window(resizable=True, width=600)
+# Twindow = pyglet.window.Window(resizable=True, width=600)
 window.switch_to()
 batch = pyglet.graphics.Batch()
 pyglet.resource.path = [f"{absPath}", ".", f"{os.path.dirname(__file__)}", *sys.path]
@@ -254,11 +254,15 @@ def my_on_press_handler():
         print("null value")
         return
     # sdf=Transaction(amt)
-    print("dat", dat, UniAccountNameDict[dat].accountname)
-    UniAccountNameDict[dat].transactionIdList.append(UniData.data["self.currentId"])
-    UniAccountNameDict[dat].save()
-    UniData.add(Transaction(amt, "20240525", dat))
-    print("Button Pressed!")
+    try:
+        print("dat", dat, UniAccountNameDict[dat].accountname)
+        UniAccountNameDict[dat].transactionIdList.append(UniData.data["self.currentId"])
+        UniAccountNameDict[dat].save()
+        UniData.add(Transaction(amt, "20240525", dat))
+        print("Button Pressed!")
+    except:
+        print("null account")
+        return
     txen.value = "amount"
     # datetxen.value = "CashAccount"
     UniData.export_list()
@@ -288,7 +292,7 @@ def datecommmm(strr: str):
 
 txen = pyglet.gui.TextEntry("amount", 0 + margin, 0 + margin, 100, batch=batch)
 datetxen = pyglet.gui.TextEntry(
-    "CashAccount", 0 + margin, 20 + margin, 100, batch=batch
+    "CertainAccount", 0 + margin, 20 + margin, 100, batch=batch
 )
 txen.set_handler("on_commit", commmm)
 datetxen.set_handler("on_commit", datecommmm)
@@ -302,28 +306,31 @@ def on_draw():
     batch.draw()
 
 
-Twindow.switch_to()
-tbatch = pyglet.graphics.Batch()
-acc = Account("CashAccount.npy", "CashAccount", UniData)
-UniAccountNameDict[acc.accountname] = acc
-accwin = AccountWindow(acc, tbatch, Twindow)
+# Twindow.switch_to()
+# tbatch = pyglet.graphics.Batch()
+# acc = Account("CashAccount.npy", "CashAccount", UniData)
+# UniAccountNameDict[acc.accountname] = acc
+# accwin = AccountWindow(acc, tbatch, Twindow)
 
 
-@Twindow.event
-def on_draw():
-    Twindow.clear()
-    accwin.lableList = accwin.generateList()
-    accwin.render()
+# @Twindow.event
+# def on_draw():
+#     Twindow.clear()
+#     accwin.lableList = accwin.generateList()
+#     accwin.render()
 
 
-@Twindow.event
-def on_mouse_scroll(x, y, scroll_x, scroll_y):
-    print("Mouse scrolled", x, y, scroll_x, scroll_y)
-    accwin.bias -= scroll_y
+# @Twindow.event
+# def on_mouse_scroll(x, y, scroll_x, scroll_y):
+#     print("Mouse scrolled", x, y, scroll_x, scroll_y)
+#     accwin.bias -= scroll_y
 
 
 tmpwin = AccountTrueWindow("NewAccount", resizable=True, width=600)
 UniAccountNameDict[tmpwin.account.accountname] = tmpwin.account
+print(UniAccountNameDict)
+caswin = AccountTrueWindow("CashAccount", resizable=True, width=600)
+UniAccountNameDict[caswin.account.accountname] = caswin.account
 print(UniAccountNameDict)
 
 
