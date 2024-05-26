@@ -1,22 +1,34 @@
 import pyglet
 import numpy as np
 from MonoBookingManifest import *
+import pyglet.resource
+import sys, os
+
+print(sys.path, os.path.dirname(__file__))
 
 margin = 10
 
-
+if getattr(sys, "frozen", False):
+    absPath = os.path.dirname(os.path.abspath(sys.executable))
+elif __file__:
+    absPath = os.path.dirname(os.path.abspath(__file__))
+print(absPath)
+fileList = os.listdir(absPath)
+print(fileList)
+# ruleFilePath = os.path.join(absPath,fileList)
 # class UniLedger:
 #     pass
 
 
 class Transaction:
-    def __init__(self, amount, date, accountname) -> None:
+    def __init__(self, amount, date, accountname, expl="Default") -> None:
         self.amount: int = amount
+        self.explanation: str = expl
         self.date: str = date
         self.accountname: str = accountname
 
     def __str__(self) -> str:
-        return f"<amount={self.amount},date={self.date},accountname={self.accountname}>"
+        return f"<amount={self.amount},date={self.date},accountname={self.accountname},exp={self.explanation}>"
 
 
 class UniLedger:
@@ -59,6 +71,7 @@ class Account:
         np.save(self.filename, self.transactionIdList)
 
     def load(self) -> list[Transaction] | list:
+        print(self.accountname, self.filename)
         try:
             print("dt")
             dt = np.load(self.filename, allow_pickle=True).tolist()
@@ -69,6 +82,71 @@ class Account:
             dt = []
             # dt["self.currentId"] = 0
         return dt
+
+
+class AccountTrueWindow(pyglet.window.Window):
+    def __init__(self, name: str, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.name: str = name
+        self.account: Account = Account(name + ".npy", name, UniData)
+        self.switch_to()
+        self.batch: pyglet.graphics.Batch = pyglet.graphics.Batch()
+        self.bias = 0
+        self.lableList: list[pyglet.text.Label] = self.generateList()
+
+        @self.event
+        def on_draw():
+            self.clear()
+            self.lableList = self.generateList()
+            self.render()
+
+        @self.event
+        def on_mouse_scroll(x, y, scroll_x, scroll_y):
+            print("self Mouse scrolled", x, y, scroll_x, scroll_y)
+            self.bias -= scroll_y
+
+    def render(self) -> None:
+        self.batch.draw()
+
+    def generateList(self) -> list[pyglet.text.Label]:
+        return [
+            pyglet.text.Label(
+                f"{self.account.accountname}",
+                font_name="Times New Roman",
+                font_size=20,
+                x=0,
+                y=(len(self.account.transactionIdList) + self.bias) * 20,
+                color=(255, 255, 0, 255),
+                anchor_x="left",
+                anchor_y="bottom",
+                batch=self.batch,
+            )
+        ] + [
+            pyglet.text.Label(
+                (
+                    self.account.uni.data[self.account.transactionIdList[i]].date
+                    + f":ammount-explain:{self.account.uni.data[self.account.transactionIdList[i]].explanation}:"
+                    + (
+                        ""
+                        if self.account.uni.data[
+                            self.account.transactionIdList[i]
+                        ].amount
+                        > 0
+                        else "\t\t"
+                    )
+                    + f"{self.account.uni.data[self.account.transactionIdList[i]].amount}"
+                ),
+                font_name="Times New Roman",
+                font_size=20,
+                x=0,
+                y=(len(self.account.transactionIdList) - 1 - i + self.bias) * 20,
+                color=(255, 255, 0, 255),
+                anchor_x="left",
+                anchor_y="bottom",
+                batch=self.batch,
+            )
+            for i in range(len(self.account.transactionIdList))
+        ]
 
 
 class AccountWindow:
@@ -82,6 +160,7 @@ class AccountWindow:
         self.batch: pyglet.graphics.Batch = batch
         self.window: pyglet.window.Window = window
         self.window.switch_to()
+        self.bias = 0
         self.lableList: list[pyglet.text.Label] = self.generateList()
 
     def render(self) -> None:
@@ -90,13 +169,35 @@ class AccountWindow:
     def generateList(self) -> list[pyglet.text.Label]:
         return [
             pyglet.text.Label(
-                self.account.uni.data[self.account.transactionIdList[i]].date
-                + ":ammount:"
-                + f"\t{self.account.uni.data[self.account.transactionIdList[i]].amount}",
+                f"{self.account.accountname}",
                 font_name="Times New Roman",
                 font_size=20,
                 x=0,
-                y=(len(self.account.transactionIdList) - 1 - i) * 20,
+                y=(len(self.account.transactionIdList) + self.bias) * 20,
+                color=(255, 255, 0, 255),
+                anchor_x="left",
+                anchor_y="bottom",
+                batch=self.batch,
+            )
+        ] + [
+            pyglet.text.Label(
+                (
+                    self.account.uni.data[self.account.transactionIdList[i]].date
+                    + ":ammount:"
+                    + (
+                        ""
+                        if self.account.uni.data[
+                            self.account.transactionIdList[i]
+                        ].amount
+                        > 0
+                        else "\t\t"
+                    )
+                    + f"{self.account.uni.data[self.account.transactionIdList[i]].amount}"
+                ),
+                font_name="Times New Roman",
+                font_size=20,
+                x=0,
+                y=(len(self.account.transactionIdList) - 1 - i + self.bias) * 20,
                 color=(255, 255, 0, 255),
                 anchor_x="left",
                 anchor_y="bottom",
@@ -114,11 +215,17 @@ window = pyglet.window.Window(resizable=True, width=400)
 Twindow = pyglet.window.Window(resizable=True, width=600)
 window.switch_to()
 batch = pyglet.graphics.Batch()
-ball_image = pyglet.image.load("artAssets/but.png")
+pyglet.resource.path = [f"{absPath}", ".", f"{os.path.dirname(__file__)}", *sys.path]
+pyglet.resource.reindex()
+print(pyglet.resource.path)
+# pyglet.resource.add_path("./artAssets")
+ball_image = pyglet.image.load("./artAssets/but.png")
+print(type(ball_image))
 # ball = pyglet.sprite.Sprite(ball_image, x=50, y=50, batch=batch)
 
 pressed_img = pyglet.resource.image("artAssets/greenPress.png")
 depressed_img = pyglet.resource.image("artAssets/greenRelease.png")
+print(type(pressed_img))
 pressed_img.height = 40
 pressed_img.width = 40
 depressed_img.height = 40
@@ -147,12 +254,13 @@ def my_on_press_handler():
         print("null value")
         return
     # sdf=Transaction(amt)
+    print("dat", dat, UniAccountNameDict[dat].accountname)
     UniAccountNameDict[dat].transactionIdList.append(UniData.data["self.currentId"])
     UniAccountNameDict[dat].save()
     UniData.add(Transaction(amt, "20240525", dat))
     print("Button Pressed!")
     txen.value = "amount"
-    datetxen.value = "CashAccount"
+    # datetxen.value = "CashAccount"
     UniData.export_list()
 
 
@@ -196,7 +304,7 @@ def on_draw():
 
 Twindow.switch_to()
 tbatch = pyglet.graphics.Batch()
-acc = Account("newAccount.npy", "CashAccount", UniData)
+acc = Account("CashAccount.npy", "CashAccount", UniData)
 UniAccountNameDict[acc.accountname] = acc
 accwin = AccountWindow(acc, tbatch, Twindow)
 
@@ -206,6 +314,17 @@ def on_draw():
     Twindow.clear()
     accwin.lableList = accwin.generateList()
     accwin.render()
+
+
+@Twindow.event
+def on_mouse_scroll(x, y, scroll_x, scroll_y):
+    print("Mouse scrolled", x, y, scroll_x, scroll_y)
+    accwin.bias -= scroll_y
+
+
+tmpwin = AccountTrueWindow("NewAccount", resizable=True, width=600)
+UniAccountNameDict[tmpwin.account.accountname] = tmpwin.account
+print(UniAccountNameDict)
 
 
 pyglet.app.run()
