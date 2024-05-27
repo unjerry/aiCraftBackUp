@@ -3,6 +3,11 @@ import numpy as np
 from MonoBookingManifest import *
 import pyglet.resource
 import sys, os
+import json
+import datetime
+
+with open("MonoBookingdoubleCounting.json", "r") as file:
+    manifestJsonDict: dict = json.load(file)
 
 print(sys.path, os.path.dirname(__file__))
 
@@ -93,6 +98,7 @@ class AccountTrueWindow(pyglet.window.Window):
         self.batch: pyglet.graphics.Batch = pyglet.graphics.Batch()
         self.bias = 0
         self.lableList: list[pyglet.text.Label] = self.generateList()
+        self.set_caption(name)
 
         @self.event
         def on_draw():
@@ -125,7 +131,7 @@ class AccountTrueWindow(pyglet.window.Window):
             pyglet.text.Label(
                 (
                     self.account.uni.data[self.account.transactionIdList[i]].date
-                    + f":ammount-explain:{self.account.uni.data[self.account.transactionIdList[i]].explanation}:"
+                    + f":explain:{self.account.uni.data[self.account.transactionIdList[i]].explanation}:"
                     + (
                         ""
                         if self.account.uni.data[
@@ -207,11 +213,96 @@ class AccountWindow:
         ]
 
 
+class Profile:
+    def __init__(self) -> None:
+        self.netIcome = 100
+
+
+class ProfileWindow(pyglet.window.Window):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cashFlow = pyglet.gui.TextEntry(
+            "cashFLow", 0 + margin, 0 + margin, 100, batch=batch
+        )
+
+
+class CharaLabel:
+    def __init__(
+        self, window: pyglet.window.Window, batch: pyglet.graphics.Batch
+    ) -> None:
+        self.currentDisplay: int = 0
+        self.window: pyglet.window.Window = window
+        self.batch: pyglet.graphics.Batch = batch
+        self.nameList: list[str] = [
+            "artAssets/Chara_PAYDAY.png",
+            "artAssets/Chara_DEAL.png",
+        ]
+        self.ExplanList: list[str] = [
+            "artAssets/PAYDAY_EXPLAIN.png",
+            "artAssets/DEAL_EXPLAIN.png",
+        ]
+        self.CharaList: list[pyglet.sprite.Sprite] = self.generate()
+        self.ExpanList: list[pyglet.sprite.Sprite] = self.genExp()
+
+    def genExp(self) -> list[pyglet.sprite.Sprite]:
+        lis = [
+            pyglet.sprite.Sprite(
+                pyglet.resource.image(it),
+                x=0 + margin,
+                y=window.height - margin - 64,
+                batch=batch,
+            )
+            for it in self.ExplanList
+        ]
+        for spr in lis:
+            spr.y -= spr.height
+            spr.visible = False
+        lis[self.currentDisplay].visible = True
+        return lis
+
+    def generate(self) -> list[pyglet.sprite.Sprite]:
+        lis = [
+            pyglet.sprite.Sprite(
+                pyglet.resource.image(it),
+                x=0 + margin,
+                y=window.height - margin,
+                batch=batch,
+            )
+            for it in self.nameList
+        ]
+        for spr in lis:
+            spr.y -= spr.height
+            spr.visible = False
+        lis[self.currentDisplay].visible = True
+        return lis
+
+    def changeChara(self):
+        rand = np.random.uniform()
+        print(rand, type(rand))
+        self.CharaList[self.currentDisplay].visible = False
+        self.ExpanList[self.currentDisplay].visible = False
+        if rand < 0.1:
+            self.currentDisplay = 0
+        else:
+            self.currentDisplay = 1
+        self.ExpanList[self.currentDisplay].visible = True
+        self.CharaList[self.currentDisplay].visible = True
+
+
 UniData = UniLedger(UniLedgeName)
 # UniData.add(103, "2024-05-25")
 UniData.export_list()
+UniAccountNameDict: dict[str, Account] = {}
 
 window = pyglet.window.Window(width=400)
+accountwindows: list[AccountTrueWindow] = []
+for accountName in manifestJsonDict["Accounts"]:
+    tmp = AccountTrueWindow(accountName, resizable=True, width=600)
+    accountwindows.append(tmp)
+    UniAccountNameDict[tmp.account.accountname] = tmp.account
+    print(UniAccountNameDict)
+    tmp.close()
+window.set_caption("worldLine MonoBookingdoubleCounting")
 # Twindow = pyglet.window.Window(resizable=True, width=600)
 window.switch_to()
 batch = pyglet.graphics.Batch()
@@ -219,17 +310,19 @@ pyglet.resource.path = [f"{absPath}", ".", f"{os.path.dirname(__file__)}", *sys.
 pyglet.resource.reindex()
 print(pyglet.resource.path)
 # pyglet.resource.add_path("./artAssets")
-# ball_image = pyglet.image.load("./artAssets/but.png")
-# print(type(ball_image))
+ball_image = pyglet.image.load("./artAssets/but.png")
+print(type(ball_image))
 # ball = pyglet.sprite.Sprite(ball_image, x=50, y=50, batch=batch)
 
-backgroung_image = pyglet.image.load("artAssets/Designer3.png")
+backgroung_image: pyglet.image.ImageData = pyglet.image.load("artAssets/Designer3.png")
 
-image = pyglet.resource.image("artAssets/Chara_PAYDAY.png")
-sprite = pyglet.sprite.Sprite(
-    image, x=0 + margin, y=window.height - margin, batch=batch
-)
-sprite.y -= sprite.height
+# image = pyglet.resource.image("artAssets/Chara_PAYDAY.png")
+# sprite = pyglet.sprite.Sprite(
+#     image, x=0 + margin, y=window.height - margin, batch=batch
+# )
+# sprite.y -= sprite.height
+charaLabel = CharaLabel(window, batch)
+playerTest = Profile()
 
 pressed_img = pyglet.resource.image("artAssets/greenPress.png")
 depressed_img = pyglet.resource.image("artAssets/greenRelease.png")
@@ -270,25 +363,42 @@ batsu_pushbutton.y -= batsu_pushbutton.height
 #     x=350, y=20, pressed=pressed_img, depressed=depressed_img, batch=batch
 # )
 
-UniAccountNameDict: dict[str, Account] = {}
-
 
 def checks_on_press():
-    sprite.batch = None
-    print("checksPressed")
+    # charaLabel.CharaList[0].visible = False
+    charaLabel.changeChara()
+    if charaLabel.currentDisplay == 0:
+        dat = "CashAccount"
+        UniAccountNameDict[dat].transactionIdList.append(UniData.data["self.currentId"])
+        UniAccountNameDict[dat].save()
+        UniData.add(
+            Transaction(
+                playerTest.netIcome,
+                datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
+                dat,
+                "PAYDAY_INCOME",
+            )
+        )
+    # print("checksPressed")
 
 
 def checks_on_unpress():
-    print("checksReleased")
+    pass
+    # print("checksReleased")
 
 
 def batsu_on_press():
-    sprite.batch = batch
-    print("batsuPressed")
+    charaLabel.CharaList[charaLabel.currentDisplay].visible = False
+    # print("batsuPressed")
 
 
 def batsu_on_unpress():
-    print("batsuReleased")
+    charaLabel.CharaList[charaLabel.currentDisplay].visible = True
+    # for ite in accountwindows:
+    #     ite.set_visible(True)
+    #     print(ite.account)
+    # print(accountwindows)
+    # print("batsuReleased")
 
 
 def my_on_press_handler():
@@ -304,7 +414,11 @@ def my_on_press_handler():
         print("dat", dat, UniAccountNameDict[dat].accountname)
         UniAccountNameDict[dat].transactionIdList.append(UniData.data["self.currentId"])
         UniAccountNameDict[dat].save()
-        UniData.add(Transaction(amt, "20240525", dat))
+        UniData.add(
+            Transaction(
+                amt, datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S"), dat
+            )
+        )
         print("Button Pressed!")
     except:
         print("null account")
@@ -342,6 +456,26 @@ def datecommmm(strr: str):
     print("datecomm:" + strr)
 
 
+def accopen(strr: str):
+    if strr in manifestJsonDict["Accounts"]:
+        tmp = AccountTrueWindow(strr, resizable=True, width=600)
+        # accountwindows.append(tmp)
+        UniAccountNameDict[tmp.account.accountname] = tmp.account
+        print(UniAccountNameDict)
+    print(" accopen:" + strr)
+
+
+def craccopen(strr: str):
+    if strr in manifestJsonDict["Accounts"]:
+        print("already exits just open")
+    else:
+        tmp = AccountTrueWindow(strr, resizable=True, width=600)
+        accountwindows.append(tmp)
+        UniAccountNameDict[tmp.account.accountname] = tmp.account
+        print(UniAccountNameDict)
+    print("craccopen:" + strr)
+
+
 txen = pyglet.gui.TextEntry("amount", 0 + margin, 0 + margin, 100, batch=batch)
 datetxen = pyglet.gui.TextEntry(
     "CertainAccount", 0 + margin, 20 + margin, 100, batch=batch
@@ -350,13 +484,58 @@ txen.set_handler("on_commit", commmm)
 datetxen.set_handler("on_commit", datecommmm)
 window.push_handlers(txen)
 window.push_handlers(datetxen)
+accountOpen = pyglet.gui.TextEntry(
+    "openAccount", 0 + margin, 0 + margin + 50, 100, batch=batch
+)
+createAccountOpen = pyglet.gui.TextEntry(
+    "CertainAccount", 0 + margin, 20 + margin + 50, 100, batch=batch
+)
+accountOpen.set_handler("on_commit", accopen)
+createAccountOpen.set_handler("on_commit", craccopen)
+window.push_handlers(accountOpen)
+window.push_handlers(createAccountOpen)
+
+
+fps_display = pyglet.window.FPSDisplay(window=window)
+
+ddvx = 0
+ddvy = 0
+ddx = -50
+ddy = -50
+
+
+def bronian():
+    global ddvx, ddvy, ddx, ddy
+    ddvx += (np.random.uniform(0, 1) - 0.5) * 0.1
+    ddvy += (np.random.uniform(0, 1) - 0.5) * 0.1
+    ddx += ddvx
+    ddy += ddvy
+    if ddx > 0:
+        # ddx = 1
+        ddvx = -ddvx
+    if ddy > 0:
+        # ddy = 1
+        ddvy = -ddvy
+    if ddy < 0 - (backgroung_image.height - window.height):
+        # ddy = 1
+        ddvy = -ddvy
+    if ddx < 0 - (backgroung_image.width - window.width):
+        # ddx = 1
+        ddvx = -ddvx
 
 
 @window.event
 def on_draw():
     window.clear()
-    backgroung_image.blit(0, 0)
+    bronian()
+    backgroung_image.blit(ddx, ddy)
     batch.draw()
+    fps_display.draw()
+
+
+@window.event
+def on_close():
+    pyglet.app.exit()
 
 
 # Twindow.switch_to()
@@ -379,12 +558,22 @@ def on_draw():
 #     accwin.bias -= scroll_y
 
 
-tmpwin = AccountTrueWindow("NewAccount", resizable=True, width=600)
-UniAccountNameDict[tmpwin.account.accountname] = tmpwin.account
-print(UniAccountNameDict)
-caswin = AccountTrueWindow("CashAccount", resizable=True, width=600)
-UniAccountNameDict[caswin.account.accountname] = caswin.account
-print(UniAccountNameDict)
+# tmpwin = AccountTrueWindow("NewAccount", resizable=True, width=600)
+# UniAccountNameDict[tmpwin.account.accountname] = tmpwin.account
+# print(UniAccountNameDict)
+# caswin = AccountTrueWindow("CashAccount", resizable=True, width=600)
+# UniAccountNameDict[caswin.account.accountname] = caswin.account
+# print(UniAccountNameDict)
+# pyglet.app.run()
+# for accountName in manifestJsonDict["Accounts"]:
+#     tmp = AccountTrueWindow(accountName, resizable=True, width=600)
+#     UniAccountNameDict[tmp.account.accountname] = tmp.account
+#     print(UniAccountNameDict)
 
 
-pyglet.app.run()
+# import time
+
+# time.sleep(1)
+
+# del accountwindows
+pyglet.app.run(1 / 30.0)
