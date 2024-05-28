@@ -13,6 +13,8 @@ import threading, socket, re
 dirname = "./Accounts/"
 MB = 16
 chunksize = int(MB * 1024 * 1024)
+with open(sendIpFileName,"r") as file:
+    sendIp=file.read()
 
 
 def SendFile(s, filename):
@@ -49,7 +51,7 @@ def deamon_thread_serve():
             ss = reg.findall(recvd.decode())
             print(ss)
             filename = ss[0]
-            f = open(filename, "wb")
+            f = open(othersAccdir+filename, "wb")
             while True:
                 data = conn.recv(1024)
                 if not data:
@@ -78,7 +80,7 @@ deamon_thread.daemon = True
 deamon_thread.start()
 print("mainfuncStart")
 
-with open("MonoBookingdoubleCounting.json", "r") as file:
+with open("Accounts/MonoBookingdoubleCounting.json", "r") as file:
     manifestJsonDict: dict = json.load(file)
 
 print(sys.path, os.path.dirname(__file__))
@@ -640,7 +642,7 @@ def sendfile_pushbutton_press_handler():
         if os.path.isfile(dirname + filename):
             print(filename)
             s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
-            s.connect((get_public_ipv6(), 12345))
+            s.connect((sendIp, 12345))
             SendFile(s, filename)
 
 
@@ -677,6 +679,14 @@ def datecommmm(strr: str):
     print("datecomm:" + strr)
 
 
+def IPaccopen(strr: str):
+    global sendIp
+    with open(sendIpFileName,"r") as file:
+        sendIp=file.read()
+    IP_inBox.value=f"{sendIp}"
+    print(" accopen:" + f"{sendIp}")
+
+
 def accopen(strr: str):
     if strr in manifestJsonDict["Accounts"]:
         tmp = AccountTrueWindow(strr, resizable=True, width=800)
@@ -692,7 +702,7 @@ def craccopen(strr: str):
         print("already exits just open")
     else:
         manifestJsonDict["Accounts"].append(strr)
-        with open("MonoBookingdoubleCounting.json", "w") as file:
+        with open("Accounts/MonoBookingdoubleCounting.json", "w") as file:
             json.dump(manifestJsonDict, file)
         tmp = AccountTrueWindow(strr, resizable=True, width=800)
         # mainloop.sleep(1.0)
@@ -711,6 +721,7 @@ txen.set_handler("on_commit", commmm)
 datetxen.set_handler("on_commit", datecommmm)
 window.push_handlers(txen)
 window.push_handlers(datetxen)
+
 accountOpen = pyglet.gui.TextEntry(
     "openAccount", 0 + margin, 0 + margin + 50, 100, batch=batch
 )
@@ -721,6 +732,12 @@ accountOpen.set_handler("on_commit", accopen)
 createAccountOpen.set_handler("on_commit", craccopen)
 window.push_handlers(accountOpen)
 window.push_handlers(createAccountOpen)
+
+IP_inBox = pyglet.gui.TextEntry(
+    f"{sendIp}", 0 + margin, 200 + margin + 50, 300, batch=batch
+)
+IP_inBox.set_handler("on_commit", IPaccopen)
+window.push_handlers(IP_inBox)
 
 
 fps_display = pyglet.window.FPSDisplay(window=window)
