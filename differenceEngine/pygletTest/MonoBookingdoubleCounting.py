@@ -5,6 +5,78 @@ import pyglet.resource
 import sys, os
 import json
 import datetime
+import math
+import requests
+import time
+import threading, socket, re
+
+dirname = "./Accounts/"
+MB = 16
+chunksize = int(MB * 1024 * 1024)
+
+
+def SendFile(s, filename):
+    print("Sending %s" % filename)
+    s.sendall(f"filename:{filename}::::".encode())
+    f = open(dirname + filename, "rb")
+    while True:
+        chunk = f.read(chunksize)
+        if not chunk:
+            f.close()
+            print("%s Successfully Sent %s\n" % (time.ctime(), filename))
+            break
+        s.sendall(chunk)
+    time.sleep(1)
+    s.sendall(b"EOF")
+    s.close()
+
+
+def deamon_thread_serve():
+    IP = get_public_ipv6()
+    Port = 12345
+    log = open("log.txt", "w+")
+    s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+    s.bind((IP, Port))
+    s.listen(12)
+    print("Listened on ", IP, Port)
+    reg = re.compile("filename:(.*?)::::")
+
+    while True:
+        conn, addr = s.accept()
+        print(time.ctime(), "Connected from ", addr)
+        recvd = conn.recv(1024)
+        if recvd:
+            ss = reg.findall(recvd.decode())
+            print(ss)
+            filename = ss[0]
+            f = open(filename, "wb")
+            while True:
+                data = conn.recv(1024)
+                if not data:
+                    break
+                if data == b"EOF":
+                    f.close()
+                    log.write("%s Received %s\n" % (time.ctime(), filename))
+                    log.flush()
+                else:
+                    f.write(data)
+                    f.flush()
+            conn.close()
+    s.close()
+
+
+def get_public_ipv6():
+    try:
+        response = requests.get("https://ipv6.icanhazip.com/")
+        return response.text.strip()
+    except requests.RequestException:
+        return None
+
+
+deamon_thread = threading.Thread(target=deamon_thread_serve)
+deamon_thread.daemon = True
+deamon_thread.start()
+print("mainfuncStart")
 
 with open("MonoBookingdoubleCounting.json", "r") as file:
     manifestJsonDict: dict = json.load(file)
@@ -104,18 +176,29 @@ class AccountTrueWindow(pyglet.window.Window):
         def on_draw():
             self.clear()
             self.lableList = self.generateList()
+            # self.update()
             self.render()
 
         @self.event
         def on_mouse_scroll(x, y, scroll_x, scroll_y):
             print("self Mouse scrolled", x, y, scroll_x, scroll_y)
             self.bias -= scroll_y
+            # self.update()
 
     def render(self) -> None:
         self.batch.draw()
 
+    # def update(self) -> None:
+    #     for it in self.lableList:
+    #         print(it.y, it.visible)
+    #         print(type(it))
+    #         if it.y < 0 or it.y > 100:
+    #             it.visible = False
+    #         else:
+    #             it.visible = True
+
     def generateList(self) -> list[pyglet.text.Label]:
-        return [
+        Lis = [
             pyglet.text.Label(
                 f"{self.account.accountname}",
                 font_name="Times New Roman",
@@ -127,32 +210,66 @@ class AccountTrueWindow(pyglet.window.Window):
                 anchor_y="bottom",
                 batch=self.batch,
             )
-        ] + [
-            pyglet.text.Label(
-                (
-                    self.account.uni.data[self.account.transactionIdList[i]].date
-                    + f":explain:{self.account.uni.data[self.account.transactionIdList[i]].explanation}:"
-                    + (
-                        ""
-                        if self.account.uni.data[
-                            self.account.transactionIdList[i]
-                        ].amount
-                        > 0
-                        else "\t\t"
-                    )
-                    + f"{self.account.uni.data[self.account.transactionIdList[i]].amount}"
-                ),
-                font_name="Times New Roman",
-                font_size=20,
-                x=0,
-                y=(len(self.account.transactionIdList) - 1 - i + self.bias) * 20,
-                color=(255, 255, 0, 255),
-                anchor_x="left",
-                anchor_y="bottom",
-                batch=self.batch,
-            )
-            for i in range(len(self.account.transactionIdList))
         ]
+        # ] + [
+        #     pyglet.text.Label(
+        #         (
+        #             self.account.uni.data[self.account.transactionIdList[i]].date
+        #             + f":explain:{self.account.uni.data[self.account.transactionIdList[i]].explanation}:"
+        #             + (
+        #                 ""
+        #                 if self.account.uni.data[
+        #                     self.account.transactionIdList[i]
+        #                 ].amount
+        #                 > 0
+        #                 else "\t\t"
+        #             )
+        #             + f"{self.account.uni.data[self.account.transactionIdList[i]].amount}"
+        #         ),
+        #         font_name="Times New Roman",
+        #         font_size=20,
+        #         x=0,
+        #         y=(len(self.account.transactionIdList) - 1 - i + self.bias) * 20,
+        #         color=(255, 255, 0, 255),
+        #         anchor_x="left",
+        #         anchor_y="bottom",
+        #         batch=self.batch,
+        #     )
+        #     for i in range(len(self.account.transactionIdList))
+        # ]
+        # LL = []
+        for i in range(len(self.account.transactionIdList)):
+            y = (len(self.account.transactionIdList) - 1 - i + self.bias) * 20
+            if y > 10 and y < 300:
+                Lis.append(
+                    pyglet.text.Label(
+                        (
+                            self.account.uni.data[
+                                self.account.transactionIdList[i]
+                            ].date
+                            + f":explain:{self.account.uni.data[self.account.transactionIdList[i]].explanation}:"
+                            + (
+                                ""
+                                if self.account.uni.data[
+                                    self.account.transactionIdList[i]
+                                ].amount
+                                > 0
+                                else "\t\t"
+                            )
+                            + f"{self.account.uni.data[self.account.transactionIdList[i]].amount}"
+                        ),
+                        font_name="Times New Roman",
+                        font_size=20,
+                        x=0,
+                        y=(len(self.account.transactionIdList) - 1 - i + self.bias)
+                        * 20,
+                        color=(255, 255, 0, 255),
+                        anchor_x="left",
+                        anchor_y="bottom",
+                        batch=self.batch,
+                    )
+                )
+        return Lis
 
 
 class AccountWindow:
@@ -219,11 +336,57 @@ class Profile:
 
 
 class ProfileWindow(pyglet.window.Window):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, profileFileName: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.profileFileName: str = profileFileName
+        self.data: dict[str, int | float] = self.load()
+        self.switch_to()
+        self.batch: pyglet.graphics.Batch = pyglet.graphics.Batch()
         self.cashFlow = pyglet.gui.TextEntry(
-            "cashFLow", 0 + margin, 0 + margin, 100, batch=batch
+            "cashFLow", 0 + margin, 0 + margin, 100, batch=self.batch
         )
+        print("----------------------", self.data)
+        self.cashFlowInput = pyglet.gui.TextEntry(
+            (
+                f"{int(self.data['cashFlow'])}"
+                if "cashFlow" in self.data
+                else "cashFlowInput"
+            ),
+            0 + margin + 150,
+            0 + margin,
+            200,
+            batch=self.batch,
+        )
+        self.image: pyglet.image.ImageData = pyglet.image.load("artAssets/Designer.png")
+
+        def ocmt(strr: str):
+            try:
+                self.data["cashFlow"] = int(strr)
+            except:
+                print("error str int")
+            self.save()
+            print("cas com:", strr)
+
+        self.cashFlowInput.set_handler("on_commit", ocmt)
+
+        self.push_handlers(self.cashFlow)
+        self.push_handlers(self.cashFlowInput)
+
+        @self.event
+        def on_draw():
+            self.clear()
+            self.image.blit(0, 0)
+            self.batch.draw()
+
+    def save(self) -> None:
+        np.save(self.profileFileName, self.data)
+
+    def load(self) -> dict[int, int | float] | dict:
+        try:
+            dt = np.load(self.profileFileName, allow_pickle=True).item()
+        except:
+            dt = {}
+        return dt
 
 
 class CharaLabel:
@@ -236,9 +399,17 @@ class CharaLabel:
         self.nameList: list[str] = [
             "artAssets/Chara_PAYDAY.png",
             "artAssets/Chara_DEAL.png",
+            "artAssets/Chara_MARKET.png",
+            "artAssets/Chara_BABY.png",
+            "artAssets/Chara_CHARITY.png",
+            "artAssets/Chara_DOODAD.png",
         ]
         self.ExplanList: list[str] = [
             "artAssets/PAYDAY_EXPLAIN.png",
+            "artAssets/DEAL_EXPLAIN.png",
+            "artAssets/DEAL_EXPLAIN.png",
+            "artAssets/DEAL_EXPLAIN.png",
+            "artAssets/DEAL_EXPLAIN.png",
             "artAssets/DEAL_EXPLAIN.png",
         ]
         self.CharaList: list[pyglet.sprite.Sprite] = self.generate()
@@ -281,10 +452,13 @@ class CharaLabel:
         print(rand, type(rand))
         self.CharaList[self.currentDisplay].visible = False
         self.ExpanList[self.currentDisplay].visible = False
-        if rand < 0.1:
-            self.currentDisplay = 0
-        else:
-            self.currentDisplay = 1
+        # if rand < 0.1:
+        #     self.currentDisplay = 0
+        # else:
+        #     self.currentDisplay = 1
+        rand *= len(self.nameList)
+        rrr = math.floor(rand)
+        self.currentDisplay = rrr
         self.ExpanList[self.currentDisplay].visible = True
         self.CharaList[self.currentDisplay].visible = True
 
@@ -295,9 +469,14 @@ UniData.export_list()
 UniAccountNameDict: dict[str, Account] = {}
 
 window = pyglet.window.Window(width=400)
+# accountDics:dict[str,pyglet.window.Window]={}
 accountwindows: list[AccountTrueWindow] = []
+winPro = ProfileWindow(userprofile, width=600)
+# accountDics["winprof"]=winPro
+accountwindows.append(winPro)
 for accountName in manifestJsonDict["Accounts"]:
-    tmp = AccountTrueWindow(accountName, resizable=True, width=600)
+    tmp = AccountTrueWindow(accountName, resizable=True, width=800)
+    # accountDics[accountName]=tmp
     accountwindows.append(tmp)
     UniAccountNameDict[tmp.account.accountname] = tmp.account
     print(UniAccountNameDict)
@@ -339,6 +518,20 @@ depressed_img.width = 40
 pushbutton = pyglet.gui.PushButton(
     x=100 + margin,
     y=0 + margin,
+    pressed=pressed_img,
+    depressed=depressed_img,
+    batch=batch,
+)
+ipv6_pushbutton = pyglet.gui.PushButton(
+    x=200 + margin,
+    y=0 + margin,
+    pressed=pressed_img,
+    depressed=depressed_img,
+    batch=batch,
+)
+sendfile_pushbutton = pyglet.gui.PushButton(
+    x=200 + margin,
+    y=200 + margin,
     pressed=pressed_img,
     depressed=depressed_img,
     batch=batch,
@@ -433,12 +626,40 @@ def my_on_release_handler():
     # print("Button Released...")
 
 
+def ipv6_pushbutton_press_handler():
+    print(get_public_ipv6())
+
+
+def ipv6_pushbutton_release_handler():
+    pass
+
+
+def sendfile_pushbutton_press_handler():
+    print("senffile push button pressed")
+    for filename in os.listdir(dirname):
+        if os.path.isfile(dirname + filename):
+            print(filename)
+            s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+            s.connect((get_public_ipv6(), 12345))
+            SendFile(s, filename)
+
+
+def sendfile_pushbutton_release_handler():
+    print("ddd")
+
+
+sendfile_pushbutton.set_handler("on_press", sendfile_pushbutton_press_handler)
+sendfile_pushbutton.set_handler("on_release", sendfile_pushbutton_release_handler)
+ipv6_pushbutton.set_handler("on_press", ipv6_pushbutton_press_handler)
+ipv6_pushbutton.set_handler("on_release", ipv6_pushbutton_release_handler)
 pushbutton.set_handler("on_press", my_on_press_handler)
 pushbutton.set_handler("on_release", my_on_release_handler)
 check_pushbutton.set_handler("on_press", checks_on_press)
 check_pushbutton.set_handler("on_release", checks_on_unpress)
 batsu_pushbutton.set_handler("on_press", batsu_on_press)
 batsu_pushbutton.set_handler("on_release", batsu_on_unpress)
+window.push_handlers(sendfile_pushbutton)
+window.push_handlers(ipv6_pushbutton)
 window.push_handlers(pushbutton)
 window.push_handlers(check_pushbutton)
 window.push_handlers(batsu_pushbutton)
@@ -458,8 +679,9 @@ def datecommmm(strr: str):
 
 def accopen(strr: str):
     if strr in manifestJsonDict["Accounts"]:
-        tmp = AccountTrueWindow(strr, resizable=True, width=600)
-        # accountwindows.append(tmp)
+        tmp = AccountTrueWindow(strr, resizable=True, width=800)
+        # mainloop.sleep(1.0)
+        accountwindows.append(tmp)
         UniAccountNameDict[tmp.account.accountname] = tmp.account
         print(UniAccountNameDict)
     print(" accopen:" + strr)
@@ -469,7 +691,12 @@ def craccopen(strr: str):
     if strr in manifestJsonDict["Accounts"]:
         print("already exits just open")
     else:
-        tmp = AccountTrueWindow(strr, resizable=True, width=600)
+        manifestJsonDict["Accounts"].append(strr)
+        with open("MonoBookingdoubleCounting.json", "w") as file:
+            json.dump(manifestJsonDict, file)
+        tmp = AccountTrueWindow(strr, resizable=True, width=800)
+        # mainloop.sleep(1.0)
+        # accountDics[strr]=tmp
         accountwindows.append(tmp)
         UniAccountNameDict[tmp.account.accountname] = tmp.account
         print(UniAccountNameDict)
@@ -576,4 +803,16 @@ def on_close():
 # time.sleep(1)
 
 # del accountwindows
-pyglet.app.run(1 / 30.0)
+pyglet.app.run()
+# time.sleep(1)
+# pyglet.app.run()
+# pyglet.app.exit()
+# time.sleep(1)
+# pyglet.app.EventLoop
+# pyglet.app.run()
+# mainloop = pyglet.app.EventLoop()
+
+# mainloop.run()
+# mainloop.sleep(1.0)
+# mainloop.exit()
+# mainloop.run()

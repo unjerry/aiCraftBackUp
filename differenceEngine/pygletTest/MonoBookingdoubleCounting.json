@@ -3,6 +3,7 @@
         "CashAccount",
         "NewAccount",
         "OldAccount",
-        "ssss"
+        "ssss",
+        "LedgerAccount"
     ]
 }
