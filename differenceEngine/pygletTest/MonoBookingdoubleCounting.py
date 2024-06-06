@@ -13,8 +13,8 @@ import threading, socket, re
 dirname = "./Accounts/"
 MB = 16
 chunksize = int(MB * 1024 * 1024)
-with open(sendIpFileName,"r") as file:
-    sendIp=file.read()
+with open(sendIpFileName, "r") as file:
+    sendIp = file.read()
 
 
 def SendFile(s, filename):
@@ -138,7 +138,14 @@ class UniLedger:
 
 
 class Account:
-    def __init__(self, filename: str, accountname: str, uni: UniLedger) -> None:
+    def __init__(
+        self,
+        filename: str,
+        accountname: str,
+        uni: UniLedger,
+        folder: str = "./Accounts/",
+    ) -> None:
+        self.folder = folder
         self.filename: str = filename
         self.accountname: str = accountname
         self.uni: UniLedger = uni
@@ -147,13 +154,13 @@ class Account:
 
     def save(self) -> None:
         print(self.transactionIdList)
-        np.save("./Accounts/" + self.filename, self.transactionIdList)
+        np.save(self.folder + self.filename, self.transactionIdList)
 
     def load(self) -> list[Transaction] | list:
         print(self.accountname, self.filename)
         try:
             print("dt")
-            dt = np.load("./Accounts/" + self.filename, allow_pickle=True).tolist()
+            dt = np.load(self.folder + self.filename, allow_pickle=True).tolist()
             print(dt)
             # dt["self.currentId"]
         except:
@@ -163,11 +170,26 @@ class Account:
         return dt
 
 
+UniData = UniLedger(UniLedgeName)
+# UniData.add(103, "2024-05-25")
+UniData.export_list()
+UniAccountNameDict: dict[str, Account] = {}
+
+
 class AccountTrueWindow(pyglet.window.Window):
-    def __init__(self, name: str, *args, **kwargs):
+    def __init__(
+        self,
+        name: str,
+        folder: str = "./Accounts/",
+        uni: UniLedger = UniData,
+        *args,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
+        self.folder: str = folder
+        self.uni = uni
         self.name: str = name
-        self.account: Account = Account(name + ".npy", name, UniData)
+        self.account: Account = Account(name + ".npy", name, self.uni, self.folder)
         self.switch_to()
         self.batch: pyglet.graphics.Batch = pyglet.graphics.Batch()
         self.bias = 0
@@ -465,11 +487,6 @@ class CharaLabel:
         self.CharaList[self.currentDisplay].visible = True
 
 
-UniData = UniLedger(UniLedgeName)
-# UniData.add(103, "2024-05-25")
-UniData.export_list()
-UniAccountNameDict: dict[str, Account] = {}
-
 window = pyglet.window.Window(width=400)
 # accountDics:dict[str,pyglet.window.Window]={}
 accountwindows: list[AccountTrueWindow] = []
@@ -538,6 +555,13 @@ sendfile_pushbutton = pyglet.gui.PushButton(
     depressed=depressed_img,
     batch=batch,
 )
+checkOther_pushbutton = pyglet.gui.PushButton(
+    x=200 + margin,
+    y=100 + margin,
+    pressed=pressed_img,
+    depressed=depressed_img,
+    batch=batch,
+)
 check_pushbutton = pyglet.gui.PushButton(
     x=128 + margin,
     y=window.height - margin,
@@ -568,7 +592,7 @@ def checks_on_press():
         UniAccountNameDict[dat].save()
         UniData.add(
             Transaction(
-                playerTest.netIcome,
+                int(winPro.cashFlowInput.value),
                 datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
                 dat,
                 "PAYDAY_INCOME",
@@ -650,6 +674,43 @@ def sendfile_pushbutton_release_handler():
     print("ddd")
 
 
+# Otheraccountwindows: list[AccountTrueWindow] = []
+
+
+OtherUni: UniLedger = UniLedger(OtherUniLedgeName)
+Otheraccountwindows: list = []
+OtheraccountDics: dict = {}
+
+
+def checkOther_pushbutton_press_handler():
+    with open("AccountsOthers/MonoBookingdoubleCounting.json", "r") as file:
+        OthermanifestJsonDict: dict = json.load(file)
+    global OtherUni
+    global Otheraccountwindows
+    global OtherwinPro
+    OtherwinPro = ProfileWindow(Otheruserprofile, width=600)
+    OtherwinPro.set_caption("OthersProfile")
+    # OtheraccountDics["Otherwinprof"] = OtherwinPro
+    Otheraccountwindows.append(OtherwinPro)
+    for accountName in OthermanifestJsonDict["Accounts"]:
+        tmp = AccountTrueWindow(
+            accountName,
+            resizable=True,
+            width=800,
+            folder="./AccountsOthers/",
+            uni=OtherUni,
+        )
+        # accountDics[accountName]=tmp
+        Otheraccountwindows.append(tmp)
+    print("checkOther But pressd")
+
+
+def checkOther_pushbutton_release_handler():
+    print("checkOther But releas")
+
+
+checkOther_pushbutton.set_handler("on_press", checkOther_pushbutton_press_handler)
+checkOther_pushbutton.set_handler("on_release", checkOther_pushbutton_release_handler)
 sendfile_pushbutton.set_handler("on_press", sendfile_pushbutton_press_handler)
 sendfile_pushbutton.set_handler("on_release", sendfile_pushbutton_release_handler)
 ipv6_pushbutton.set_handler("on_press", ipv6_pushbutton_press_handler)
@@ -660,6 +721,7 @@ check_pushbutton.set_handler("on_press", checks_on_press)
 check_pushbutton.set_handler("on_release", checks_on_unpress)
 batsu_pushbutton.set_handler("on_press", batsu_on_press)
 batsu_pushbutton.set_handler("on_release", batsu_on_unpress)
+window.push_handlers(checkOther_pushbutton)
 window.push_handlers(sendfile_pushbutton)
 window.push_handlers(ipv6_pushbutton)
 window.push_handlers(pushbutton)
@@ -681,9 +743,9 @@ def datecommmm(strr: str):
 
 def IPaccopen(strr: str):
     global sendIp
-    with open(sendIpFileName,"r") as file:
-        sendIp=file.read()
-    IP_inBox.value=f"{sendIp}"
+    with open(sendIpFileName, "r") as file:
+        sendIp = file.read()
+    IP_inBox.value = f"{sendIp}"
     print(" accopen:" + f"{sendIp}")
 
 
@@ -817,7 +879,7 @@ def on_close():
 
 # import time
 
-# time.sleep(1)
+time.sleep(1)
 
 # del accountwindows
 pyglet.app.run()
