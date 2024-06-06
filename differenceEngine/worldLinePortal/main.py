@@ -1,170 +1,51 @@
+# differenceEngine/graphicsEngine/main.py
+# differenceEngine/pygletTest/test2.py
 import pyglet
-import numpy as np
+from pyglet.graphics.shader import Shader, ShaderProgram, ComputeShaderProgram
+from pyglet.gl import GL_TRIANGLES
+from pyglet.math import Mat4, Vec3, Vec4, Vec2
 
 
-class Hexagon(pyglet.shapes.Polygon):
-    def __init__(self, x, y, radius=100, batch=None, group=None):
-        self.radius = radius
-        self.coordinates = [
-            (
-                x + self.radius * np.cos(0 * np.pi / 3),
-                y + self.radius * np.sin(0 * np.pi / 3),
-            ),
-            (
-                x + self.radius * np.cos(1 * np.pi / 3),
-                y + self.radius * np.sin(1 * np.pi / 3),
-            ),
-            (
-                x + self.radius * np.cos(2 * np.pi / 3),
-                y + self.radius * np.sin(2 * np.pi / 3),
-            ),
-            (
-                x + self.radius * np.cos(3 * np.pi / 3),
-                y + self.radius * np.sin(3 * np.pi / 3),
-            ),
-            (
-                x + self.radius * np.cos(4 * np.pi / 3),
-                y + self.radius * np.sin(4 * np.pi / 3),
-            ),
-            (
-                x + self.radius * np.cos(5 * np.pi / 3),
-                y + self.radius * np.sin(5 * np.pi / 3),
-            ),
-        ]
-        self.hexColor = (
-            int(np.random.uniform(0.5, 1) * 255),
-            int(np.random.uniform(0.5, 1) * 255),
-            int(np.random.uniform(0.5, 1) * 255),
-            int(np.random.uniform(0.5, 1) * 255),
+class GraphicsEngine(pyglet.window.Window):
+    def __init__(self, winSize: tuple[int, int] = (1600 // 2, 900 // 2)):
+        self.winSize: tuple[int, int] = winSize
+        self.openglConfig: pyglet.gl.Config = pyglet.gl.Config(
+            minor_version=3, major_version=3
         )
         super().__init__(
-            *self.coordinates, color=self.hexColor, batch=batch, group=group
+            *self.winSize, caption="test2", resizable=True, config=self.openglConfig
         )
+        self.set_location(100, 100)
+        self.set_minimum_size(100, 100)
 
+        with open("shaders/vert1.glsl", "r") as file:
+            vert_shader = file.read()
+        with open("shaders/frag1.glsl", "r") as file:
+            frag_shader = file.read()
+        vert = Shader(vert_shader, "vertex")
+        frag = Shader(frag_shader, "fragment")
 
-class MenuWindow(pyglet.window.Window):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self.matHexCoord: pyglet.math.Mat3 = pyglet.math.Mat3(
-            [
-                3.0 / 2.0,
-                np.sqrt(3.0) / 2.0,
-                0.0,
-                0.0,
-                np.sqrt(3.0),
-                0.0,
-                0.0,
-                0.0,
-                1.0,
-            ]
-        )
+        self.program: ShaderProgram = ShaderProgram(vert, frag)
+
         self.batch: pyglet.graphics.Batch = pyglet.graphics.Batch()
-        self.fpsDisplay: pyglet.window.FPSDisplay = pyglet.window.FPSDisplay(
-            window=self
+        self.program.vertex_list(
+            3,
+            GL_TRIANGLES,
+            batch=self.batch,
+            vert=("f", (-0.5, -0.5, 0.5, -0.5, 0.0, 0.5)),
+            col=("f", (1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1)),
         )
-        self.position: dict[str, pyglet.math.Vec3] = {}
-        self.renderList: dict[str, Hexagon] = {}
-        self.stepLength: float = 5.0
-        self.anchor: pyglet.math.Vec3 = pyglet.math.Vec3(10, 15, 0)
-        self.anchorVelocity: pyglet.math.Vec3 = pyglet.math.Vec3(0, 0, 0)
-        for i in range(20):
-            for j in range(20 - i):
-                self.position[f"({i},{j})"] = (
-                    self.matHexCoord @ (pyglet.math.Vec3(i, j, 0))
-                ) * self.stepLength + self.anchor
-                if (
-                    self.position[f"({i},{j})"].x < 0
-                    or self.position[f"({i},{j})"].x > self.width
-                ):
-                    continue
-                if (
-                    self.position[f"({i},{j})"].y < 0
-                    or self.position[f"({i},{j})"].y > self.height
-                ):
-                    continue
-                self.renderList[f"({i},{j})"] = Hexagon(
-                    self.position[f"({i},{j})"].x,
-                    self.position[f"({i},{j})"].y,
-                    radius=self.stepLength,
-                    batch=self.batch,
-                )
-        print(len(self.renderList))
 
-    def update(self):
-        self.anchor += self.anchorVelocity
-        # print(self.anchor)
-        for i in range(20):
-            for j in range(20 - i):
-                self.position[f"({i},{j})"] = (
-                    self.matHexCoord @ (pyglet.math.Vec3(i, j, 0))
-                ) * self.stepLength + self.anchor
-                if (
-                    self.position[f"({i},{j})"].x < 0
-                    or self.position[f"({i},{j})"].x > self.width
-                ):
-                    continue
-                if (
-                    self.position[f"({i},{j})"].y < 0
-                    or self.position[f"({i},{j})"].y > self.height
-                ):
-                    continue
-                self.renderList[f"({i},{j})"] = Hexagon(
-                    self.position[f"({i},{j})"].x,
-                    self.position[f"({i},{j})"].y,
-                    radius=self.stepLength,
-                    batch=self.batch,
-                )
-        # print(len(self.renderList))
-
-    def on_draw(self) -> None:
+    def on_draw(self):
+        pyglet.gl.glClearColor(255, 255, 255, 255)
         self.clear()
         self.batch.draw()
-        self.update()
-        self.fpsDisplay.draw()
 
-    def on_key_press(self, symbol, modifiers):
-        print(symbol, modifiers, pyglet.window.key.A)
-        if symbol == pyglet.window.key.A:
-            self.anchorVelocity.x = 10
-        if symbol == pyglet.window.key.D:
-            self.anchorVelocity.x = -10
-        if symbol == pyglet.window.key.S:
-            self.anchorVelocity.y = 10
-        if symbol == pyglet.window.key.W:
-            self.anchorVelocity.y = -10
-        print(self.anchorVelocity)
-        return super().on_key_press(symbol, modifiers)
-
-    def on_key_release(self, symbol, modifiers):
-        print(symbol, modifiers, pyglet.window.key.A)
-        if symbol == pyglet.window.key.A:
-            self.anchorVelocity.x = 0
-        if symbol == pyglet.window.key.D:
-            self.anchorVelocity.x = 0
-        if symbol == pyglet.window.key.S:
-            self.anchorVelocity.y = 0
-        if symbol == pyglet.window.key.W:
-            self.anchorVelocity.y = 0
-        print(self.anchorVelocity)
+    # def on_resize(self, width, height):
+    #     print("resize", width, height)
+    #     return super().on_resize(width, height)
 
 
-# menuWindow: pyglet.window.Window = pyglet.window.Window(caption="worldLinePortal")
-# menuWindow.set_location(x=100, y=100)
-# fpsDisplay: pyglet.window.FPSDisplay = pyglet.window.FPSDisplay(window=menuWindow)
-# menuWindowBatch: pyglet.graphics.Batch = pyglet.graphics.Batch()
-# rectangle: pyglet.shapes.Rectangle = pyglet.shapes.Rectangle(
-#     x=400, y=400, width=100, height=50, batch=menuWindowBatch
-# )
-# polygon: pyglet.shapes.Polygon = pyglet.shapes.Polygon(
-#     *[(0, 0), (100, 100), (100, 200)], batch=menuWindowBatch
-# )
-
-
-# @menuWindow.event
-# def on_draw():
-#     menuWindow.clear()
-#     menuWindowBatch.draw()
-#     fpsDisplay.draw()
-menuWindow = MenuWindow(caption="Test")
-
-pyglet.app.run(0)
+if __name__ == "__main__":
+    app = GraphicsEngine()
+    pyglet.app.run(0)
