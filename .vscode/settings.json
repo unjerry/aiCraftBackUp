@@ -1,0 +1,75 @@
+{
+    "[plaintext]": {
+        "editor.wrappingIndent": "none",
+        "editor.autoIndent": "none",
+        "editor.wordWrap": "bounded"
+    },
+    // 用户自定义高亮，按照正则表达式匹配
+    // 键为正则表达式，值为高亮配置，结构为 DecorationRenderOptions
+    "noveler.customHighlight": {
+        "\\d+(\\.\\d+)?": {
+            "color": "#23e40a"
+        },
+        "《.*?》": {
+            "color": "#8482e4"
+        },
+        "「.*?」": {
+            "color": "#84e2ff"
+        }
+    },
+    "noveler.confCSVFiles": [
+        {
+            // 文件路径（相对路径只在打开单文件夹时才会读取）
+            "path": ".vscode/test1.csv",
+            // 要高亮的列名，默认为 name
+            "key": "key",
+            // 悬挂提示的列名，不写则无悬挂信息，无默认值
+            "hoverKey": "hoverKey",
+            // 高亮配置，结构为DecorationRenderOptions
+            "decorationRenderOptions": {
+                "color": "#9e952f"
+            }
+        },
+        {
+            // 文件路径（相对路径只在打开单文件夹时才会读取）
+            "path": ".vscode/青春猪头.csv",
+            // 要高亮的列名，默认为 name
+            "key": "key",
+            // 悬挂提示的列名，不写则无悬挂信息，无默认值
+            "hoverKey": "hoverKey",
+            // 高亮配置，结构为DecorationRenderOptions
+            "decorationRenderOptions": {
+                "color": "#9eff2f"
+            }
+        },
+        // {
+        //     // 文件路径（相对路径只在打开单文件夹时才会读取）
+        //     "path": ".vscode/藏名.csv",
+        //     // 要高亮的列名，默认为 name
+        //     "key": "key",
+        //     // 悬挂提示的列名，不写则无悬挂信息，无默认值
+        //     "hoverKey": "hoverKey",
+        //     // 高亮配置，结构为DecorationRenderOptions
+        //     "decorationRenderOptions": {
+        //         "color": "#3fefef"
+        //     }
+        // },
+        // {
+        //     // 文件路径（相对路径只在打开单文件夹时才会读取）
+        //     "path": ".vscode/魔王军.csv",
+        //     // 要高亮的列名，默认为 name
+        //     "key": "key",
+        //     // 悬挂提示的列名，不写则无悬挂信息，无默认值
+        //     "hoverKey": "hoverKey",
+        //     // 高亮配置，结构为DecorationRenderOptions
+        //     "decorationRenderOptions": {
+        //         "color": "#ff3fef"
+        //     }
+        // },
+    ],
+    "noveler.previewFontSize": 20,
+    "noveler.previewIndentionLength": 7,
+    "noveler.completionChar": "@",
+    "noveler.previewSpaceLines": 1,
+    "noveler.outlinesDir": "./novel/outlines",
+}
