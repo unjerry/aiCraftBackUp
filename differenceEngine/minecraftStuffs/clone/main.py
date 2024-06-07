@@ -5,21 +5,23 @@ pyglet.options["shadow_window"] = False
 pyglet.options["debug_gl"] = False
 import pyglet.gl as gl
 
+import math
+import matrix
 import shader
 
 vertex_positions = [
     -0.5,
     0.5,
-    1.0,
+    0.0,
     -0.5,
     -0.5,
-    1.0,
+    0.0,
     0.5,
     -0.5,
-    1.0,
+    0.0,
     0.5,
     0.5,
-    1.0,
+    0.0,
 ]
 
 indices = [
@@ -66,9 +68,30 @@ class Window(pyglet.window.Window):
         )
         # create shader
         self.shader = shader.Shader("./shaders/vert.glsl", "./shaders/frag.glsl")
+        self.shader_matrix_location = self.shader.find_uniform(b"matrix")
         self.shader.use()
+        # create matrices
+        self.mv_matrix = matrix.Matrix()
+        self.p_matrix = matrix.Matrix()
+
+        self.x = 0
+        pyglet.clock.schedule_interval(self.update, 1.0 / 60)
+
+    def update(self, dt):
+        self.x += dt
 
     def on_draw(self):
+        # create projection matrix
+        self.p_matrix.load_identity()
+        self.p_matrix.perspective(90, float(self.width) / float(self.height), 0.1, 500)
+        # create modelview matrix
+        self.mv_matrix.load_identity()
+        self.mv_matrix.translate(0, 0, -1)
+        self.mv_matrix.rotate_2d(self.x, math.sin(self.x / 3 * 2) / 2)
+        # create modelviewprojection matrix
+        mvp_matrix = self.p_matrix * self.mv_matrix
+        self.shader.uniform_matrix(self.shader_matrix_location, mvp_matrix)
+        # draw stuff
         gl.glClearColor(0, 0, 0, 1)
         self.clear()
 
