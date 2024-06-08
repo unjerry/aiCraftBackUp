@@ -18,18 +18,28 @@ class Window(pyglet.window.Window):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # create blocks
-        self.texture_manager=texture_manageer.Texture_manager(16,16,256)
-        self.cobblestone = block_type.Block_type(self.texture_manager,"cobblestone", {"all": "cobblestone"})
-        # create each one of our blocks with the texture manager and a list of textures per face
-        self.grass = block_type.Block_type(self.texture_manager,
-            "grass", {"top": "grass", "bottom": "dirt", "sides": "grass_side"}
+        self.texture_manager = texture_manageer.Texture_manager(16, 16, 256)
+        self.cobblestone = block_type.Block_type(
+            self.texture_manager, "cobblestone", {"all": "cobblestone"}
         )
-        self.dirt = block_type.Block_type(self.texture_manager,"dirt", {"all": "dirt"})
-        self.stone = block_type.Block_type(self.texture_manager,"stone", {"all": "stone"})
-        self.sand = block_type.Block_type(self.texture_manager,"sand", {"all": "sand"})
-        self.planks = block_type.Block_type(self.texture_manager,"planks", {"all": "planks"})
-        self.log = block_type.Block_type(self.texture_manager,
-            "log", {"top": "log_top", "bottom": "log_top", "sides": "log_side"}
+        # create each one of our blocks with the texture manager and a list of textures per face
+        self.grass = block_type.Block_type(
+            self.texture_manager,
+            "grass",
+            {"top": "grass", "bottom": "dirt", "sides": "grass_side"},
+        )
+        self.dirt = block_type.Block_type(self.texture_manager, "dirt", {"all": "dirt"})
+        self.stone = block_type.Block_type(
+            self.texture_manager, "stone", {"all": "stone"}
+        )
+        self.sand = block_type.Block_type(self.texture_manager, "sand", {"all": "sand"})
+        self.planks = block_type.Block_type(
+            self.texture_manager, "planks", {"all": "planks"}
+        )
+        self.log = block_type.Block_type(
+            self.texture_manager,
+            "log",
+            {"top": "log_top", "bottom": "log_top", "sides": "log_side"},
         )
         self.texture_manager.generate_mipmaps()
 
@@ -52,6 +62,21 @@ class Window(pyglet.window.Window):
         )
         gl.glVertexAttribPointer(0, 3, gl.GL_FLOAT, gl.GL_FALSE, 0, 0)
         gl.glEnableVertexAttribArray(0)
+        # create vertex buffer object
+        self.tex_coord_vbo = gl.GLuint(0)
+        gl.glGenBuffers(1, ctypes.byref(self.tex_coord_vbo))
+        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.tex_coord_vbo)
+
+        gl.glBufferData(
+            gl.GL_ARRAY_BUFFER,
+            ctypes.sizeof(gl.GLfloat * len(self.grass.tex_coords)),
+            (gl.GLfloat * len(self.grass.tex_coords))(
+                *self.grass.tex_coords
+            ),
+            gl.GL_STATIC_DRAW,
+        )
+        gl.glVertexAttribPointer(1, 3, gl.GL_FLOAT, gl.GL_FALSE, 0, 0)
+        gl.glEnableVertexAttribArray(1)
         # create index buffer object
         self.ibo = gl.GLuint(0)
         gl.glGenBuffers(1, self.ibo)
@@ -68,6 +93,9 @@ class Window(pyglet.window.Window):
         # create shader
         self.shader = shader.Shader("./shaders/vert.glsl", "./shaders/frag.glsl")
         self.shader_matrix_location = self.shader.find_uniform(b"matrix")
+        self.shader_sampler_location = self.shader.find_uniform(
+            b"texture_array_sampler"
+        )
         self.shader.use()
         # create matrices
         self.mv_matrix = matrix.Matrix()
@@ -87,9 +115,13 @@ class Window(pyglet.window.Window):
         self.mv_matrix.load_identity()
         self.mv_matrix.translate(0, 0, -3)
         self.mv_matrix.rotate_2d(self.x, math.sin(self.x / 3 * 2) / 2)
-        # create modelviewprojection matrix
+        # modelviewprojection matrix
         mvp_matrix = self.p_matrix * self.mv_matrix
         self.shader.uniform_matrix(self.shader_matrix_location, mvp_matrix)
+        # bind textures
+        gl.glActiveTexture(gl.GL_TEXTURE0)
+        gl.glBindTexture(gl.GL_TEXTURE_2D_ARRAY, self.texture_manager.texture_array)
+        gl.glUniform1i(self.shader_sampler_location, 0)
         # draw stuff
         gl.glEnable(
             gl.GL_DEPTH_TEST

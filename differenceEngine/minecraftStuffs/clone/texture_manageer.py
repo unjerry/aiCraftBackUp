@@ -15,6 +15,10 @@ class Texture_manager:
         gl.glGenTextures(1, self.texture_array)
         gl.glBindTexture(gl.GL_TEXTURE_2D_ARRAY, self.texture_array)
 
+        gl.glTexParameteri(
+            gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST
+        )
+
         gl.glTexImage3D(
             gl.GL_TEXTURE_2D_ARRAY,
             0,
