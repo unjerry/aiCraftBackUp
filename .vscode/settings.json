@@ -32,6 +32,18 @@
         },
         {
             // 文件路径（相对路径只在打开单文件夹时才会读取）
+            "path": ".vscode/台站.csv",
+            // 要高亮的列名，默认为 name
+            "key": "key",
+            // 悬挂提示的列名，不写则无悬挂信息，无默认值
+            "hoverKey": "hoverKey",
+            // 高亮配置，结构为DecorationRenderOptions
+            "decorationRenderOptions": {
+                "color": "#2ed5cf"
+            }
+        },
+        {
+            // 文件路径（相对路径只在打开单文件夹时才会读取）
             "path": ".vscode/青春猪头.csv",
             // 要高亮的列名，默认为 name
             "key": "key",
