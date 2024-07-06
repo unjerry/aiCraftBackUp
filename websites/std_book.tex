@@ -198,7 +198,7 @@ reasonalbe way.
 \begin{flushleft}
     \vspace*{\fill}
     This book was typeset using \LaTeX{} software.\\
-    To those who love me.\\
+    To those who love and hate me.\\
     \vspace{\fill}
     Copyright \textcopyright{} \the\year{}  \bookauthor\\
     License: \booklicense
@@ -231,60 +231,115 @@ reasonalbe way.
 
 \mainmatter
 
-\chapter{PreTalks}
- {
-  the first thing to think about is how we mearsure things.
-  \section{Tensor oriented for computation}
-  \subsection{Examples of (a,b)-Tensor $\forall a,b \in \mathbb{N}$}
-  \subsection{(0,1)-Tensor the vector}
-  \subsection{(1,0)-Tensor the covector}
-  \subsection{(1,1)-Tensor the linear maps}
-  \subsection{(2,0)-Tensor the bilinear maps}
-  \subsection{Exercises}
-  \section{Outer algebra oriented for computation}
-  \subsection{Examples of geometric algebra}
-  \subsection{bivectors and trivectors}
-  \subsection{dot and wedge product and the flux in 3D}
-  \subsection{Exercises}
-  \foreach \x in {A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z}
-      {\index{\x 1}\index{\x 2}}
- }
-\chapter{Tensor(Vector) Space}
- {
-  the first thing to think about is how we mearsure things.
-  \section{Tensor oriented for computation}
-  \subsection{Examples of (a,b)-Tensor $\forall a,b \in \mathbb{N}$}
-  \subsection{(0,1)-Tensor the vector}
-  \subsection{(1,0)-Tensor the covector}
-  \subsection{(1,1)-Tensor the linear maps}
-  \subsection{(2,0)-Tensor the bilinear maps}
-  \subsection{Exercises}
-  \section{Outer algebra oriented for computation}
-  \subsection{Examples of geometric algebra}
-  \subsection{bivectors and trivectors}
-  \subsection{dot and wedge product and the flux in 3D}
-  \subsection{Exercises}
-  \foreach \x in {A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z}
-      {\index{\x 1}\index{\x 2}}
- }
-\chapter{Irrational and Transcendent Numbers}
-\chapter{Complex Numbers}
-\chapter{Quaternions and Ausdehnungslehre}
-\chapter{Theory of Equations}
-\chapter{Substitutions and Groups}
-\chapter{Determinants}
-\chapter{Quantics}
-\chapter{Calculus}
-\chapter{Differential Equations}
-\chapter{Infinite Series}
-\chapter{Theory of Functions}
-\chapter{Probabilities and Least Squares}
-\chapter{Analytic Geometry}
-\chapter{Modern Geometry}
-\chapter{Trigonometry and Elementary Geometry}
-\chapter{Non-Euclidean Geometry}
-\chapter{Bibliography}
-\chapter{General Tendencies}
+\chapter{0 PreTalks}
+
+the first thing to think about is how we mearsure things.
+
+\section{Tensor oriented for computation}
+
+\subsection{Examples of (a,b)-Tensor $\forall a,b \in \mathbb{N}$}
+
+$\left[\begin{matrix}
+            1 & 2 \\
+            3 & 4
+        \end{matrix}\right]$
+is a (1,1)-Tensor which is often refer
+as a matrix.
+
+$\left[\begin{matrix}
+            1 \\
+            3
+        \end{matrix}\right]$
+is a (0,1)-Tensor which is often refer
+as a vector.
+
+$\left[\begin{matrix}
+            1 & 3
+        \end{matrix}\right]$
+is a (1,0)-Tensor which is called the covector.
+
+The covector are also know as the linear functional.
+come togeter with the concepts that are
+called the dule space and dule vectors.
+
+\subsection{(0,1)-Tensor the vector}
+
+The current
+textbook in linear algebra is very abundant,
+include the linear operator oriented approach,
+which is the currently best one I have ever seen.
+
+This book will base on a computational oriented
+approach to the subject of the so called linear
+algebra.Linear algebra is such a vast topic that
+I'm having the most firghtened heart to output
+what I have learnt so far in this amazing land.
+
+In this book, the main goal is to answer all the
+questions about those are not well pondered in the
+traditional linear algebra course of any kind.
+In the computational matrix theory there are plenty
+ways of decompose the matrix, such as LU, QR, and the
+most fundamental SVD decomposition.
+While in the more math oriented linear course
+the main topic are always in the most abstract way
+as they move forward.
+And the main concepts such as the Transpose, dule
+space, determinant, trace and all other fundamental
+but always treated just in a forced memorize level.
+
+The main goal is to explain all the concepts in a
+more mathematical natrual and fun way, even the sudden
+expose of a certain defination would be a very hard
+problem to those first expose to the abstract algebra
+world student just like me. So I'll try my best to
+get every defination and notion in a smooth and more
+reasonalbe way.
+\subsection{(1,0)-Tensor the covector}
+\subsection{(1,1)-Tensor the linear maps}
+\subsection{(2,0)-Tensor the bilinear maps}
+\subsection{Exercises}
+\section{Outer algebra oriented for computation}
+\subsection{Examples of geometric algebra}
+\subsection{Bivectors and trivectors}
+\subsection{Dot and wedge product and the flux in 3D}
+\subsection{Exercises}
+\foreach \x in {A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z}
+    {\index{\x 1}\index{\x 2}}
+
+\chapter{1 Tensor(Vector) Space}
+
+the first thing to think about is how we mearsure things.
+
+\section{Tensor basics}
+\subsection{Basis, compotents, covariant, and contravariant}
+\subsection{Exercises}
+\foreach \x in {A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z}
+    {\index{\x 1}\index{\x 2}}
+
+\chapter{2 Representation the arrays}
+
+\chapter{3 Metric and metric tensor}
+
+\chapter{Re:1 Vector Spaces}
+
+\chapter{Re:2 Linear maps the matrix}
+
+\chapter{Re:3 Inner(Outer) Product Spaces}
+
+% \chapter{Determinants}
+% \chapter{Quantics}
+% \chapter{Calculus}
+% \chapter{Differential Equations}
+% \chapter{Infinite Series}
+% \chapter{Theory of Functions}
+% \chapter{Probabilities and Least Squares}
+% \chapter{Analytic Geometry}
+% \chapter{Modern Geometry}
+% \chapter{Trigonometry and Elementary Geometry}
+% \chapter{Non-Euclidean Geometry}
+% \chapter{Bibliography}
+% \chapter{General Tendencies}
 
 \backmatter
 \addcontentsline{toc}{chapter}{Index}
