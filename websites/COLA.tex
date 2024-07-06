@@ -1,0 +1,292 @@
+\documentclass{book}
+
+\title{COLA}
+\newcommand{\booksubtitle}{computational oriented linear algebra}
+\newcommand{\booklicense}{ALL RIGHT PRESERVED}
+
+\author{Zhang Jinrui}
+% Author subtitle could be a university or a geographical location, for example
+\newcommand{\authorsubtitle}{NewArea, China}
+
+% Create convenient commands \booktitle and \bookauthor
+\makeatletter
+\newcommand{\booktitle}{\@title}
+\newcommand{\bookauthor}{\@author}
+\makeatother
+
+% This utf8 declaration is not needed for versions of latex > 2018 but may
+% be helpful for older software. Eventually it may not be worth keeping.
+\usepackage[utf8]{inputenc}  
+\usepackage{fix-cm}  % this package allows large \fontsize
+\usepackage{tikz}    % this is for graphics. e.g. rectangle on title page
+\usepackage{amsmath} % Used by equations
+\usepackage{amssymb}
+% The following dimensions specify 4.75" X 7.5" content on 6 3/8" by 9 1/4"
+% paper. The paper width and height can be tweaked as required and the content
+% should size to fit within the margins accordingly.
+%
+% The (inside) bindingoffset should be larger for books with more pages. Some
+% standard recommended sizes are .375in minimum up to 1in for 600+ page books.
+% Sizes .75in and .875in are also recommended roughly at 150 and 400 pages.
+\usepackage[bindingoffset=0.625in,
+            left=.5in, right=.5in,
+            top=.8125in, bottom=.9375in,
+            paperwidth=6.375in, paperheight=9.25in]{geometry}
+% Here is an alternative geometry for reading on letter size paper:
+% \usepackage[margin=.75in, paperwidth=8.5in, paperheight=11in]{geometry}
+
+\renewcommand{\contentsname}{Table of Contents} % default is {Contents}
+\usepackage{makeidx}
+\makeindex % Initialize an index so we can add entries with \index
+
+% The next few commands are for creating fake content to fill out the template.
+% You should delete this (e.g.  everything up to, but not including,
+% \begin{document}) after you insert your own content.
+% Example content from Einstein's Meaning of Relativity.
+% Public domain book: http://www.gutenberg.org/ebooks/36276
+\newcommand{\fakeparagraph}{}
+\newcommand{\para}{defsdf}
+\newcommand{\fakecontent}{
+    sldkfjsldkfj
+
+    sdfsdfsdf
+}
+\newcommand{\prefacePara}
+{
+The current 
+textbook in linear algebra is very abundant, 
+include the linear operator oriented approach, 
+which is the currently best one I have ever seen.
+
+This book will base on a computational oriented 
+approach to the subject of the so called linear
+algebra.Linear algebra is such a vast topic that
+I'm having the most firghtened heart to output
+what I have learnt so far in this amazing land.
+
+In this book, the main goal is to answer all the
+questions about those are not well pondered in the
+traditional linear algebra course of any kind.
+In the computational matrix theory there are plenty
+ways of decompose the matrix, such as LU, QR, and the
+most fundamental SVD decomposition.
+While in the more math oriented linear course
+the main topic are always in the most abstract way
+as they move forward.
+And the main concepts such as the Transpose, dule
+space, determinant, trace and all other fundamental
+but always treated just in a forced memorize level.
+
+The main goal is to explain all the concepts in a 
+more mathematical natrual and fun way, even the sudden
+expose of a certain defination would be a very hard
+problem to those first expose to the abstract algebra
+world student just like me. So I'll try my best to
+get every defination and notion in a smooth and more
+reasonalbe way. 
+}
+
+\newcommand{\fakesections}{
+\fakecontent{}
+\section{Tensor oriented for computation}\fakecontent{}
+\subsection{Examples}\fakecontent{}
+\subsection{Excessive Elaborations}\fakecontent{}
+\subsection{Long Winded Conclusion}\fakecontent{}
+\subsection{Exercises}\fakecontent{}
+\section{Theory vs Practice}\fakecontent{}
+\subsection{Examples}\fakecontent{}
+\subsection{Excessive Elaborations}\fakecontent{}
+\subsection{Long Winded Conclusion}\fakecontent{}
+\subsection{Exercises}\fakecontent{}
+\foreach \x in {A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z}
+    {\index{\x 1}\index{\x 2}}
+}
+
+% Content Starts Here
+\begin{document}
+\frontmatter
+
+% ---- Half Title Page ----
+% current geometry will be restored after title page
+\newgeometry{top=1.75in,bottom=.5in}
+\begin{titlepage}
+    \begin{flushleft}
+
+        % Title
+        \textbf{\fontfamily{qcs}\fontsize{48}{54}\selectfont COLA\\}
+
+        % Draw a line 4pt high
+        \par\noindent\rule{\textwidth}{4pt}\\
+
+        % Subtitle
+        % Shaded box from left to right. Text node is midway (centered).
+        \begin{tikzpicture}
+            \shade[bottom color=lightgray,top color=white]
+            (0,0) rectangle (\textwidth, 1.5)
+            node[midway] {\textbf{\large \textit{\booksubtitle}}};
+        \end{tikzpicture}
+
+        % Edition Number
+        \begin{flushright}
+            \Large First Edition
+        \end{flushright}
+
+        % \vspace{\fill}
+        \vspace{\fill}
+
+    \end{flushleft}
+\end{titlepage}
+\restoregeometry
+% ---- End of Half Title Page ----
+
+
+% No page numbers on the Frontispiece page
+\thispagestyle{empty}
+
+
+% ---- Title Page ----
+% current geometry will be restored after title page
+\newgeometry{top=1.75in,bottom=.5in}
+\begin{titlepage}
+    \begin{flushleft}
+
+        % Title
+        \textbf{\fontfamily{qcs}\fontsize{48}{54}\selectfont COLA\\}
+
+        % Draw a line 4pt high
+        \par\noindent\rule{\textwidth}{4pt}\\
+
+        % Shaded box from left to right with Subtitle
+        % The text node is midway (centered).
+        \begin{tikzpicture}
+            \shade[bottom color=lightgray,top color=white]
+            (0,0) rectangle (\textwidth, 1.5)
+            node[midway] {\textbf{\large \textit{\booksubtitle}}};
+        \end{tikzpicture}
+
+        % Edition Number
+        \begin{flushright}
+            \Large First Edition
+        \end{flushright}
+
+        \vspace{\fill}
+
+        % Author and Location
+        \textbf{\large \bookauthor}\\[3.5pt]
+        \textbf{\large \textit{\authorsubtitle}}
+
+        \vspace{\fill}
+
+        % Self Publishing Logo. Free to use: CC0 license.
+        % The source file is book.svg. If you change the svg, you must then convert
+        % it to pdf. There are many online and offline tools available to do that.
+        \begin{center}
+            \includegraphics{booksvg.pdf}\\[4pt]
+            \fontfamily{lmtt}\small{Self Publishers Worldwide\\
+                Seattle San Francisco New York\\
+                London Paris Rome Beijing Barcelona}
+        \end{center}
+
+    \end{flushleft}
+\end{titlepage}
+\restoregeometry
+% ---- End of Title Page ----
+
+% Do not show page numbers on colophon page
+\thispagestyle{empty}
+
+\begin{flushleft}
+    \vspace*{\fill}
+    This book was typeset using \LaTeX{} software.\\
+    To those who love me.\\
+    \vspace{\fill}
+    Copyright \textcopyright{} \the\year{}  \bookauthor\\
+    License: \booklicense
+\end{flushleft}
+
+% A title page resets the page # to 1, but the second title page
+% was actually page 3. So add two to page counter.
+\addtocounter{page}{2}
+
+% The asterisk excludes chapter from the table of contents.
+\chapter*{Preface}
+\prefacePara{}
+% \[
+%     \left.
+%     \begin{aligned}
+%          & \sqrt{{dX_{1}}^{2} + {dX_{2}}^{2} + {dX_{3}}^{2}} \\
+%          & \qquad
+%         \begin{aligned}
+%                & = \left(1 + \frac{\kappa}{8\pi} \int \frac{\sigma\, dV_{0}}{r}\right)
+%             \sqrt{{dx_{1}}^{2} + {dx_{2}}^{2} + {dx_{3}}^{2}},                             \\
+%             dT & = \left(1 - \frac{\kappa}{8\pi} \int \frac{\sigma\, dV_{0}}{r}\right) dl.
+%         \end{aligned}
+%     \end{aligned}
+%     \right\}
+% \]
+
+% Three-level Table of Contents
+\setcounter{tocdepth}{3}
+\tableofcontents
+
+\mainmatter
+
+\chapter{PreTalks}
+ {
+  the first thing to think about is how we mearsure things.
+  \section{Tensor oriented for computation}
+  \subsection{Examples of (a,b)-Tensor $\forall a,b \in \mathbb{N}$}
+  \subsection{(0,1)-Tensor the vector}
+  \subsection{(1,0)-Tensor the covector}
+  \subsection{(1,1)-Tensor the linear maps}
+  \subsection{(2,0)-Tensor the bilinear maps}
+  \subsection{Exercises}
+  \section{Outer algebra oriented for computation}
+  \subsection{Examples of geometric algebra}
+  \subsection{bivectors and trivectors}
+  \subsection{dot and wedge product and the flux in 3D}
+  \subsection{Exercises}
+  \foreach \x in {A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z}
+      {\index{\x 1}\index{\x 2}}
+ }
+\chapter{Tensor(Vector) Space}
+ {
+  the first thing to think about is how we mearsure things.
+  \section{Tensor oriented for computation}
+  \subsection{Examples of (a,b)-Tensor $\forall a,b \in \mathbb{N}$}
+  \subsection{(0,1)-Tensor the vector}
+  \subsection{(1,0)-Tensor the covector}
+  \subsection{(1,1)-Tensor the linear maps}
+  \subsection{(2,0)-Tensor the bilinear maps}
+  \subsection{Exercises}
+  \section{Outer algebra oriented for computation}
+  \subsection{Examples of geometric algebra}
+  \subsection{bivectors and trivectors}
+  \subsection{dot and wedge product and the flux in 3D}
+  \subsection{Exercises}
+  \foreach \x in {A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z}
+      {\index{\x 1}\index{\x 2}}
+ }
+\chapter{Irrational and Transcendent Numbers}
+\chapter{Complex Numbers}
+\chapter{Quaternions and Ausdehnungslehre}
+\chapter{Theory of Equations}
+\chapter{Substitutions and Groups}
+\chapter{Determinants}
+\chapter{Quantics}
+\chapter{Calculus}
+\chapter{Differential Equations}
+\chapter{Infinite Series}
+\chapter{Theory of Functions}
+\chapter{Probabilities and Least Squares}
+\chapter{Analytic Geometry}
+\chapter{Modern Geometry}
+\chapter{Trigonometry and Elementary Geometry}
+\chapter{Non-Euclidean Geometry}
+\chapter{Bibliography}
+\chapter{General Tendencies}
+
+\backmatter
+\addcontentsline{toc}{chapter}{Index}
+\printindex
+\end{document}
