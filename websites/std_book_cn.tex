@@ -1,0 +1,564 @@
+\documentclass{book}
+
+\title{计算线代}
+\newcommand{\booksubtitle}{面向计算的线性代数}
+\newcommand{\booklicense}{ALL RIGHT PRESERVED}
+
+\author{张津睿}
+% Author subtitle could be a university or a geographical location, for example
+\newcommand{\authorsubtitle}{新域, 中国}
+
+% Create convenient commands \booktitle and \bookauthor
+\makeatletter
+\newcommand{\booktitle}{\@title}
+\newcommand{\bookauthor}{\@author}
+\makeatother
+
+% This utf8 declaration is not needed for versions of latex > 2018 but may
+% be helpful for older software. Eventually it may not be worth keeping.
+\usepackage[utf8]{inputenc}  
+\usepackage{fix-cm}  % this package allows large \fontsize
+\usepackage{tikz}    % this is for graphics. e.g. rectangle on title page
+\usepackage{amsmath} % Used by equations
+\usepackage{amssymb}
+\usepackage{CJKutf8}
+\usepackage[UTF8]{ctex}
+\usepackage[center]{titlesec}%chapter1修改为第1章
+\usepackage{hyperref}%生成pdf超链接目录
+\hypersetup{hidelinks,
+	colorlinks=true,
+	allcolors=black,
+	pdfstartview=Fit,
+	breaklinks=true
+}
+\titleformat{\chapter}{\raggedright\Huge\bfseries}{第\,\thechapter\,章}{1em}{}
+\titleformat{\section}{\raggedright\Large\bfseries}{\,\thesection\,}{1em}{}
+\titleformat{\subsection}{\raggedright\large\bfseries}{\,\thesubsection\,}{1em}{}
+
+% The following dimensions specify 4.75" X 7.5" content on 6 3/8" by 9 1/4"
+% paper. The paper width and height can be tweaked as required and the content
+% should size to fit within the margins accordingly.
+%
+% The (inside) bindingoffset should be larger for books with more pages. Some
+% standard recommended sizes are .375in minimum up to 1in for 600+ page books.
+% Sizes .75in and .875in are also recommended roughly at 150 and 400 pages.
+\usepackage[bindingoffset=0.625in,
+            left=.5in, right=.5in,
+            top=.8125in, bottom=.9375in,
+            paperwidth=6.375in, paperheight=9.25in]{geometry}
+% Here is an alternative geometry for reading on letter size paper:
+% \usepackage[margin=.75in, paperwidth=8.5in, paperheight=11in]{geometry}
+
+\renewcommand{\contentsname}{Table of Contents} % default is {Contents}
+\usepackage{makeidx}
+\makeindex % Initialize an index so we can add entries with \index
+
+% The next few commands are for creating fake content to fill out the template.
+% You should delete this (e.g.  everything up to, but not including,
+% \begin{document}) after you insert your own content.
+% Example content from Einstein's Meaning of Relativity.
+% Public domain book: http://www.gutenberg.org/ebooks/36276
+\newcommand{\fakeparagraph}{}
+\newcommand{\para}{defsdf}
+\newcommand{\fakecontent}{
+    sldkfjsldkfj
+
+    sdfsdfsdf
+}
+\newcommand{\prefacePara}
+{
+现今市面上的线性代数教材非常充足，像我这样一个人
+来写一本教材必然会贻笑大方。但是我并不能放下那些
+我有时候自己脑海中的古怪想法和天马行空的路线。我
+是看面向算子的线性代数入门的，我也感觉非常庆幸能
+够在学生时代读到那样的好书。
+
+这本书将基于一种面向计算的方式来讲解一般意义上的
+线性代数。线性代数，线性是一个非常广阔的话题，我
+非常惶恐地尝试将我在这片非常神奇的领域所学到的东
+西分享在这本书中。
+
+这本书会回答所有我曾经感到非常困惑和未能够得到任
+意一位老师满意答案的问题。包括行列式为什么这么定
+义行向量和列向量到底有什么区别，转置究竟在干什么
+，为什么转置有和逆一样的性质（乘积的转置等于分别
+转置但是交换相乘），迹又是什么，为什么单单把对角
+线元素加起来就得到迹，这种搞笑的计算方法为什么有
+那么多神奇的性质，都是那里来的？
+
+In this book, the main goal is to answer all the
+questions about those are not well pondered in the
+traditional linear algebra course of any kind.
+In the computational matrix theory there are plenty
+ways of decompose the matrix, such as LU, QR, and the
+most fundamental SVD decomposition.
+While in the more math oriented linear course
+the main topic are always in the most abstract way
+as they move forward.
+And the main concepts such as the Transpose, dule
+space, determinant, trace and all other fundamental
+but always treated just in a forced memorize level.
+
+The main goal is to explain all the concepts in a 
+more mathematical natrual and fun way, even the sudden
+expose of a certain defination would be a very hard
+problem to those first expose to the abstract algebra
+world student just like me. So I'll try my best to
+get every defination and notion in a smooth and more
+reasonalbe way. 
+}
+
+\newcommand{\fakesections}{
+\fakecontent{}
+\section{Tensor oriented for computation}\fakecontent{}
+\subsection{Examples}\fakecontent{}
+\subsection{Excessive Elaborations}\fakecontent{}
+\subsection{Long Winded Conclusion}\fakecontent{}
+\subsection{Exercises}\fakecontent{}
+\section{Theory vs Practice}\fakecontent{}
+\subsection{Examples}\fakecontent{}
+\subsection{Excessive Elaborations}\fakecontent{}
+\subsection{Long Winded Conclusion}\fakecontent{}
+\subsection{Exercises}\fakecontent{}
+\foreach \x in {A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z}
+    {\index{\x 1}\index{\x 2}}
+}
+
+% Content Starts Here
+\begin{document}
+\begin{CJK}{UTF8}{gbsn}
+    \frontmatter
+
+    % ---- Half Title Page ----
+    % current geometry will be restored after title page
+    \newgeometry{top=1.75in,bottom=.5in}
+    \begin{titlepage}
+        \begin{flushleft}
+
+            % Title
+            \textbf{\fontfamily{qcs}\fontsize{48}{54}\selectfont 计算线代\\}
+
+            % Draw a line 4pt high
+            \par\noindent\rule{\textwidth}{4pt}\\
+
+            % Subtitle
+            % Shaded box from left to right. Text node is midway (centered).
+            \begin{tikzpicture}
+                \shade[bottom color=lightgray,top color=white]
+                (0,0) rectangle (\textwidth, 1.5)
+                node[midway] {\textbf{\large {\booksubtitle}}};
+            \end{tikzpicture}
+
+            % Edition Number
+            \begin{flushright}
+                \Large 第一版
+            \end{flushright}
+
+            % \vspace{\fill}
+            \vspace{\fill}
+
+        \end{flushleft}
+    \end{titlepage}
+    \restoregeometry
+    % ---- End of Half Title Page ----
+
+
+    % No page numbers on the Frontispiece page
+    \thispagestyle{empty}
+
+
+    % ---- Title Page ----
+    % current geometry will be restored after title page
+    \newgeometry{top=1.75in,bottom=.5in}
+    \begin{titlepage}
+        \begin{flushleft}
+
+            % Title
+            \textbf{\fontfamily{qcs}\fontsize{48}{54}\selectfont 计线\\}
+
+            % Draw a line 4pt high
+            \par\noindent\rule{\textwidth}{4pt}\\
+
+            % Shaded box from left to right with Subtitle
+            % The text node is midway (centered).
+            \begin{tikzpicture}
+                \shade[bottom color=lightgray,top color=white]
+                (0,0) rectangle (\textwidth, 1.5)
+                node[midway] {\textbf{\large {\booksubtitle}}};
+            \end{tikzpicture}
+
+            % Edition Number
+            \begin{flushright}
+                \Large 第一版
+            \end{flushright}
+
+            \vspace{\fill}
+
+            % Author and Location
+            \textbf{\large \bookauthor}\\[3.5pt]
+            \textbf{\large {\authorsubtitle}}
+
+            \vspace{\fill}
+
+            % Self Publishing Logo. Free to use: CC0 license.
+            % The source file is book.svg. If you change the svg, you must then convert
+            % it to pdf. There are many online and offline tools available to do that.
+            \begin{center}
+                \includegraphics{booksvg.pdf}\\[4pt]
+                \fontfamily{lmtt}\small{Self Publishers Worldwide\\
+                    Seattle San Francisco New York\\
+                    London Paris Rome Beijing Barcelona}
+            \end{center}
+
+        \end{flushleft}
+    \end{titlepage}
+    \restoregeometry
+    % ---- End of Title Page ----
+
+    % Do not show page numbers on colophon page
+    \thispagestyle{empty}
+
+    \begin{flushleft}
+        \vspace*{\fill}
+        This book was typeset using \LaTeX{} software.\\
+        本书给那些爱我与恨我的人。\\
+        \vspace{\fill}
+        Copyright \textcopyright{} \the\year{}  \bookauthor\\
+        License: \booklicense
+    \end{flushleft}
+
+    % A title page resets the page # to 1, but the second title page
+    % was actually page 3. So add two to page counter.
+    \addtocounter{page}{2}
+
+    % The asterisk excludes chapter from the table of contents.
+    \chapter{-1 前言}
+    \prefacePara{}
+    % \[
+    %     \left.
+    %     \begin{aligned}
+    %          & \sqrt{{dX_{1}}^{2} + {dX_{2}}^{2} + {dX_{3}}^{2}} \\
+    %          & \qquad
+    %         \begin{aligned}
+    %                & = \left(1 + \frac{\kappa}{8\pi} \int \frac{\sigma\, dV_{0}}{r}\right)
+    %             \sqrt{{dx_{1}}^{2} + {dx_{2}}^{2} + {dx_{3}}^{2}},                             \\
+    %             dT & = \left(1 - \frac{\kappa}{8\pi} \int \frac{\sigma\, dV_{0}}{r}\right) dl.
+    %         \end{aligned}
+    %     \end{aligned}
+    %     \right\}
+    % \]
+
+    % Three-level Table of Contents
+    \setcounter{tocdepth}{3}
+    \tableofcontents
+
+    \mainmatter
+
+    \chapter{0 杂谈}
+
+    % 每次阉牛我都在场。对于一般的公牛，只用刀割去即可。但是对于格外生性者，就须采取槌骟术，也就是割开阴囊，掏出睾丸，一木槌砸个稀烂。从此后手术者只知道吃草干活，别的什么都不知道，连杀都不用捆。
+
+    % 后来我才知道生活就是一个缓慢受锤的过程，人一天天老下去，奢望也一天一天消失，之后变得像挨了槌的牛一样。
+    % ——黄金时代
+
+    数学并不能防止你受锤，但是在你的黄金时代
+    认真地学习数学能防止你睡着，让你醒着受锤，清醒地感受疼痛，和绝望。但同时
+    也给予你正确认识和描述世界的语言与改变世界的工具，希望你能用你手里的
+    利剑斩开你的前路，希望创造，毁灭的力量就在你的手里了。
+
+    本章并不会证明地讲解若干中学代数之后可能继续发展代数的方向。
+
+    这里面主要还是以坐标计算为主，希望开发若干和高维空间解析几何和物理
+    有密切关系的代数运算方法。主要以计算方法为主，并不会牵涉
+    公理化的进世代代数方法。
+
+    \section{张量计算方法}
+
+    \subsection{(a,b)-张量 \texorpdfstring{$\forall a,b \in \mathbb{N}$}{∀a,b∈N}的例子}
+
+    $\left[\begin{matrix}
+                1 & 2 \\
+                3 & 4
+            \end{matrix}\right]$
+    是一个(1,1)-张量，有一个协变部分和一个逆变部分，
+    这种张量其实就是矩阵。矩阵是线性变换的表示。
+
+    $\left[\begin{matrix}
+                1 \\
+                3
+            \end{matrix}\right]$
+    是一个(0,1)-张量，这种张量有一个逆变部分，也就是
+    之后线性代数中的列向量。
+
+    $\left[\begin{matrix}
+                1 & 3
+            \end{matrix}\right]$
+    是一个(1,0)-张量，这种张量有一个协变部分，也是之后
+    线代中的协向量，对偶向量，行向量，线性泛函。
+
+    \subsection{(0,1)-张量 列向量}
+    列向量没什么好说的，你写一个大括号，中间放一列东西就行，也许不是数也行。
+    $\left[\begin{matrix}
+                a \\
+                b \\
+                c
+            \end{matrix}\right]$
+
+    这样的向量就是列向量。
+
+    这样的一列数是没有意义的。聚个例子，我有三个苹果一个
+    桃子可以记作
+    $\left[\begin{matrix}
+                3 \\
+                1
+            \end{matrix}\right]$
+    同时我要是有三个房子一个汽车，我也可以记成
+    $\left[\begin{matrix}
+                3 \\
+                1
+            \end{matrix}\right]$
+    要是没有单位或者说“基底”来确定每一个分量代表的意义
+    这个一列数就没啥意义（或者至少在纯粹的数学以外，很难
+    找到意义）
+
+    所以这两个
+    $\left[\begin{matrix}
+                3 \\
+                1
+            \end{matrix}\right]$
+    应该写成一些基向量的多少倍的和的形式。
+    比如把苹果作为基底$\vec{e_1}$，桃子作为基底$\vec{e_2}$,
+    房子记作基底$\vec{\tilde{e_1}}$，汽车记作基底$\vec{\tilde{e_2}}$。
+    对第一种情况就是$3\vec{e_1}+1\vec{e_2}$
+    对第二种情况就是$3\vec{\tilde{e_1}}+1\vec{\tilde{e_2}}$
+    我们先把这个东西记成一个更简洁的形式。
+    第一种情况
+    $\left[\begin{matrix}
+                \vec{e_1} & \vec{e_2}
+            \end{matrix}\right]
+        \left[\begin{matrix}
+                3 \\
+                1
+            \end{matrix}\right]=3\vec{e_1}+1\vec{e_2}$
+    第二种情况
+    $\left[\begin{matrix}
+                \vec{\tilde{e_1}} & \vec{\tilde{e_2}}
+            \end{matrix}\right]
+        \left[\begin{matrix}
+                3 \\
+                1
+            \end{matrix}\right]=3\vec{\tilde{e_1}}+1\vec{\tilde{e_2}}$
+    这两个列向量的分量一样，但是因为基底不同可以有
+    不同的意义。
+
+
+    textbook in linear algebra is very abundant,
+    include the linear operator oriented approach,
+    which is the currently best one I have ever seen.
+
+    This book will base on a computational oriented
+    approach to the subject of the so called linear
+    algebra.Linear algebra is such a vast topic that
+    I'm having the most firghtened heart to output
+    what I have learnt so far in this amazing land.
+
+    In this book, the main goal is to answer all the
+    questions about those are not well pondered in the
+    traditional linear algebra course of any kind.
+    In the computational matrix theory there are plenty
+    ways of decompose the matrix, such as LU, QR, and the
+    most fundamental SVD decomposition.
+    While in the more math oriented linear course
+    the main topic are always in the most abstract way
+    as they move forward.
+    And the main concepts such as the Transpose, dule
+    space, determinant, trace and all other fundamental
+    but always treated just in a forced memorize level.
+
+    The main goal is to explain all the concepts in a
+    more mathematical natrual and fun way, even the sudden
+    expose of a certain defination would be a very hard
+    problem to those first expose to the abstract algebra
+    world student just like me. So I'll try my best to
+    get every defination and notion in a smooth and more
+    reasonalbe way.
+    \subsection{(1,0)-张量 行向量}
+    \subsection{(1,1)-张量 线性变换}
+    \subsection{(2,0)-张量 双线性函数}
+    \subsection{练习}
+    \section{外代数计算方法}
+    \subsection{几何代数举例}
+    \subsection{二向量和三向量}
+    \subsection{点积楔积和三维向量场的通量}
+    \subsection{练习}
+    \foreach \x in {A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z}
+        {\index{\x 1}\index{\x 2}}
+
+    \chapter{1 张量(向量) 空间}
+
+    就像「0 杂谈」中说过的那样，单独
+    写一个堆有一定结构的分量组成各种
+    类型的张量并没有什么意义，除非我
+    们在某种基底的意义下讨论个张量。
+
+
+    \section{张量基础}
+    \subsection{基底, 坐标分量, 协变与逆变}
+    \subsection{练习}
+    \foreach \x in {A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z}
+        {\index{\x 1}\index{\x 2}}
+
+    \chapter{2 使用数组表示}
+
+    \chapter{3 度量与度规张量}
+
+    \chapter{Re:1 向量空间}
+
+    \chapter{Re:2 线性映射与作为表示的矩阵}
+
+    \chapter{Re:3 内(外)积空间}
+
+    这一章我们将会回答那些我曾经非常希望知道答案的
+    问题，关于行列式，迹，转置，对偶与各种算子（矩
+    阵）分解的相关结论和性质。我希望当看完这本书全
+    书，和之后这一章后读者能够有一种近乎直观的感受
+    感受到这些非常繁琐繁多的性质其实可以非常显然与
+    直观。
+
+    \section{内积，作为一种双线性函数}
+    \subsection{内积，带度量的空间}
+
+    $\left[\begin{matrix}
+                1 & 2 \\
+                3 & 4
+            \end{matrix}\right]$
+    是一个(1,1)-张量，有一个协变部分和一个逆变部分，
+    这种张量其实就是矩阵。矩阵是线性变换的表示。
+
+    $\left[\begin{matrix}
+                1 \\
+                3
+            \end{matrix}\right]$
+    是一个(0,1)-张量，这种张量有一个逆变部分，也就是
+    之后线性代数中的列向量。
+
+    $\left[\begin{matrix}
+                1 & 3
+            \end{matrix}\right]$
+    是一个(1,0)-张量，这种张量有一个协变部分，也是之后
+    线代中的协向量，对偶向量，行向量，线性泛函。
+
+    \subsection{内积作为度量}
+    列向量没什么好说的，你写一个大括号，中间放一列东西就行，也许不是数也行。
+    $\left[\begin{matrix}
+                a \\
+                b \\
+                c
+            \end{matrix}\right]$
+
+    这样的向量就是列向量。
+
+    这样的一列数是没有意义的。聚个例子，我有三个苹果一个
+    桃子可以记作
+    $\left[\begin{matrix}
+                3 \\
+                1
+            \end{matrix}\right]$
+    同时我要是有三个房子一个汽车，我也可以记成
+    $\left[\begin{matrix}
+                3 \\
+                1
+            \end{matrix}\right]$
+    要是没有单位或者说“基底”来确定每一个分量代表的意义
+    这个一列数就没啥意义（或者至少在纯粹的数学以外，很难
+    找到意义）
+
+    所以这两个
+    $\left[\begin{matrix}
+                3 \\
+                1
+            \end{matrix}\right]$
+    应该写成一些基向量的多少倍的和的形式。
+    比如把苹果作为基底$\vec{e_1}$，桃子作为基底$\vec{e_2}$,
+    房子记作基底$\vec{\tilde{e_1}}$，汽车记作基底$\vec{\tilde{e_2}}$。
+    对第一种情况就是$3\vec{e_1}+1\vec{e_2}$
+    对第二种情况就是$3\vec{\tilde{e_1}}+1\vec{\tilde{e_2}}$
+    我们先把这个东西记成一个更简洁的形式。
+    第一种情况
+    $\left[\begin{matrix}
+                \vec{e_1} & \vec{e_2}
+            \end{matrix}\right]
+        \left[\begin{matrix}
+                3 \\
+                1
+            \end{matrix}\right]=3\vec{e_1}+1\vec{e_2}$
+    第二种情况
+    $\left[\begin{matrix}
+                \vec{\tilde{e_1}} & \vec{\tilde{e_2}}
+            \end{matrix}\right]
+        \left[\begin{matrix}
+                3 \\
+                1
+            \end{matrix}\right]=3\vec{\tilde{e_1}}+1\vec{\tilde{e_2}}$
+    这两个列向量的分量一样，但是因为基底不同可以有
+    不同的意义。
+
+
+    textbook in linear algebra is very abundant,
+    include the linear operator oriented approach,
+    which is the currently best one I have ever seen.
+
+    This book will base on a computational oriented
+    approach to the subject of the so called linear
+    algebra.Linear algebra is such a vast topic that
+    I'm having the most firghtened heart to output
+    what I have learnt so far in this amazing land.
+
+    In this book, the main goal is to answer all the
+    questions about those are not well pondered in the
+    traditional linear algebra course of any kind.
+    In the computational matrix theory there are plenty
+    ways of decompose the matrix, such as LU, QR, and the
+    most fundamental SVD decomposition.
+    While in the more math oriented linear course
+    the main topic are always in the most abstract way
+    as they move forward.
+    And the main concepts such as the Transpose, dule
+    space, determinant, trace and all other fundamental
+    but always treated just in a forced memorize level.
+
+    The main goal is to explain all the concepts in a
+    more mathematical natrual and fun way, even the sudden
+    expose of a certain defination would be a very hard
+    problem to those first expose to the abstract algebra
+    world student just like me. So I'll try my best to
+    get every defination and notion in a smooth and more
+    reasonalbe way.
+    \subsection{练习}
+    \section{外积作为度量的可能性}
+    \subsection{几何代数举例}
+    \subsection{二向量和三向量}
+    \subsection{点积楔积和三维向量场的通量}
+    \subsection{练习}
+    \foreach \x in {A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z}
+        {\index{\x 1}\index{\x 2}}
+
+    % \chapter{Determinants}
+    % \chapter{Quantics}
+    % \chapter{Calculus}
+    % \chapter{Differential Equations}
+    % \chapter{Infinite Series}
+    % \chapter{Theory of Functions}
+    % \chapter{Probabilities and Least Squares}
+    % \chapter{Analytic Geometry}
+    % \chapter{Modern Geometry}
+    % \chapter{Trigonometry and Elementary Geometry}
+    % \chapter{Non-Euclidean Geometry}
+    % \chapter{Bibliography}
+    % \chapter{General Tendencies}
+
+    \backmatter
+    \addcontentsline{toc}{chapter}{Index}
+    \printindex
+\end{CJK}
+\end{document}
