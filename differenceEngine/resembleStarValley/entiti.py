@@ -1,6 +1,7 @@
 # basic entities in game
 import pickle
 import os
+import random
 
 gameDir: str = "gameData/"
 
@@ -44,20 +45,34 @@ class blob(entiti):  # the space blob
         self.name: str = name
         self.size: tuple[int, int] = size  # the space blob-tours size
         self.tileMap: dict[str, tyle] = {}  # the actuall tilemap data of the 20*30
-        # create the game storage folder
-        if not os.path.exists(gameDir):
+        # read the tileMap data
+        if not os.path.exists(gameDir):  # if there is no gameDir directory then create
             os.makedirs(gameDir)
             print(f"The directory {gameDir} has been created.")
         else:
             print(f"The directory {gameDir} already exists.")
             print(f"Loading tileMap.")
-            if not os.path.exists(gameDir + self.name + ".pkl"):
-                # wirte into pkl file
+            if not os.path.exists(
+                gameDir + self.name + ".pkl"
+            ):  # if there is no data before then create.
+                print(f"no data of blob name:{self.name}.")
+                for i in range(self.size[0]):
+                    for j in range(self.size[1]):
+                        self.tileMap[f"loc_({i},{j})"] = tyle(
+                            name=f"earth_at_loc_({i},{j})",
+                            position=(i, j, 0),
+                            status="rest",
+                            possess="air",
+                            tiletype="RSV_GRASS_YELLO_PIX",
+                        )
+                        if random.randint(0, 1) == 0:
+                            self.tileMap[f"loc_({i},{j})"].tiletype = (
+                                "RSV_GRASS_GREEN_PIX"
+                            )
                 with open(gameDir + self.name + ".pkl", "wb") as file:
                     pickle.dump(self.tileMap, file)
-                print("game data created.")
-            else:
-                # read pkl
+                print(f"data of blob name:{self.name} created.")
+            else:  # if there is data before then read.
                 with open(gameDir + self.name + ".pkl", "rb") as file:
                     self.tileMap = pickle.load(file)
                 print("game data loaded.")
@@ -91,4 +106,4 @@ if __name__ == "__main__":
         if cmd.startswith("create_blob"):
             name = cmd.split("_")[-1]
             newBlob = blob(name=name, size=(10, 20))
-            print(name)
+            print(name, newBlob)
