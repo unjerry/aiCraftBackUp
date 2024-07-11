@@ -15,20 +15,30 @@ import pyglet
 # } """
 window: pyglet.window.Window = pyglet.window.Window()
 # ball_image = pyglet.image.load("RSV_2.png")
-ball_image: pyglet.image.TextureRegion = pyglet.resource.image("RSV_2.png")
+# ball_image: pyglet.image.TextureRegion = pyglet.resource.image("artAssets/RSV_2.png")
 # ball = pyglet.sprite.Sprite(ball_image)
+def dsfldskjOnCommit(cmd: str):
+    print("comlskdfj", cmd)
 batch: pyglet.graphics.Batch = pyglet.graphics.Batch()
-ball_sprites: list[pyglet.sprite.Sprite] = []
-for i in range(100):
-    x, y, z = i * 128, 5 * i, -i
-    ball_sprites.append(pyglet.sprite.Sprite(img=ball_image, batch=batch))
-    ball_sprites[-1].position = (x, y, z)
+# ball_sprites: list[pyglet.sprite.Sprite] = []
+# for i in range(100):
+#     x, y, z = i * 128, 5 * i, -i
+    # ball_sprites.append(pyglet.sprite.Sprite(img=ball_image, batch=batch))
+    # ball_sprites[-1].position = (x, y, z)
+
+
+
+
+dsfldskj = pyglet.gui.TextEntry("amount", 0 + 5, 0 + 5, 200, batch=batch)
+dsfldskj.set_handler("on_commit", dsfldskjOnCommit)
+window.push_handlers(dsfldskj)
 
 
 @window.event
 def on_draw():
     window.clear()  # clear window
     pyglet.gl.glEnable(pyglet.gl.GL_DEPTH_TEST)  # enable the z value test
+    pyglet.gl.glDisable(pyglet.gl.GL_DEPTH_TEST)  # enable the z value test
     batch.draw()  # draw the batch
 
 

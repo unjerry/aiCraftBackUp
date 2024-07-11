@@ -4,11 +4,18 @@ import renderStuff
 import pyglet
 
 if __name__ == "__main__":
-    firstBlob = renderStuff.blobWindow(tileSize=16, name="mainLandAnich", caption="sdf")
+    firstBlob = renderStuff.blobWindow(tileSize=32, name="mainLandAnich", caption="sdf")
     mainPlayerDrone = renderStuff.droneRender(
         window=firstBlob,
-        img=renderStuff.mainAssets.RSV_FOUR_COLOR_DRONE_PIX,
+        img=renderStuff.mainAssets.RSV_FOUR_COLOR_DRONE_SQUARE_PIX,
     )
+    firstBlob.drone = mainPlayerDrone
+    mainSelectDrone = renderStuff.droneRender(
+        window=firstBlob,
+        img=renderStuff.mainAssets.RSV_SELECT_BAR,
+    )
+    firstBlob.selectDrone = mainSelectDrone
+    mainPlayerDrone.z = 2
 
     # # @firstBlob.event
     # # def on_key_press(symbol, modifiers):

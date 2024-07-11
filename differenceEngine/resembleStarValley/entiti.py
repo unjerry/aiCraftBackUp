@@ -77,6 +77,11 @@ class blob(entiti):  # the space blob
                     self.tileMap = pickle.load(file)
                 print("game data loaded.")
 
+    def save(self):
+        with open(gameDir + self.name + ".pkl", "wb") as file:
+            pickle.dump(self.tileMap, file)
+        print(f"data of blob name:{self.name} saved.")
+
 
 if __name__ == "__main__":
     # new_eni = entiti(name="sdlkfj")
