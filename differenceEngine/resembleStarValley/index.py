@@ -4,7 +4,14 @@ import renderStuff
 import pyglet
 
 if __name__ == "__main__":
-    firstBlob = renderStuff.blobWindow(tileSize=32, name="mainLandAnich", caption="sdf")
+    firstBlob = renderStuff.blobWindow(
+        width=1000,
+        height=600,
+        tileSize=16,
+        name="mainLandAnich",
+        caption="sdf",
+        resizable=True,
+    )
     mainPlayerDrone = renderStuff.droneRender(
         window=firstBlob,
         img=renderStuff.mainAssets.RSV_FOUR_COLOR_DRONE_SQUARE_PIX,
@@ -12,7 +19,7 @@ if __name__ == "__main__":
     firstBlob.drone = mainPlayerDrone
     mainSelectDrone = renderStuff.droneRender(
         window=firstBlob,
-        img=renderStuff.mainAssets.RSV_SELECT_BAR,
+        img=renderStuff.mainAssets.tile011,
     )
     firstBlob.selectDrone = mainSelectDrone
     mainPlayerDrone.z = 2

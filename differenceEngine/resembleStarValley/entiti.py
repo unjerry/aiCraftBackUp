@@ -63,12 +63,11 @@ class blob(entiti):  # the space blob
                             position=(i, j, 0),
                             status="rest",
                             possess="air",
-                            tiletype="RSV_GRASS_YELLO_PIX",
+                            tiletype="tile000",
                         )
-                        if random.randint(0, 1) == 0:
-                            self.tileMap[f"loc_({i},{j})"].tiletype = (
-                                "RSV_GRASS_GREEN_PIX"
-                            )
+                        rd = random.randint(0, 5)
+                        # if rd == 0:
+                        self.tileMap[f"loc_({i},{j})"].tiletype = f"tile00{rd}"
                 with open(gameDir + self.name + ".pkl", "wb") as file:
                     pickle.dump(self.tileMap, file)
                 print(f"data of blob name:{self.name} created.")
