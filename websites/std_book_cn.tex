@@ -136,7 +136,7 @@ reasonalbe way.
         \begin{flushleft}
 
             % Title
-            \textbf{\fontfamily{qcs}\fontsize{48}{54}\selectfont 计算线代\\}
+            \textbf{\fontfamily{qcs}\fontsize{48}{54}\selectfont 计线\\}
 
             % Draw a line 4pt high
             \par\noindent\rule{\textwidth}{4pt}\\
@@ -232,7 +232,7 @@ reasonalbe way.
     \addtocounter{page}{2}
 
     % The asterisk excludes chapter from the table of contents.
-    \chapter{-1 前言}
+    \chapter{前言}
     \prefacePara{}
     % \[
     %     \left.
@@ -250,6 +250,7 @@ reasonalbe way.
 
     % Three-level Table of Contents
     \setcounter{tocdepth}{3}
+    \renewcommand{\contentsname}{目录}
     \tableofcontents
 
     \mainmatter
@@ -295,6 +296,8 @@ reasonalbe way.
             \end{matrix}\right]$
     是一个(1,0)-张量，这种张量有一个协变部分，也是之后
     线代中的协向量，对偶向量，行向量，线性泛函。
+
+    在本书其余部分中，我会使用(a,b)-张量，这种jihao
 
     \subsection{(0,1)-张量 列向量}
     列向量没什么好说的，你写一个大括号，中间放一列东西就行，也许不是数也行。
@@ -409,6 +412,31 @@ reasonalbe way.
         {\index{\x 1}\index{\x 2}}
 
     \chapter{2 使用数组表示}
+
+    就像「0 杂谈」中说过的那样，单独
+    写一个堆有一定结构的分量组成各种
+    类型的张量并没有什么意义，除非我
+    们在某种基底的意义下讨论个张量。
+
+    \section{矩阵是列向量组成的行向量}
+    \subsection{一行列向量}
+    $\left[\begin{matrix}
+                1 & 2 \\
+                3 & 4
+            \end{matrix}\right]$
+    正常的线性代数课都会告诉你矩阵是这么写的。
+    但是其实你可以有两种新的写法。
+    $\left[\left[\begin{matrix}
+                    1 \\
+                    3
+                \end{matrix}\right]
+            \left[\begin{matrix}
+                    2 \\
+                    4
+                \end{matrix}\right]\right]$
+    \subsection{练习}
+    \foreach \x in {A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z}
+        {\index{\x 1}\index{\x 2}}
 
     \chapter{3 度量与度规张量}
 
