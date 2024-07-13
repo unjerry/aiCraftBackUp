@@ -131,6 +131,8 @@ class blobWindow(pyglet.window.Window):
             lis = cmd.split("_")
             print(lis, lis[-1])
             self.save()
+            pyglet.clock.unschedule(self.update)
+            pyglet.clock.unschedule(self.gameTimeUpdate)
             self.pldrone.movoto(lis[-1])
             self.close()
         if cmd.startswith("set_scale"):  # for example set_scale_4
@@ -169,11 +171,26 @@ class blobWindow(pyglet.window.Window):
             position: pyglet.math.Vec3 = pyglet.math.Vec3(*sprite.initposition)
             # print(position + (self.anchorVelocity * dt))
             sprite.position = tuple(position + (self.anchor))
+        for k, v in self.blob.data["tileMap"].items():
+            pos: str = k.split("_")[-1]
+            if v.changed:
+                self.spriteDict["sprite_" + pos].image = getattr(
+                    mainAssets,
+                    v.tiletype,
+                )
 
     def gameTimeUpdate(self, dt: float) -> None:
-        self.blob.data["blobTime"] += 1
+        self.pldrone.drone.data["perspectiveCumulateTime"] += 1
+        self.blob.sync(self.pldrone.drone.data["perspectiveCumulateTime"])
         self.timeDisplay.value = f"tick:{self.blob.data['blobTime']}"
-        # print(dt)
+        print(
+            "PRINT_sampling",
+            self.blob.data["blobTime"],
+            self.blob.data["tileMap"][f"loc_({0},{0})"].ident,
+            self.blob.data["tileMap"][f"loc_({0},{0})"].tiletype,
+            self.blob.data["tileMap"][f"loc_({0},{0})"].age,
+            self.pldrone.drone.data["perspectiveCumulateTime"],
+        )
 
     def on_draw(self) -> None:
         self.clear()
@@ -249,10 +266,16 @@ class blobWindow(pyglet.window.Window):
                     self.blob.data["tileMap"][
                         f"loc_({tup[0]},{tup[1]})"
                     ].tiletype = "tile012"
+                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]})"].ident = "dirt"
+                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]})"].age = 0
                 if button == 1:
                     self.blob.data["tileMap"][
                         f"loc_({tup[0]},{tup[1]})"
                     ].tiletype = "RSV_GRASS_GREEN_PIX"
+                    self.blob.data["tileMap"][
+                        f"loc_({tup[0]},{tup[1]})"
+                    ].ident = "salty"
+                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]})"].age = 0
                 self.spriteDict[f"sprite_({tup[0]},{tup[1]})"].image = getattr(
                     mainAssets,
                     self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]})"].tiletype,
@@ -335,10 +358,16 @@ class blobWindow(pyglet.window.Window):
                     self.blob.data["tileMap"][
                         f"loc_({tup[0]},{tup[1]})"
                     ].tiletype = "tile012"
+                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]})"].ident = "dirt"
+                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]})"].age = 0
                 if buttons == 1:
                     self.blob.data["tileMap"][
                         f"loc_({tup[0]},{tup[1]})"
                     ].tiletype = "RSV_GRASS_GREEN_PIX"
+                    self.blob.data["tileMap"][
+                        f"loc_({tup[0]},{tup[1]})"
+                    ].ident = "salty"
+                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]})"].age = 0
                 self.spriteDict[f"sprite_({tup[0]},{tup[1]})"].image = getattr(
                     mainAssets,
                     self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]})"].tiletype,
@@ -355,6 +384,7 @@ class blobWindow(pyglet.window.Window):
         self.pldrone.drone.save()
 
     def on_close(self):
+        print("close")
         self.save()
         return super().on_close()
 
@@ -398,6 +428,7 @@ class PlayerDroneRender(entiti.entiti):
             caption=self.drone.data["worldBlobName"],
             resizable=True,
         )
+        self.firstBlob.blob.sync(self.drone.data["perspectiveCumulateTime"])
         # renderStuff
         self.mainPlayerDrone = droneRender(
             window=self.firstBlob,
@@ -423,6 +454,8 @@ class PlayerDroneRender(entiti.entiti):
             caption=window,
             resizable=True,
         )
+        self.firstBlob.blob.sync(self.drone.data["perspectiveCumulateTime"])
+        # renderStuff
         self.mainPlayerDrone.batch = self.firstBlob.tilemapBatch
         self.mainSelectDrone.batch = self.firstBlob.tilemapBatch
         # the new world anchor

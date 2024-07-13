@@ -38,8 +38,32 @@ class entiti(object):
 
 
 class tyle(entiti):  # tile blocks
-    def __init__(self, **karg) -> None:
+    def __init__(
+        self,
+        name,
+        position,
+        ident,
+        **karg,
+    ) -> None:
         super().__init__(**karg)
+        self.name = name
+        self.position = position
+        self.ident = ident
+        self.changed = False
+        self.age = 0
+
+    def update(self):
+        # if self.ident == "grass":
+        #     rd = random.randint(0, 5)
+        #     self.tiletype = f"tile00{rd}"
+        if self.ident == "dirt":
+            rd = random.randint(0, min(100, self.age))
+            print("PRINT_dirt2grass", rd)
+            if rd > 90:
+                self.ident = "grass"
+                self.tiletype = f"tile002"
+                self.changed = True
+                self.age = 0
 
 
 class ytem(entiti):  # unified scattering items
@@ -160,13 +184,21 @@ class blob(entiti):  # the space blob
                 self.data["tileMap"][f"loc_({i},{j})"] = tyle(
                     name=f"earth_at_loc_({i},{j})",
                     position=(i, j, 0),
-                    status="rest",
-                    possess="air",
-                    tiletype="tile000",
+                    ident="grass",
                 )
                 rd = random.randint(0, 5)
-                # if rd == 0:
                 self.data["tileMap"][f"loc_({i},{j})"].tiletype = f"tile00{rd}"
+
+    def sync(self, time):
+        while self.data["blobTime"] < time:
+            self.incrementSync()
+
+    def incrementSync(self):
+        for i in range(self.size[0]):
+            for j in range(self.size[1]):
+                self.data["tileMap"][f"loc_({i},{j})"].age += 1
+                self.data["tileMap"][f"loc_({i},{j})"].update()
+        self.data["blobTime"] += 1
 
 
 class arxiv(entiti):
