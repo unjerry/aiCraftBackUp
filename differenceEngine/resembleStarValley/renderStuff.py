@@ -92,7 +92,7 @@ class blobWindow(pyglet.window.Window):
         self.push_handlers(self.commandBar)
         # set the righttop corner a clock display
         self.timeDisplay: pyglet.gui.TextEntry = pyglet.gui.TextEntry(
-            f"tick:{self.blob.data['gameTime']}",
+            f"tick:{self.blob.data['blobTime']}",
             self.width - 30 - 200,
             self.height - 50,
             200,
@@ -171,8 +171,8 @@ class blobWindow(pyglet.window.Window):
             sprite.position = tuple(position + (self.anchor))
 
     def gameTimeUpdate(self, dt: float) -> None:
-        self.blob.data["gameTime"] += 1
-        self.timeDisplay.value = f"tick:{self.blob.data['gameTime']}"
+        self.blob.data["blobTime"] += 1
+        self.timeDisplay.value = f"tick:{self.blob.data['blobTime']}"
         # print(dt)
 
     def on_draw(self) -> None:
@@ -398,6 +398,7 @@ class PlayerDroneRender(entiti.entiti):
             caption=self.drone.data["worldBlobName"],
             resizable=True,
         )
+        # renderStuff
         self.mainPlayerDrone = droneRender(
             window=self.firstBlob,
             img=mainAssets.RSV_FOUR_COLOR_DRONE_SQUARE_PIX,
