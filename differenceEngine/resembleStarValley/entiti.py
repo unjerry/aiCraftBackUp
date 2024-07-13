@@ -33,8 +33,39 @@ class ytem(entiti):  # unified scattering items
 
 
 class dron(entiti):  # floating drone
-    def __init__(self, **karg) -> None:
+    def __init__(self, name: str = "defaultDron", **karg) -> None:
         super().__init__(**karg)
+        self.name: str = name
+        # self.bagPack
+        self.data: dict = {
+            "worldBlobName": "mainLandAnich",
+            "position": (0, 0, 0),
+            "time": 0,
+        }
+        # read the drone data
+        if not os.path.exists(gameDir):  # if there is no gameDir directory then create
+            os.makedirs(gameDir)
+            print(f"The directory {gameDir} has been created.")
+        else:
+            print(f"The directory {gameDir} already exists.")
+            print(f"Loading drone.")
+            if not os.path.exists(
+                gameDir + self.name + ".pkl"
+            ):  # if there is no data before then create.
+                print(f"no data of drone name:{self.name}.")
+                with open(gameDir + self.name + ".pkl", "wb") as file:
+                    pickle.dump(self.data, file)
+                print(f"data of blob name:{self.name} created.")
+            else:  # if there is data before then read.
+                with open(gameDir + self.name + ".pkl", "rb") as file:
+                    self.data = pickle.load(file)
+                print("game data loaded.")
+        print(self.data)
+
+    def save(self):
+        with open(gameDir + self.name + ".pkl", "wb") as file:
+            pickle.dump(self.data, file)
+        print(f"data of drone name:{self.name} saved.")
 
 
 class blob(entiti):  # the space blob
@@ -44,7 +75,10 @@ class blob(entiti):  # the space blob
         super().__init__(**karg)
         self.name: str = name
         self.size: tuple[int, int] = size  # the space blob-tours size
-        self.tileMap: dict[str, tyle] = {}  # the actuall tilemap data of the 20*30
+        self.data: dict[str] = {
+            "tileMap": {},
+            "gameTime": 0,
+        }  # the actuall tilemap data of the 20*30
         # read the tileMap data
         if not os.path.exists(gameDir):  # if there is no gameDir directory then create
             os.makedirs(gameDir)
@@ -58,7 +92,7 @@ class blob(entiti):  # the space blob
                 print(f"no data of blob name:{self.name}.")
                 for i in range(self.size[0]):
                     for j in range(self.size[1]):
-                        self.tileMap[f"loc_({i},{j})"] = tyle(
+                        self.data["tileMap"][f"loc_({i},{j})"] = tyle(
                             name=f"earth_at_loc_({i},{j})",
                             position=(i, j, 0),
                             status="rest",
@@ -67,19 +101,52 @@ class blob(entiti):  # the space blob
                         )
                         rd = random.randint(0, 5)
                         # if rd == 0:
-                        self.tileMap[f"loc_({i},{j})"].tiletype = f"tile00{rd}"
+                        self.data["tileMap"][f"loc_({i},{j})"].tiletype = f"tile00{rd}"
                 with open(gameDir + self.name + ".pkl", "wb") as file:
-                    pickle.dump(self.tileMap, file)
+                    pickle.dump(self.data, file)
                 print(f"data of blob name:{self.name} created.")
             else:  # if there is data before then read.
                 with open(gameDir + self.name + ".pkl", "rb") as file:
-                    self.tileMap = pickle.load(file)
+                    self.data = pickle.load(file)
                 print("game data loaded.")
 
     def save(self):
+        print(self.data["gameTime"])
         with open(gameDir + self.name + ".pkl", "wb") as file:
-            pickle.dump(self.tileMap, file)
+            pickle.dump(self.data, file)
         print(f"data of blob name:{self.name} saved.")
+
+
+class arxiv(entiti):
+    def __init__(self, name: str = "defaultArxivName", **karg) -> None:
+        super().__init__(**karg)
+        self.name: str = name
+        self.data: dict = {"blobs": {}, "time": 0}
+        # read the arxiv data
+        if not os.path.exists(gameDir):  # if there is no gameDir directory then create
+            os.makedirs(gameDir)
+            print(f"The directory {gameDir} has been created.")
+        else:
+            print(f"The directory {gameDir} already exists.")
+            print(f"Loading arxiv.")
+            if not os.path.exists(
+                gameDir + self.name + ".pkl"
+            ):  # if there is no data before then create.
+                print(f"no data of arxiv:「{self.name}」.")
+                self.data["blobs"]["mainLandAnich"]=blob()
+                with open(gameDir + self.name + ".pkl", "wb") as file:
+                    pickle.dump(self.data, file)
+                print(f"data of arxiv:「{self.name}」 created.")
+            else:  # if there is data before then read.
+                with open(gameDir + self.name + ".pkl", "rb") as file:
+                    self.data = pickle.load(file)
+                print("arxiv:「{self.name}」 data loaded.")
+
+    def save(self):
+        print(f"start saving the data of arxiv:{self.name}")
+        with open(gameDir + self.name + ".pkl", "wb") as file:
+            pickle.dump(self.data, file)
+        print(f"data of arxiv:{self.name} saved.")
 
 
 if __name__ == "__main__":

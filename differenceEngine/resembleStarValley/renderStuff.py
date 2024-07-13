@@ -37,16 +37,16 @@ class assetsManager(entiti.entiti):
         super().__init__(**karg)
         filenames: list[str] = os.listdir(self.folder)
         for itm in filenames:
-            print(itm.split(".")[0])
+            # print(itm.split(".")[0])
             setattr(
                 self,
                 itm.split(".")[0],
                 pyglet.resource.image(self.folder + itm),
             )
+        print("Assets load finished")
 
 
 mainAssets = assetsManager(folder="artAssets/mainAssets/")
-# tileSheet = assetsManager(folder="artAssets/tileSheet/")
 
 
 class blobWindow(pyglet.window.Window):
@@ -58,52 +58,56 @@ class blobWindow(pyglet.window.Window):
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
-        self.n = 3
-        self.tileSize = tileSize
-        self.name: str = name
+        self.n: float = 3  # the scaling factor default is 3.0
+        self.tileSize: int = tileSize  # the sprite real pixel size
+        self.name: str = name  # the blobs name
         self.blob: entiti.blob = entiti.blob(self.name, size=(20, 30))
         self.anchor: pyglet.math.Vec3 = pyglet.math.Vec3(0, 0, 0)
         self.tileMapSize: pyglet.math.Vec3 = pyglet.math.Vec3(
             self.blob.size[0] * self.tileSize, self.blob.size[1] * self.tileSize, 0
         )
         self.anchorVelocity: pyglet.math.Vec3 = pyglet.math.Vec3(0, 0, 0)
-        self.set_icon(mainAssets.RSV_GRASS_YELLO_PIX)
+        self.set_icon(mainAssets.tile034)
         # self.set_vsync(True)
         pyglet.clock.schedule_interval(
             self.update, 1 / 60
         )  # set the update function to be called 60times/second
+        pyglet.clock.schedule_interval(self.gameTimeUpdate, 1)
         pyglet.gl.glClearColor(0.35, 0.4, 0.65, 0.5)  # set window clear color
+        # set the fpsDisplay at leftbottom corner
         self.fpsDisplay: pyglet.window.FPSDisplay = pyglet.window.FPSDisplay(
             window=self,
             color=(0, 0, 0, 128),
         )  # set a fpsdisplay
-        # self.view = self.view.translate(
-        #     (-self.width * (n - 1) / 2, -self.height * (n - 1) / 2, 0)
-        # )
-        # self.view = self.view.scale((n, n, 1))
-        # self.view = self.view.translate((+self.width / 2, +self.height / 2, 0))
+        # the main Dict for the tile sprite in this blob
         self.spriteDict: dict[str, pyglet.sprite.Sprite] = {}
+        # bath rendering
         self.tilemapBatch: pyglet.graphics.Batch = pyglet.graphics.Batch()
         self.weidgeBatch: pyglet.graphics.Batch = pyglet.graphics.Batch()
+        # the command bar at the left bottom corner
         self.commandBar: pyglet.gui.TextEntry = pyglet.gui.TextEntry(
             "", 0 + 5, 0 + 5, 200, batch=self.weidgeBatch
         )
         self.commandBar.set_handler("on_commit", self.commandBarOnCommit)
         self.push_handlers(self.commandBar)
+        # set the righttop corner a clock display
+        self.timeDisplay: pyglet.gui.TextEntry = pyglet.gui.TextEntry(
+            f"tick:{self.blob.data['gameTime']}",
+            self.width - 30 - 200,
+            self.height - 50,
+            200,
+            batch=self.weidgeBatch,
+        )
+        # definate the tile size by the scaleing factor
         self.tileSize *= self.n
-        # pyglet.gl.glEnable(pyglet.gl.GL_TEXTURE_2D)
-        # pyglet.gl.glTexParameteri(
-        #     pyglet.gl.GL_TEXTURE_2D,
-        #     pyglet.gl.GL_TEXTURE_MAG_FILTER,
-        #     pyglet.gl.GL_NEAREST,
-        # )
-        for k, v in self.blob.tileMap.items():
+        # generate the actual sprite are rendering
+        for k, v in self.blob.data["tileMap"].items():
             pos: str = k.split("_")[-1]
             self.spriteDict["sprite_" + pos] = pyglet.sprite.Sprite(
                 img=getattr(mainAssets, v.tiletype), batch=self.tilemapBatch
             )
             self.spriteDict["sprite_" + pos].scale *= self.n
-            self.spriteDict["sprite_" + pos].position = tuple(
+            self.spriteDict["sprite_" + pos].initposition = tuple(
                 pyglet.math.Vec3(
                     v.position[0] * self.tileSize,
                     v.position[1] * self.tileSize,
@@ -116,23 +120,20 @@ class blobWindow(pyglet.window.Window):
         print("comlskdfj", cmd)
         if cmd == "quit":
             self.dispatch_event("on_close")
-        if cmd.startswith("goto_tyle"):
+        if cmd.startswith("goto_tyle"):  # for example goto_tyle_(2,3)
             lis = cmd.split("_")
             print(lis, lis[-1], [int(it) for it in lis[-1][1:-1].split(",")])
-        if cmd.startswith("create_blob"):
+        if cmd.startswith("create_blob"):  # for example create_blob_newBlob
             name = cmd.split("_")[-1]
             newBlob = entiti.blob(name=name, size=(10, 20))
             print(name, newBlob)
-        if cmd.startswith("goto_window"):
+        if cmd.startswith("goto_window"):  # for example goto_window_newBlob
             lis = cmd.split("_")
             print(lis, lis[-1])
-            firstBlob = blobWindow(tileSize=self.tileSize, name=lis[-1], caption="sdf")
-            self.drone.window = firstBlob
-            self.drone.batch = firstBlob.tilemapBatch
-            firstBlob.drone = self.drone
-            # self.blob.save()
+            self.save()
+            self.pldrone.movoto(lis[-1])
             self.close()
-        if cmd.startswith("set_scale"):
+        if cmd.startswith("set_scale"):  # for example set_scale_4
             lis = cmd.split("_")
             print(lis, lis[-1])
             self.tileSize /= self.n
@@ -141,7 +142,7 @@ class blobWindow(pyglet.window.Window):
             self.selectDrone.scale *= float(lis[-1])
             self.drone.scale /= self.n
             self.drone.scale *= float(lis[-1])
-            for k, v in self.blob.tileMap.items():
+            for k, v in self.blob.data["tileMap"].items():
                 pos: str = k.split("_")[-1]
                 # self.spriteDict["sprite_" + pos] = pyglet.sprite.Sprite(
                 #     img=getattr(mainAssets, v.tiletype), batch=self.tilemapBatch
@@ -161,11 +162,18 @@ class blobWindow(pyglet.window.Window):
         self.commandBar.value = ""
 
     def update(self, dt: float) -> None:
+        self.timeDisplay.x = self.width - 30 - 200
+        self.timeDisplay.y = self.height - 50
         self.anchor += self.anchorVelocity * dt
         for sprite in self.spriteDict.values():
-            position: pyglet.math.Vec3 = pyglet.math.Vec3(*sprite.position)
+            position: pyglet.math.Vec3 = pyglet.math.Vec3(*sprite.initposition)
             # print(position + (self.anchorVelocity * dt))
-            sprite.position = tuple(position + (self.anchorVelocity * dt))
+            sprite.position = tuple(position + (self.anchor))
+
+    def gameTimeUpdate(self, dt: float) -> None:
+        self.blob.data["gameTime"] += 1
+        self.timeDisplay.value = f"tick:{self.blob.data['gameTime']}"
+        # print(dt)
 
     def on_draw(self) -> None:
         self.clear()
@@ -235,18 +243,19 @@ class blobWindow(pyglet.window.Window):
                 math.floor((y - self.anchor.y) / self.tileSize),
             )
             print(tup)
-            if f"loc_({tup[0]},{tup[1]})" in self.blob.tileMap:
-                print(self.blob.tileMap[f"loc_({tup[0]},{tup[1]})"])
+            if f"loc_({tup[0]},{tup[1]})" in self.blob.data["tileMap"]:
+                print(self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]})"])
                 if button == 4:
-                    self.blob.tileMap[f"loc_({tup[0]},{tup[1]})"].tiletype = (
-                        "tile012"
-                    )
+                    self.blob.data["tileMap"][
+                        f"loc_({tup[0]},{tup[1]})"
+                    ].tiletype = "tile012"
                 if button == 1:
-                    self.blob.tileMap[f"loc_({tup[0]},{tup[1]})"].tiletype = (
-                        "RSV_GRASS_GREEN_PIX"
-                    )
+                    self.blob.data["tileMap"][
+                        f"loc_({tup[0]},{tup[1]})"
+                    ].tiletype = "RSV_GRASS_GREEN_PIX"
                 self.spriteDict[f"sprite_({tup[0]},{tup[1]})"].image = getattr(
-                    mainAssets, self.blob.tileMap[f"loc_({tup[0]},{tup[1]})"].tiletype
+                    mainAssets,
+                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]})"].tiletype,
                 )
             else:
                 print("out of this blobs boundary")
@@ -320,40 +329,105 @@ class blobWindow(pyglet.window.Window):
                 math.floor((y - self.anchor.y) / self.tileSize),
             )
             print(tup)
-            if f"loc_({tup[0]},{tup[1]})" in self.blob.tileMap:
-                print(self.blob.tileMap[f"loc_({tup[0]},{tup[1]})"])
+            if f"loc_({tup[0]},{tup[1]})" in self.blob.data["tileMap"]:
+                print(self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]})"])
                 if buttons == 4:
-                    self.blob.tileMap[f"loc_({tup[0]},{tup[1]})"].tiletype = (
-                        "tile012"
-                    )
+                    self.blob.data["tileMap"][
+                        f"loc_({tup[0]},{tup[1]})"
+                    ].tiletype = "tile012"
                 if buttons == 1:
-                    self.blob.tileMap[f"loc_({tup[0]},{tup[1]})"].tiletype = (
-                        "RSV_GRASS_GREEN_PIX"
-                    )
+                    self.blob.data["tileMap"][
+                        f"loc_({tup[0]},{tup[1]})"
+                    ].tiletype = "RSV_GRASS_GREEN_PIX"
                 self.spriteDict[f"sprite_({tup[0]},{tup[1]})"].image = getattr(
-                    mainAssets, self.blob.tileMap[f"loc_({tup[0]},{tup[1]})"].tiletype
+                    mainAssets,
+                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]})"].tiletype,
                 )
             else:
                 print("out of this blobs boundary")
         return
 
-    def on_close(self):
+    def save(self) -> None:
         self.blob.save()
+        print(self.pldrone.drone.data["position"])
+        self.pldrone.drone.data["position"] = tuple(self.anchor)
+        print(self.pldrone.drone.data["position"])
+        self.pldrone.drone.save()
+
+    def on_close(self):
+        self.save()
         return super().on_close()
+
+    def on_resize(self, width, height):
+        return super().on_resize(width, height)
 
 
 class droneRender(pyglet.sprite.Sprite):
-    def __init__(self, window: blobWindow, img: pyglet.image.TextureRegion, **karg):
+    def __init__(
+        self,
+        window,
+        img: pyglet.image.TextureRegion,
+        name: str = "defaultPlayerDroneName",
+        **karg,
+    ):
         self.window: blobWindow = window
-        self.velocity = (0, 0, 0)
-        super().__init__(img=img, batch=window.tilemapBatch, **karg)
+        self.name: str = name
+        super().__init__(img=img, batch=self.window.tilemapBatch, **karg)
         self.position = (
             self.window.width / 2,
             self.window.height / 2,
             1,
         )
-        # self.window.drone = self
         self.scale *= self.window.n
+        # print(self.window.anchor, self.drone.position)
 
-    def update(self, dt: float):
-        pass
+    # def setWindow(self, window: blobWindow):
+    #     self.window = window
+
+
+class PlayerDroneRender(entiti.entiti):
+    def __init__(self, name, **karg) -> None:
+        super().__init__(**karg)
+        self.name = name
+        self.drone: entiti.dron = entiti.dron(name=self.name)
+        self.firstBlob = blobWindow(
+            width=1000,
+            height=600,
+            tileSize=16,
+            name=self.drone.data["worldBlobName"],
+            caption=self.drone.data["worldBlobName"],
+            resizable=True,
+        )
+        self.mainPlayerDrone = droneRender(
+            window=self.firstBlob,
+            img=mainAssets.RSV_FOUR_COLOR_DRONE_SQUARE_PIX,
+            name="mainPlayerDrone",
+        )
+        self.mainPlayerDrone.z = 2
+        self.mainSelectDrone = droneRender(
+            window=self.firstBlob, img=mainAssets.tile011, name="mainSelectDrone"
+        )
+        self.firstBlob.anchor = pyglet.math.Vec3(*self.drone.data["position"])
+        self.firstBlob.pldrone = self
+        self.firstBlob.drone = self.mainPlayerDrone
+        self.firstBlob.selectDrone = self.mainSelectDrone
+
+    def movoto(self, window):
+        self.drone.data["worldBlobName"] = window
+        self.firstBlob = blobWindow(
+            width=1000,
+            height=600,
+            tileSize=16,
+            name=window,
+            caption=window,
+            resizable=True,
+        )
+        self.mainPlayerDrone.batch = self.firstBlob.tilemapBatch
+        self.mainSelectDrone.batch = self.firstBlob.tilemapBatch
+        # the new world anchor
+        # self.firstBlob.anchor = pyglet.math.Vec3(
+        #     *self.drone.data["position"]
+        # )
+        self.firstBlob.pldrone = self
+        self.firstBlob.drone = self.mainPlayerDrone
+        self.firstBlob.selectDrone = self.mainSelectDrone
