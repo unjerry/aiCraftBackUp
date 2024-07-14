@@ -43,6 +43,7 @@ class tyle(entiti):  # tile blocks
         name,
         position,
         ident,
+        mapp,
         **karg,
     ) -> None:
         super().__init__(**karg)
@@ -51,6 +52,7 @@ class tyle(entiti):  # tile blocks
         self.ident = ident
         self.changed = False
         self.age = 0
+        self.map = mapp
 
     def update(self):
         # if self.ident == "grass":
@@ -64,12 +66,39 @@ class tyle(entiti):  # tile blocks
                 self.tiletype = f"tile002"
                 self.changed = True
                 self.age = 0
+        if self.ident == "seed":
+            if self.age < 5 and self.tiletype != "tile031":
+                self.tiletype = f"tile031"
+                self.changed = True
+            if 5 <= self.age and self.age < 10 and self.tiletype != "tile032":
+                self.tiletype = f"tile032"
+                self.changed = True
+            if 10 <= self.age and self.age < 15 and self.tiletype != "tile033":
+                self.tiletype = f"tile033"
+                self.changed = True
+            if 15 <= self.age and self.age < 20 and self.tiletype != "tile034":
+                self.tiletype = f"tile034"
+                self.changed = True
+
+    def onRightClick(self):
+        if self.ident == "dirt":
+            print("PRINT_test_onRIGHTCLIC")
+            self.map.data["tileMap"][
+                f"loc_({self.position[0]},{self.position[1]},{1})"
+            ] = tyle(
+                name=f"earth_at_loc_({self.position[0]},{self.position[1]},{1})",
+                position=(self.position[0], self.position[1], 1),
+                ident="seed",
+                mapp=self,
+                tiletype="tile031",
+            )
 
 
 class ytem(entiti):  # unified scattering items
-    def __init__(self, ident: int, **karg) -> None:
+    def __init__(self, ident: str, scattered, **karg) -> None:
         super().__init__(**karg)
         self.ident: str = ident
+        self.scattered = scattered
 
 
 class ytemMap(entiti):  # the id map with the id:int and the pixture name:str
@@ -138,6 +167,14 @@ class dron(entiti):  # floating drone
     def __del__(self):
         self.save()
 
+    def giveYtem(self, ident):
+        for i in range(30):
+            if i not in self.data["itemDict"] or self.data["itemDict"] == None:
+                self.data["itemDict"][i] = ytem(ident, None)
+                break
+        print(self.data["itemDict"])
+        self.save()
+
 
 class blob(entiti):  # the space blob
     def __init__(
@@ -181,23 +218,23 @@ class blob(entiti):  # the space blob
     def simpleGenerate(self):
         for i in range(self.size[0]):
             for j in range(self.size[1]):
-                self.data["tileMap"][f"loc_({i},{j})"] = tyle(
-                    name=f"earth_at_loc_({i},{j})",
+                self.data["tileMap"][f"loc_({i},{j},{0})"] = tyle(
+                    name=f"earth_at_loc_({i},{j},{0})",
                     position=(i, j, 0),
                     ident="grass",
+                    mapp=self,
                 )
                 rd = random.randint(0, 5)
-                self.data["tileMap"][f"loc_({i},{j})"].tiletype = f"tile00{rd}"
+                self.data["tileMap"][f"loc_({i},{j},{0})"].tiletype = f"tile00{rd}"
 
     def sync(self, time):
         while self.data["blobTime"] < time:
             self.incrementSync()
 
     def incrementSync(self):
-        for i in range(self.size[0]):
-            for j in range(self.size[1]):
-                self.data["tileMap"][f"loc_({i},{j})"].age += 1
-                self.data["tileMap"][f"loc_({i},{j})"].update()
+        for k, v in self.data["tileMap"].items():
+            v.age += 1
+            v.update()
         self.data["blobTime"] += 1
 
 
@@ -250,13 +287,23 @@ if __name__ == "__main__":
             lis = cmd.split("_")
             print(lis, lis[-1], lis[-2], [int(it) for it in lis[-1][1:-1].split(",")])
             name = cmd.split("_")[-2]
-            blob(name=name, size=[int(it) for it in lis[-1][1:-1].split(",")])
+            blobb = blob(name=name, size=[int(it) for it in lis[-1][1:-1].split(",")])
         if cmd.startswith("create_arxiv"):
             name = cmd.split("_")[-1]
-            arxiv(name)
+            arxi = arxiv(name)
         if cmd.startswith("create_drone"):
             name = cmd.split("_")[-1]
-            dron(name)
+            drone = dron(name)
+        if cmd.startswith("check_drone"):
+            name = cmd.split("_")[-1]
+            print(dron(name))
         if cmd.startswith("load_map"):
             name = cmd.split("_")[-1]
-            ytemMap(name)
+            itemmap = ytemMap(name)
+        if cmd.startswith("give_ytem"):  # give_ytem_seed_to_ddd
+            name = cmd.split("_")[-1]
+            ident = cmd.split("_")[-3]
+            drone = dron(name)
+            print(name, ident)
+            drone.giveYtem(name)
+            del drone

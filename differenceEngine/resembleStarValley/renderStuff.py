@@ -13,11 +13,11 @@ in vec4 vertex_colors;
 in vec3 texture_coords;
 out vec4 final_colors;
 
-uniform sampler2D sprite_texture;
+uniform sampler2D loc_texture;
 
 void main()
 {
-    final_colors = texture(sprite_texture, texture_coords.xy) * vertex_colors;
+    final_colors = texture(loc_texture, texture_coords.xy) * vertex_colors;
     if (final_colors.a < 0.01) discard;
 } """
 if getattr(sys, "frozen", False):
@@ -103,17 +103,16 @@ class blobWindow(pyglet.window.Window):
         # generate the actual sprite are rendering
         for k, v in self.blob.data["tileMap"].items():
             pos: str = k.split("_")[-1]
-            self.spriteDict["sprite_" + pos] = pyglet.sprite.Sprite(
+            self.spriteDict["loc_" + pos] = pyglet.sprite.Sprite(
                 img=getattr(mainAssets, v.tiletype), batch=self.tilemapBatch
             )
-            self.spriteDict["sprite_" + pos].scale *= self.n
-            self.spriteDict["sprite_" + pos].initposition = tuple(
+            self.spriteDict["loc_" + pos].scale *= self.n
+            self.spriteDict["loc_" + pos].initposition = tuple(
                 pyglet.math.Vec3(
                     v.position[0] * self.tileSize,
                     v.position[1] * self.tileSize,
                     v.position[2] * self.tileSize,
                 )
-                + self.anchor
             )
 
     def commandBarOnCommit(self, cmd: str):
@@ -146,12 +145,12 @@ class blobWindow(pyglet.window.Window):
             self.drone.scale *= float(lis[-1])
             for k, v in self.blob.data["tileMap"].items():
                 pos: str = k.split("_")[-1]
-                # self.spriteDict["sprite_" + pos] = pyglet.sprite.Sprite(
+                # self.spriteDict["loc_" + pos] = pyglet.sprite.Sprite(
                 #     img=getattr(mainAssets, v.tiletype), batch=self.tilemapBatch
                 # )
-                self.spriteDict["sprite_" + pos].scale /= self.n
-                self.spriteDict["sprite_" + pos].scale *= float(lis[-1])
-                self.spriteDict["sprite_" + pos].position = tuple(
+                self.spriteDict["loc_" + pos].scale /= self.n
+                self.spriteDict["loc_" + pos].scale *= float(lis[-1])
+                self.spriteDict["loc_" + pos].position = tuple(
                     pyglet.math.Vec3(
                         v.position[0] * self.tileSize,
                         v.position[1] * self.tileSize,
@@ -173,11 +172,34 @@ class blobWindow(pyglet.window.Window):
             sprite.position = tuple(position + (self.anchor))
         for k, v in self.blob.data["tileMap"].items():
             pos: str = k.split("_")[-1]
+            if ("loc_" + pos) not in self.spriteDict:
+                print("PRINT_notINdict")
+                pyglet.gl.glDisable(pyglet.gl.GL_DEPTH_TEST)
+                self.spriteDict["loc_" + pos] = pyglet.sprite.Sprite(
+                    img=getattr(mainAssets, v.tiletype), batch=self.tilemapBatch
+                )
+                self.spriteDict["loc_" + pos].scale *= self.n
+                self.spriteDict["loc_" + pos].initposition = tuple(
+                    pyglet.math.Vec3(
+                        v.position[0] * self.tileSize,
+                        v.position[1] * self.tileSize,
+                        v.position[2] * self.tileSize,
+                    )
+                )
             if v.changed:
-                self.spriteDict["sprite_" + pos].image = getattr(
+                self.spriteDict["loc_" + pos].image = getattr(
                     mainAssets,
                     v.tiletype,
                 )
+                self.spriteDict["loc_" + pos].position = tuple(
+                    pyglet.math.Vec3(
+                        v.position[0] * self.tileSize,
+                        v.position[1] * self.tileSize,
+                        v.position[2] * self.tileSize,
+                    )
+                    + self.anchor
+                )
+                # v.changed = False
 
     def gameTimeUpdate(self, dt: float) -> None:
         self.pldrone.drone.data["perspectiveCumulateTime"] += 1
@@ -186,11 +208,16 @@ class blobWindow(pyglet.window.Window):
         print(
             "PRINT_sampling",
             self.blob.data["blobTime"],
-            self.blob.data["tileMap"][f"loc_({0},{0})"].ident,
-            self.blob.data["tileMap"][f"loc_({0},{0})"].tiletype,
-            self.blob.data["tileMap"][f"loc_({0},{0})"].age,
+            self.blob.data["tileMap"][f"loc_({0},{0},{0})"].ident,
+            (f"loc_({0},{0},{1})" in self.blob.data["tileMap"]),
+            self.blob.data["tileMap"][f"loc_({0},{0},{0})"].tiletype,
+            self.blob.data["tileMap"][f"loc_({0},{0},{0})"].age,
             self.pldrone.drone.data["perspectiveCumulateTime"],
         )
+        if f"loc_({0},{0},{1})" in self.blob.data["tileMap"]:
+            print(self.blob.data["tileMap"][f"loc_({0},{0},{1})"].tiletype)
+            print(self.blob.data["tileMap"][f"loc_({0},{0},{1})"].age)
+            print(self.blob.data["tileMap"][f"loc_({0},{0},{1})"].ident)
 
     def on_draw(self) -> None:
         self.clear()
@@ -260,25 +287,31 @@ class blobWindow(pyglet.window.Window):
                 math.floor((y - self.anchor.y) / self.tileSize),
             )
             print(tup)
-            if f"loc_({tup[0]},{tup[1]})" in self.blob.data["tileMap"]:
-                print(self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]})"])
-                if button == 4:
+            if f"loc_({tup[0]},{tup[1]},{0})" in self.blob.data["tileMap"]:
+                # print(self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]},{0})"])
+                if button == 4:  # right clic
+                    print("PRINT_onMOUSEpressRIGHTclick")
                     self.blob.data["tileMap"][
-                        f"loc_({tup[0]},{tup[1]})"
-                    ].tiletype = "tile012"
-                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]})"].ident = "dirt"
-                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]})"].age = 0
+                        f"loc_({tup[0]},{tup[1]},{0})"
+                    ].onRightClick()
+                    # self.blob.data["tileMap"][
+                    #     f"loc_({tup[0]},{tup[1]},{0})"
+                    # ].tiletype = "tile012"
+                    # self.blob.data["tileMap"][
+                    #     f"loc_({tup[0]},{tup[1]},{0})"
+                    # ].ident = "dirt"
+                    # self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]},{0})"].age = 0
                 if button == 1:
                     self.blob.data["tileMap"][
-                        f"loc_({tup[0]},{tup[1]})"
+                        f"loc_({tup[0]},{tup[1]},{0})"
                     ].tiletype = "RSV_GRASS_GREEN_PIX"
                     self.blob.data["tileMap"][
-                        f"loc_({tup[0]},{tup[1]})"
+                        f"loc_({tup[0]},{tup[1]},{0})"
                     ].ident = "salty"
-                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]})"].age = 0
-                self.spriteDict[f"sprite_({tup[0]},{tup[1]})"].image = getattr(
+                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]},{0})"].age = 0
+                self.spriteDict[f"loc_({tup[0]},{tup[1]},{0})"].image = getattr(
                     mainAssets,
-                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]})"].tiletype,
+                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]},{0})"].tiletype,
                 )
             else:
                 print("out of this blobs boundary")
@@ -352,25 +385,27 @@ class blobWindow(pyglet.window.Window):
                 math.floor((y - self.anchor.y) / self.tileSize),
             )
             print(tup)
-            if f"loc_({tup[0]},{tup[1]})" in self.blob.data["tileMap"]:
-                print(self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]})"])
+            if f"loc_({tup[0]},{tup[1]},{0})" in self.blob.data["tileMap"]:
+                # print(self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]},{0})"])
                 if buttons == 4:
                     self.blob.data["tileMap"][
-                        f"loc_({tup[0]},{tup[1]})"
+                        f"loc_({tup[0]},{tup[1]},{0})"
                     ].tiletype = "tile012"
-                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]})"].ident = "dirt"
-                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]})"].age = 0
+                    self.blob.data["tileMap"][
+                        f"loc_({tup[0]},{tup[1]},{0})"
+                    ].ident = "dirt"
+                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]},{0})"].age = 0
                 if buttons == 1:
                     self.blob.data["tileMap"][
-                        f"loc_({tup[0]},{tup[1]})"
+                        f"loc_({tup[0]},{tup[1]},{0})"
                     ].tiletype = "RSV_GRASS_GREEN_PIX"
                     self.blob.data["tileMap"][
-                        f"loc_({tup[0]},{tup[1]})"
+                        f"loc_({tup[0]},{tup[1]},{0})"
                     ].ident = "salty"
-                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]})"].age = 0
-                self.spriteDict[f"sprite_({tup[0]},{tup[1]})"].image = getattr(
+                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]},{0})"].age = 0
+                self.spriteDict[f"loc_({tup[0]},{tup[1]},{0})"].image = getattr(
                     mainAssets,
-                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]})"].tiletype,
+                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]},{0})"].tiletype,
                 )
             else:
                 print("out of this blobs boundary")
@@ -435,10 +470,11 @@ class PlayerDroneRender(entiti.entiti):
             img=mainAssets.RSV_FOUR_COLOR_DRONE_SQUARE_PIX,
             name="mainPlayerDrone",
         )
-        self.mainPlayerDrone.z = 2
+        self.mainPlayerDrone.z = 3
         self.mainSelectDrone = droneRender(
             window=self.firstBlob, img=mainAssets.tile011, name="mainSelectDrone"
         )
+        self.mainSelectDrone.z = 2
         self.firstBlob.anchor = pyglet.math.Vec3(*self.drone.data["position"])
         self.firstBlob.pldrone = self
         self.firstBlob.drone = self.mainPlayerDrone
