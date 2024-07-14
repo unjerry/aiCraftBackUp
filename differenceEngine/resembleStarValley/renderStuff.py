@@ -154,7 +154,7 @@ class blobWindow(pyglet.window.Window):
                     pyglet.math.Vec3(
                         v.position[0] * self.tileSize,
                         v.position[1] * self.tileSize,
-                        v.position[2] * self.tileSize,
+                        v.position[2],
                     )
                     + self.anchor
                 )
@@ -183,7 +183,7 @@ class blobWindow(pyglet.window.Window):
                     pyglet.math.Vec3(
                         v.position[0] * self.tileSize,
                         v.position[1] * self.tileSize,
-                        v.position[2] * self.tileSize,
+                        v.position[2],
                     )
                 )
             if v.changed:
@@ -195,7 +195,7 @@ class blobWindow(pyglet.window.Window):
                     pyglet.math.Vec3(
                         v.position[0] * self.tileSize,
                         v.position[1] * self.tileSize,
-                        v.position[2] * self.tileSize,
+                        v.position[2],
                     )
                     + self.anchor
                 )

@@ -192,9 +192,9 @@ class blob(entiti):  # the space blob
         print(f"Loading tileMap.")
         # if there is no data before then create.
         if not os.path.exists(gameDirblob + self.name + ".pkl"):
-            print(f"Data of blob:{self.name} unexists.")
+            print(f"Data of blob:「{self.name}」 unexists.")
             self.simpleGenerate()
-            print(f"Data of blob:{self.name} created.")
+            print(f"Data of blob:「{self.name}」 created.")
             self.save()
         # if there is data before then read.
         else:
@@ -232,7 +232,7 @@ class blob(entiti):  # the space blob
             self.incrementSync()
 
     def incrementSync(self):
-        for k, v in self.data["tileMap"].items():
+        for v in self.data["tileMap"].values():
             v.age += 1
             v.update()
         self.data["blobTime"] += 1
@@ -288,18 +288,22 @@ if __name__ == "__main__":
             print(lis, lis[-1], lis[-2], [int(it) for it in lis[-1][1:-1].split(",")])
             name = cmd.split("_")[-2]
             blobb = blob(name=name, size=[int(it) for it in lis[-1][1:-1].split(",")])
+            del blobb
         if cmd.startswith("create_arxiv"):
             name = cmd.split("_")[-1]
             arxi = arxiv(name)
+            del arxi
         if cmd.startswith("create_drone"):
             name = cmd.split("_")[-1]
             drone = dron(name)
+            del drone
         if cmd.startswith("check_drone"):
             name = cmd.split("_")[-1]
             print(dron(name))
         if cmd.startswith("load_map"):
             name = cmd.split("_")[-1]
             itemmap = ytemMap(name)
+            del itemmap
         if cmd.startswith("give_ytem"):  # give_ytem_seed_to_ddd
             name = cmd.split("_")[-1]
             ident = cmd.split("_")[-3]
