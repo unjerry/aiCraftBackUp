@@ -1,5 +1,6 @@
 import pyglet
 from pyglet.gl import GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA
+import pyglet.graphics
 import entiti
 import sys
 import os
@@ -52,6 +53,80 @@ class assetsManager(entiti.entiti):
 mainAssets = assetsManager(folder="artAssets/mainAssets/")
 
 
+class ytemListBatch(pyglet.graphics.Batch):
+    def __init__(self, drone: entiti.dron, scale: float):
+        super().__init__()
+        self.drone: entiti.dron = drone
+        self.spriteDict: dict[str, pyglet.sprite.Sprite] = {}
+        self.labelDict: dict[str, pyglet.sprite.Sprite] = {}
+        self.scaleF: float = scale
+        print("PRINT_ytembatch", drone.data["itemDict"])
+        self.selector: pyglet.sprite.Sprite = pyglet.sprite.Sprite(
+            mainAssets.tile011,
+            210 + self.drone.data["itemSelected"] * 16 * self.scaleF,
+            0,
+            11,
+            batch=self,
+        )
+        self.selector.scale *= self.scaleF
+        for k, item in drone.data["itemDict"].items():
+            k: int
+            item: entiti.ytem
+            # print("PRINT_item", item)
+            self.spriteDict[k] = pyglet.sprite.Sprite(
+                getattr(mainAssets, item.ident),
+                210 + k * self.scaleF * 16,
+                0,
+                11,
+                batch=self,
+            )
+            self.spriteDict[k].scale *= self.scaleF
+            self.labelDict[k] = pyglet.text.Label(
+                f"{item.num}",
+                font_name="courier new",
+                font_size=13,
+                x=240 + k * self.scaleF * 16,
+                y=10,
+                z=12,
+                anchor_x="center",
+                anchor_y="center",
+                batch=self,
+            )
+
+    def update(self):
+        self.selector.x = 210 + self.drone.data["itemSelected"] * 16 * self.scaleF
+        if self.drone.itemChanged:
+            for k, item in self.drone.data["itemDict"].items():
+                k: int
+                item: entiti.ytem
+                # print("PRINT_item", item)
+                if item.num == 0:
+                    self.spriteDict.pop(k)
+                    self.labelDict.pop(k)
+                    self.drone.data["itemDict"].pop(k)
+                    break
+                self.spriteDict[k] = pyglet.sprite.Sprite(
+                    getattr(mainAssets, item.ident),
+                    210 + k * self.scaleF * 16,
+                    0,
+                    11,
+                    batch=self,
+                )
+                self.spriteDict[k].scale *= self.scaleF
+                self.labelDict[k] = pyglet.text.Label(
+                    f"{item.num}",
+                    font_name="courier new",
+                    font_size=13,
+                    x=240 + k * self.scaleF * 16,
+                    y=10,
+                    z=12,
+                    anchor_x="center",
+                    anchor_y="center",
+                    batch=self,
+                )
+            self.drone.itemChanged = False
+
+
 # the main window object
 class blobWindow(pyglet.window.Window):
     def __init__(
@@ -65,6 +140,7 @@ class blobWindow(pyglet.window.Window):
         self.pldrone: PlayerDroneRender
         self.selectDrone: droneRender
         self.drone: droneRender
+        self.YtemBatch: ytemListBatch
         # the scaling factor default is 3.0 [HYPERPARAMETER]
         self.scaleFactor: float = 3
         self.tileSize: int = tileSize  # the sprite real pixel size
@@ -161,6 +237,11 @@ class blobWindow(pyglet.window.Window):
                     )
                 )
             self.scaleFactor = float(lis[-1])
+        if cmd.startswith("give_ytem"):  # give_ytem_seed_5
+            if len(cmd.split("_")[-2]) == 4:
+                name = cmd.split("_")[-2]
+                num = int(cmd.split("_")[-1])
+                self.pldrone.drone.giveYtem(name, num)
         self.commandBar.value = ""  # clear the bar after enter
 
     def add_sprite(self, v: entiti.tyle, pos: str):
@@ -178,6 +259,7 @@ class blobWindow(pyglet.window.Window):
 
     # main update loop
     def update(self, dt: float) -> None:
+        self.YtemBatch.update()
         self.timeDisplay.x = self.width - 30 - 200
         self.timeDisplay.y = self.height - 50
         self.anchor += self.anchorVelocity * dt
@@ -185,6 +267,12 @@ class blobWindow(pyglet.window.Window):
         for sprite in self.spriteDict.values():
             position: pyglet.math.Vec3 = pyglet.math.Vec3(*sprite.initposition)
             sprite.position = tuple(position + (self.anchor))
+        for k, v in self.spriteDict.items():
+            k: str
+            v: pyglet.sprite.Sprite
+            if k not in self.blob.data["tileMap"]:
+                self.spriteDict.pop(k)
+                break
         for k, v in self.blob.data["tileMap"].items():
             v: entiti.tyle
             pos: str = k.split("_")[-1]
@@ -228,9 +316,16 @@ class blobWindow(pyglet.window.Window):
         self.clear()
         pyglet.gl.glEnable(pyglet.gl.GL_DEPTH_TEST)
         self.tilemapBatch.draw()
+        self.YtemBatch.draw()
         pyglet.gl.glDisable(pyglet.gl.GL_DEPTH_TEST)
         self.weidgeBatch.draw()
         self.fpsDisplay.draw()
+
+    def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
+        # print("PRINT_onMouse_scroll", x, y, scroll_x, scroll_y)
+        self.pldrone.drone.data["itemSelected"] -= int(scroll_y)
+        if self.pldrone.drone.data["itemSelected"] < 0:
+            self.pldrone.drone.data["itemSelected"] = 0
 
     def on_key_press(self, symbol, modifiers):
         # print(symbol, modifiers, pyglet.window.key.A)
@@ -282,9 +377,12 @@ class blobWindow(pyglet.window.Window):
                 # print(self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]},{0})"])
                 if button == 4:  # right clic
                     print("PRINT_onMOUSEpressRIGHTclick")
+                    self.pldrone.drone.onRightClick(
+                        self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]},{0})"]
+                    )
                     self.blob.data["tileMap"][
                         f"loc_({tup[0]},{tup[1]},{0})"
-                    ].onRightClick()
+                    ].onRightClick(self.pldrone.drone)
                     # self.blob.data["tileMap"][
                     #     f"loc_({tup[0]},{tup[1]},{0})"
                     # ].tiletype = "tile012"
@@ -293,13 +391,14 @@ class blobWindow(pyglet.window.Window):
                     # ].ident = "dirt"
                     # self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]},{0})"].age = 0
                 if button == 1:
-                    self.blob.data["tileMap"][
-                        f"loc_({tup[0]},{tup[1]},{0})"
-                    ].tiletype = "RSV_GRASS_GREEN_PIX"
-                    self.blob.data["tileMap"][
-                        f"loc_({tup[0]},{tup[1]},{0})"
-                    ].ident = "salty"
-                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]},{0})"].age = 0
+                    pass
+                    # self.blob.data["tileMap"][
+                    #     f"loc_({tup[0]},{tup[1]},{0})"
+                    # ].tiletype = "RSV_GRASS_GREEN_PIX"
+                    # self.blob.data["tileMap"][
+                    #     f"loc_({tup[0]},{tup[1]},{0})"
+                    # ].ident = "salty"
+                    # self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]},{0})"].age = 0
                 self.spriteDict[f"loc_({tup[0]},{tup[1]},{0})"].image = getattr(
                     mainAssets,
                     self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]},{0})"].tiletype,
@@ -378,21 +477,19 @@ class blobWindow(pyglet.window.Window):
             if f"loc_({tup[0]},{tup[1]},{0})" in self.blob.data["tileMap"]:
                 # print(self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]},{0})"])
                 if buttons == 4:
-                    self.blob.data["tileMap"][
-                        f"loc_({tup[0]},{tup[1]},{0})"
-                    ].tiletype = "tile012"
-                    self.blob.data["tileMap"][
-                        f"loc_({tup[0]},{tup[1]},{0})"
-                    ].ident = "dirt"
-                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]},{0})"].age = 0
+                    print("PRINT_onMOUSEpressRIGHTclick")
+                    # self.blob.data["tileMap"][
+                    #     f"loc_({tup[0]},{tup[1]},{0})"
+                    # ].onRightDrag()
                 if buttons == 1:
-                    self.blob.data["tileMap"][
-                        f"loc_({tup[0]},{tup[1]},{0})"
-                    ].tiletype = "RSV_GRASS_GREEN_PIX"
-                    self.blob.data["tileMap"][
-                        f"loc_({tup[0]},{tup[1]},{0})"
-                    ].ident = "salty"
-                    self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]},{0})"].age = 0
+                    pass
+                    # self.blob.data["tileMap"][
+                    #     f"loc_({tup[0]},{tup[1]},{0})"
+                    # ].tiletype = "RSV_GRASS_GREEN_PIX"
+                    # self.blob.data["tileMap"][
+                    #     f"loc_({tup[0]},{tup[1]},{0})"
+                    # ].ident = "salty"
+                    # self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]},{0})"].age = 0
                 self.spriteDict[f"loc_({tup[0]},{tup[1]},{0})"].image = getattr(
                     mainAssets,
                     self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]},{0})"].tiletype,
@@ -453,6 +550,14 @@ class PlayerDroneRender(entiti.entiti):
             caption=self.drone.data["worldBlobName"],
             resizable=True,
         )
+        self.drone.giveYtem("seed")
+        self.drone.giveYtem("dirt")
+        self.drone.giveYtem("fastFruit")
+        self.firstList: ytemListBatch = ytemListBatch(
+            self.drone, self.firstBlob.scaleFactor
+        )
+
+        self.firstBlob.YtemBatch = self.firstList
         self.firstBlob.blob.sync(self.drone.data["perspectiveCumulateTime"])
         # renderStuff
         self.mainPlayerDrone = droneRender(
@@ -480,6 +585,7 @@ class PlayerDroneRender(entiti.entiti):
             caption=window,
             resizable=True,
         )
+        self.firstBlob.YtemBatch = self.firstList
         self.firstBlob.blob.sync(self.drone.data["perspectiveCumulateTime"])
         # renderStuff
         self.mainPlayerDrone.batch = self.firstBlob.tilemapBatch

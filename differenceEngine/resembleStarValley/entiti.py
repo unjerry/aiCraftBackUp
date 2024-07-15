@@ -44,7 +44,7 @@ class tyle(entiti):  # tile blocks
         name,
         position,
         ident,
-        mapp,
+        blobResid,
         **karg,
     ) -> None:
         super().__init__(**karg)
@@ -53,7 +53,7 @@ class tyle(entiti):  # tile blocks
         self.ident = ident
         self.changed = False
         self.age = 0
-        self.map = mapp
+        self.blobRes: blob = blobResid
 
     def update(self):
         # if self.ident == "grass":
@@ -74,32 +74,102 @@ class tyle(entiti):  # tile blocks
             if 5 <= self.age and self.age < 10 and self.tiletype != "tile032":
                 self.tiletype = f"tile032"
                 self.changed = True
-            if 10 <= self.age and self.age < 15 and self.tiletype != "tile033":
+            if 10 <= self.age and self.age < 30 and self.tiletype != "tile033":
                 self.tiletype = f"tile033"
                 self.changed = True
-            if 15 <= self.age and self.age < 20 and self.tiletype != "tile034":
+            if 30 <= self.age and self.age < 35 and self.tiletype != "tile034":
                 self.tiletype = f"tile034"
                 self.changed = True
 
-    def onRightClick(self):
-        if self.ident == "dirt":
-            print("PRINT_test_onRIGHTCLIC")
-            self.map.data["tileMap"][
-                f"loc_({self.position[0]},{self.position[1]},{1})"
-            ] = tyle(
-                name=f"earth_at_loc_({self.position[0]},{self.position[1]},{1})",
-                position=(self.position[0], self.position[1], 1),
-                ident="seed",
-                mapp=self,
-                tiletype="tile031",
-            )
+    def onRightClick(self, drone=None):
+        print("PRINT_tile_CHECKRIGHTclick")
+        if (
+            f"loc_({self.position[0]},{self.position[1]},{1})"
+            in self.blobRes.data["tileMap"]
+        ):
+            if (
+                self.blobRes.data["tileMap"][
+                    f"loc_({self.position[0]},{self.position[1]},{1})"
+                ].ident
+                == "seed"
+                and self.blobRes.data["tileMap"][
+                    f"loc_({self.position[0]},{self.position[1]},{1})"
+                ].age
+                >= 30
+            ):
+                print("PRINT_age>30")
+                self.blobRes.data["tileMap"].pop(
+                    f"loc_({self.position[0]},{self.position[1]},{1})"
+                )
+                rd = random.randint(1, 5)
+                drone.giveYtem("fastFruit", rd)
+        # if self.ident == "dirt":
+        #     self.map.data["tileMap"][
+        #         f"loc_({self.position[0]},{self.position[1]},{1})"
+        #     ] = tyle(
+        #         name=f"earth_at_loc_({self.position[0]},{self.position[1]},{1})",
+        #         position=(self.position[0], self.position[1], 1),
+        #         ident="seed",
+        #         blobResid=self.blobRes,
+        #         tiletype="tile031",
+        #     )
+        #     self.changed = True
+        # if self.ident == "grass":
+        #     self.ident = "dirt"
+        #     self.tiletype = "tile012"
+        #     self.changed = True
+        #     self.age = 0
+
+    def onRightDrag(self):
+        pass
+        # if self.ident == "dirt":
+        #     self.map.data["tileMap"][
+        #         f"loc_({self.position[0]},{self.position[1]},{1})"
+        #     ] = tyle(
+        #         name=f"earth_at_loc_({self.position[0]},{self.position[1]},{1})",
+        #         position=(self.position[0], self.position[1], 1),
+        #         ident="seed",
+        #         blobResid=self,
+        #         tiletype="tile031",
+        #     )
+        #     self.changed = True
 
 
 class ytem(entiti):  # unified scattering items
-    def __init__(self, ident: str, scattered, **karg) -> None:
+    def __init__(self, ident: str, scattered, tileType: str, num: int, **karg) -> None:
         super().__init__(**karg)
         self.ident: str = ident
         self.scattered = scattered
+        self.tileType: str = tileType
+        self.num: int = num
+
+    def onRightClick(self, tile: tyle):
+        print("PRINT_YTEM_ONrIGHTclick")
+        if (
+            self.ident == "seed"
+            and tile.ident == "dirt"
+            and (
+                f"loc_({tile.position[0]},{tile.position[1]},{1})"
+                not in tile.blobRes.data["tileMap"]
+            )
+        ):
+            print("PRINT_grassIdent")
+            tile.blobRes.data["tileMap"][
+                f"loc_({tile.position[0]},{tile.position[1]},{1})"
+            ] = tyle(
+                name=f"earth_at_loc_({tile.position[0]},{tile.position[1]},{1})",
+                position=(tile.position[0], tile.position[1], 1),
+                ident="seed",
+                blobResid=tile.blobRes,
+                tiletype="tile031",
+                age=0,
+            )
+            self.num -= 1
+        if self.ident == "dirt" and tile.ident == "grass":
+            tile.ident = "dirt"
+            tile.tiletype = "tile012"
+            tile.age = 0
+            self.num -= 1
 
 
 class ytemMap(entiti):  # the id map with the id:int and the pixture name:str
@@ -128,11 +198,13 @@ class ytemMap(entiti):  # the id map with the id:int and the pixture name:str
 class dron(entiti):  # floating drone
     def __init__(self, name: str = "defaultDron", **karg) -> None:
         super().__init__(**karg)
+        self.itemChanged = False
         self.name: str = name
         self.data: dict = {
             "worldBlobName": "mainLandAnich",
             "position": (0, 0, 0),
             "itemDict": {},
+            "itemSelected": 0,
             "perspectiveCumulateTime": 0,
         }
         checkGameDir()
@@ -168,13 +240,43 @@ class dron(entiti):  # floating drone
     def __del__(self):
         self.save()
 
-    def giveYtem(self, ident):
+    def giveYtem(self, ident, num: int = 1):
+        for i in range(30):
+            if i in self.data["itemDict"]:
+                if self.data["itemDict"][i].ident == ident:
+                    self.data["itemDict"][i].num += num
+                    self.itemChanged = True
+                    self.save()
+                    return
         for i in range(30):
             if i not in self.data["itemDict"] or self.data["itemDict"] == None:
-                self.data["itemDict"][i] = ytem(ident, None)
+                self.data["itemDict"][i] = ytem(ident, None, "tile031", num)
                 break
-        print(self.data["itemDict"])
+        # print(self.data["itemDict"])
+        self.itemChanged = True
         self.save()
+
+    def onRightClick(self, key: tyle):
+        print("PRINT_drone_RIGHTclick")
+        if self.data["itemSelected"] in self.data["itemDict"]:
+            self.data["itemDict"][self.data["itemSelected"]].onRightClick(key)
+            self.itemChanged = True
+        # if self.ident == "dirt":
+        #     self.map.data["tileMap"][
+        #         f"loc_({self.position[0]},{self.position[1]},{1})"
+        #     ] = tyle(
+        #         name=f"earth_at_loc_({self.position[0]},{self.position[1]},{1})",
+        #         position=(self.position[0], self.position[1], 1),
+        #         ident="seed",
+        #         blobResid=self,
+        #         tiletype="tile031",
+        #     )
+        #     self.changed = True
+        # if self.ident == "grass":
+        #     self.ident = "dirt"
+        #     self.tiletype = "tile012"
+        #     self.changed = True
+        #     self.age = 0
 
 
 class blob(entiti):  # the space blob
@@ -222,7 +324,7 @@ class blob(entiti):  # the space blob
                     name=f"earth_at_loc_({i},{j},{0})",
                     position=(i, j, 0),
                     ident="grass",
-                    mapp=self,
+                    blobResid=self,
                 )
                 rd = random.randint(0, 5)
                 self.data["tileMap"][f"loc_({i},{j},{0})"].tiletype = f"tile00{rd}"
@@ -309,5 +411,6 @@ if __name__ == "__main__":
             ident = cmd.split("_")[-3]
             drone = dron(name)
             print(name, ident)
-            drone.giveYtem(name)
+            drone.giveYtem(ident)
+            drone.save()
             del drone

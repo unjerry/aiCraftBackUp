@@ -2,6 +2,7 @@
 import pyglet.event
 import renderStuff
 import pyglet
+from entiti import ytem
 
 if __name__ == "__main__":
     droneName: str = "ddd"
