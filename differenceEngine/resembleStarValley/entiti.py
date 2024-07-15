@@ -6,14 +6,15 @@ import json
 
 gameDir: str = "gameData/"
 gameDirblob: str = "gameData/blobs/"
+# 「」
 
 
 def checkDir(dir: str):
     if not os.path.exists(dir):  # if there is no dir directory then create
         os.makedirs(dir)
-        print(f"The directory {dir} has been created.")
+        print(f"The directory 「{dir}」 has been created.")
     else:
-        print(f"The directory {dir} already exists.")
+        print(f"The directory 「{dir}」 already exists.")
 
 
 def checkGameDir() -> None:
@@ -60,7 +61,7 @@ class tyle(entiti):  # tile blocks
         #     self.tiletype = f"tile00{rd}"
         if self.ident == "dirt":
             rd = random.randint(0, min(100, self.age))
-            print("PRINT_dirt2grass", rd)
+            # print("PRINT_dirt2grass", rd)
             if rd > 90:
                 self.ident = "grass"
                 self.tiletype = f"tile002"
@@ -108,7 +109,7 @@ class ytemMap(entiti):  # the id map with the id:int and the pixture name:str
         self.data: dict[str, str] = {}
         checkGameDir()
         # read the drone data
-        print(f"Loading drone:{self.name}.")
+        print(f"Loading drone:「{self.name}」.")
         # if there is no data before then report an error.
         if not os.path.exists(gameDir + self.name + ".json"):
             print(f"Data of map:{self.name} unexist.")
@@ -118,7 +119,7 @@ class ytemMap(entiti):  # the id map with the id:int and the pixture name:str
         print(self)
 
     def load(self):
-        print(f"start loading the data of drone:「{self.name}」.")
+        print(f"Start loading the data of drone:「{self.name}」.")
         with open(gameDir + self.name + ".json", "rb") as file:
             self.data = json.load(file)
         print(f"Data of drone:「{self.name}」 loaded.")
@@ -136,11 +137,11 @@ class dron(entiti):  # floating drone
         }
         checkGameDir()
         # read the drone data
-        print(f"Loading drone:{self.name}.")
+        print(f"Loading drone:「{self.name}」.")
         # if there is no data before then create.
         if not os.path.exists(gameDir + self.name + ".pkl"):
-            print(f"Data of drone:{self.name} unexist.")
-            print(f"Data of drone:{self.name} created.")
+            print(f"Data of drone:「{self.name}」 unexist.")
+            print(f"Data of drone:「{self.name}」 created.")
             self.save()
         # if there is data before then read.
         else:
@@ -150,16 +151,16 @@ class dron(entiti):  # floating drone
         #     arxivname: str = input("Input the new arxivName:")
         #     self.data["arxivName"] = arxivname
         #     arxiv(arxivname)
-        print(self)
+        # print(self)
 
     def save(self):
-        print(f"start saving the data of drone:「{self.name}」.")
+        print(f"Start saving the data of drone:「{self.name}」.")
         with open(gameDir + self.name + ".pkl", "wb") as file:
             pickle.dump(self.data, file)
         print(f"Data of drone:「{self.name}」 saved.")
 
     def load(self):
-        print(f"start loading the data of drone:「{self.name}」.")
+        print(f"Start loading the data of drone:「{self.name}」.")
         with open(gameDir + self.name + ".pkl", "rb") as file:
             self.data = pickle.load(file)
         print(f"Data of drone:「{self.name}」 loaded.")
@@ -177,9 +178,7 @@ class dron(entiti):  # floating drone
 
 
 class blob(entiti):  # the space blob
-    def __init__(
-        self, name: str = "defaultBlob", size: tuple[int, int] = (20, 30), **karg
-    ) -> None:
+    def __init__(self, name: str, size: tuple[int, int] = (20, 30), **karg) -> None:
         super().__init__(**karg)
         self.name: str = name
         self.size: tuple[int, int] = size  # the space blob-tours size
@@ -189,7 +188,8 @@ class blob(entiti):  # the space blob
         }
         # read the tileMap data
         checkGameDir()
-        print(f"Loading tileMap.")
+        # load the blob
+        print(f"Loading tileMap:「{self.name}」.")
         # if there is no data before then create.
         if not os.path.exists(gameDirblob + self.name + ".pkl"):
             print(f"Data of blob:「{self.name}」 unexists.")
@@ -201,13 +201,13 @@ class blob(entiti):  # the space blob
             self.load()
 
     def save(self):
-        print(f"start saving the data of blob:「{self.name}」.")
+        print(f"Start saving the data of blob:「{self.name}」.")
         with open(gameDirblob + self.name + ".pkl", "wb") as file:
             pickle.dump(self.data, file)
         print(f"Data of blob:「{self.name}」 saved.")
 
     def load(self):
-        print(f"start loading the data of blob:「{self.name}」.")
+        print(f"Start loading the data of blob:「{self.name}」.")
         with open(gameDirblob + self.name + ".pkl", "rb") as file:
             self.data = pickle.load(file)
         print(f"Data of blob:「{self.name}」 loaded.")
@@ -260,13 +260,13 @@ class arxiv(entiti):
         print(self)
 
     def save(self):
-        print(f"start saving the data of arxiv:「{self.name}」.")
+        print(f"Start saving the data of arxiv:「{self.name}」.")
         with open(gameDir + self.name + ".pkl", "wb") as file:
             pickle.dump(self.data, file)
         print(f"Data of arxiv:「{self.name}」 saved.")
 
     def load(self):
-        print(f"start loading the data of arxiv:「{self.name}」.")
+        print(f"Start loading the data of arxiv:「{self.name}」.")
         with open(gameDir + self.name + ".pkl", "rb") as file:
             self.data = pickle.load(file)
         print(f"Data of arxiv:「{self.name}」 loaded.")
