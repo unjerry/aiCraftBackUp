@@ -335,7 +335,7 @@ class blob(entiti):  # the space blob
         # if there is no data before then create.
         if not os.path.exists(gameDirblob + self.name + ".pkl"):
             print(f"Data of blob:「{self.name}」 unexists.")
-            self.simpleGenerate()
+            self.simpleGenerateWithTree()
             print(f"Data of blob:「{self.name}」 created.")
             self.save()
         # if there is data before then read.
@@ -368,6 +368,26 @@ class blob(entiti):  # the space blob
                 )
                 rd = random.randint(0, 5)
                 self.data["tileMap"][f"loc_({i},{j},{0})"].tiletype = f"tile00{rd}"
+
+    def simpleGenerateWithTree(self):
+        for i in range(self.size[0]):
+            for j in range(self.size[1]):
+                self.data["tileMap"][f"loc_({i},{j},{0})"] = tyle(
+                    name=f"earth_at_loc_({i},{j},{0})",
+                    position=(i, j, 0),
+                    ident="grass",
+                    blobResid=self,
+                )
+                rd = random.randint(0, 5)
+                self.data["tileMap"][f"loc_({i},{j},{0})"].tiletype = f"tile00{rd}"
+                if rd == 3:
+                    self.data["tileMap"][f"loc_({i},{j},{2})"] = tyle(
+                        name=f"earth_at_loc_({i},{j},{2})",
+                        position=(i, j, 2),
+                        ident="tree",
+                        blobResid=self,
+                    )
+                    self.data["tileMap"][f"loc_({i},{j},{2})"].tiletype = f"tree{1}"
 
     def checkloc(self, k: str, ident: str) -> bool:
         if k in self.data["tileMap"]:

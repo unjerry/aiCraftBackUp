@@ -47,6 +47,9 @@ class assetsManager(entiti.entiti):
                 itm.split(".")[0],
                 pyglet.resource.image(self.folder + itm),
             )
+            if getattr(self, itm.split(".")[0]).width == 3 * 16:
+                img = getattr(self, itm.split(".")[0])
+                img.anchor_x = 16
         print("Assets load finished")
 
 
@@ -168,6 +171,7 @@ class blobWindow(pyglet.window.Window):
         # bath rendering
         self.tilemapBatch: pyglet.graphics.Batch = pyglet.graphics.Batch()
         self.weidgeBatch: pyglet.graphics.Batch = pyglet.graphics.Batch()
+        self.treeBatch: pyglet.graphics.Batch = pyglet.graphics.Batch()
         # the command bar at the left bottom corner
         self.commandBar: pyglet.gui.TextEntry = pyglet.gui.TextEntry(
             "", 0 + 5, 0 + 5, 200, batch=self.weidgeBatch
@@ -191,7 +195,10 @@ class blobWindow(pyglet.window.Window):
             k: str
             pos: str = k.split("_")[-1]
             # print("PRINT_pos_init", pos)
-            self.add_sprite(v, pos)
+            if v.ident == "tree":
+                self.add_sprite(v, pos, self.treeBatch)
+                continue
+            self.add_sprite(v, pos, self.tilemapBatch)
 
     # the command Bar
     def commandBarOnCommit(self, cmd: str):
@@ -244,9 +251,11 @@ class blobWindow(pyglet.window.Window):
                 self.pldrone.drone.giveYtem(name, num)
         self.commandBar.value = ""  # clear the bar after enter
 
-    def add_sprite(self, v: entiti.tyle, pos: str):
+    def add_sprite(self, v: entiti.tyle, pos: str, bat: pyglet.graphics.Batch):
         self.spriteDict["loc_" + pos] = pyglet.sprite.Sprite(
-            img=getattr(mainAssets, v.tiletype), batch=self.tilemapBatch
+            img=getattr(mainAssets, v.tiletype),
+            batch=bat,
+            group=pyglet.graphics.Group(-v.position[1]),
         )
         self.spriteDict["loc_" + pos].scale *= self.scaleFactor
         self.spriteDict["loc_" + pos].initposition = tuple(
@@ -256,6 +265,14 @@ class blobWindow(pyglet.window.Window):
                 v.position[2],
             )
         )
+        if v.ident == "tree":
+            self.spriteDict["loc_" + pos].initposition = tuple(
+                pyglet.math.Vec3(
+                    (v.position[0]) * self.tileSize,
+                    (v.position[1]) * self.tileSize,
+                    v.position[2],
+                )
+            )
 
     # main update loop
     def update(self, dt: float) -> None:
@@ -278,7 +295,7 @@ class blobWindow(pyglet.window.Window):
             pos: str = k.split("_")[-1]
             if ("loc_" + pos) not in self.spriteDict:
                 print("PRINT_notINdict")
-                self.add_sprite(v, pos)
+                self.add_sprite(v, pos, self.tilemapBatch)
             if v.changed:
                 self.spriteDict["loc_" + pos].image = getattr(
                     mainAssets,
@@ -316,8 +333,9 @@ class blobWindow(pyglet.window.Window):
         self.clear()
         pyglet.gl.glEnable(pyglet.gl.GL_DEPTH_TEST)
         self.tilemapBatch.draw()
-        self.YtemBatch.draw()
         pyglet.gl.glDisable(pyglet.gl.GL_DEPTH_TEST)
+        self.treeBatch.draw()
+        self.YtemBatch.draw()
         self.weidgeBatch.draw()
         self.fpsDisplay.draw()
 
