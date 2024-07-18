@@ -67,6 +67,8 @@ class tyle(entiti):  # tile blocks
                 self.tiletype = f"tile002"
                 self.changed = True
                 self.age = 0
+                self.blobRes.autoTileGen()
+                self.changed = True
         if self.ident == "seed":
             if self.age < 5 and self.tiletype != "tile031":
                 self.tiletype = f"tile031"
@@ -291,6 +293,7 @@ class dron(entiti):  # floating drone
         print("PRINT_drone_RIGHTclick")
         if self.data["itemSelected"] in self.data["itemDict"]:
             self.data["itemDict"][self.data["itemSelected"]].onRightClick(key)
+            key.blobRes.autoTileGen()
             self.itemChanged = True
         # if self.ident == "dirt":
         #     self.map.data["tileMap"][
@@ -365,6 +368,67 @@ class blob(entiti):  # the space blob
                 )
                 rd = random.randint(0, 5)
                 self.data["tileMap"][f"loc_({i},{j},{0})"].tiletype = f"tile00{rd}"
+
+    def checkloc(self, k: str, ident: str) -> bool:
+        if k in self.data["tileMap"]:
+            if self.data["tileMap"][k].ident == ident:
+                return True
+            return False
+        return False
+
+    @staticmethod
+    def caltiletype(t, tr, r, br, b, bl, l, tl: bool) -> bool:
+        if not (t and l):
+            tl = False
+        if not (t and r):
+            tr = False
+        if not (b and l):
+            bl = False
+        if not (b and r):
+            br = False
+
+        tot: int = 0
+        if t:
+            tot += 1 << 0
+        if tr:
+            tot += 1 << 1
+        if r:
+            tot += 1 << 2
+        if br:
+            tot += 1 << 3
+        if b:
+            tot += 1 << 4
+        if bl:
+            tot += 1 << 5
+        if l:
+            tot += 1 << 6
+        if tl:
+            tot += 1 << 7
+        return tot
+
+    def autoTileGen(self):
+        for i in range(self.size[0]):
+            for j in range(self.size[1]):
+                if self.data["tileMap"][f"loc_({i},{j},{0})"].ident == "dirt":
+                    rd = self.caltiletype(
+                        self.checkloc(f"loc_({i},{j+1},{0})", "dirt"),
+                        self.checkloc(f"loc_({i+1},{j+1},{0})", "dirt"),
+                        self.checkloc(f"loc_({i+1},{j},{0})", "dirt"),
+                        self.checkloc(f"loc_({i+1},{j-1},{0})", "dirt"),
+                        self.checkloc(f"loc_({i},{j-1},{0})", "dirt"),
+                        self.checkloc(f"loc_({i-1},{j-1},{0})", "dirt"),
+                        self.checkloc(f"loc_({i-1},{j},{0})", "dirt"),
+                        self.checkloc(f"loc_({i-1},{j+1},{0})", "dirt"),
+                    )
+                    if (
+                        self.data["tileMap"][f"loc_({i},{j},{0})"].tiletype
+                        != f"dirtOnGrass{rd:08b}"
+                    ):
+                        self.data["tileMap"][f"loc_({i},{j},{0})"].changed = True
+                    self.data["tileMap"][
+                        f"loc_({i},{j},{0})"
+                    ].tiletype = f"dirtOnGrass{rd:08b}"
+                    print("PRINT_TILEAUTO", f"dirtOnGrass{rd:08b}")
 
     def sync(self, time):
         while self.data["blobTime"] < time:
