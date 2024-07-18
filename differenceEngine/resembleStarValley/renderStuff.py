@@ -478,9 +478,12 @@ class blobWindow(pyglet.window.Window):
                 # print(self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]},{0})"])
                 if buttons == 4:
                     print("PRINT_onMOUSEpressRIGHTclick")
-                    # self.blob.data["tileMap"][
-                    #     f"loc_({tup[0]},{tup[1]},{0})"
-                    # ].onRightDrag()
+                    self.pldrone.drone.onRightDrag(
+                        self.blob.data["tileMap"][f"loc_({tup[0]},{tup[1]},{0})"]
+                    )
+                    self.blob.data["tileMap"][
+                        f"loc_({tup[0]},{tup[1]},{0})"
+                    ].onRightDrag(self.pldrone.drone)
                 if buttons == 1:
                     pass
                     # self.blob.data["tileMap"][
@@ -585,6 +588,10 @@ class PlayerDroneRender(entiti.entiti):
             caption=window,
             resizable=True,
         )
+        self.firstList: ytemListBatch = ytemListBatch(
+            self.drone, self.firstBlob.scaleFactor
+        )
+
         self.firstBlob.YtemBatch = self.firstList
         self.firstBlob.blob.sync(self.drone.data["perspectiveCumulateTime"])
         # renderStuff

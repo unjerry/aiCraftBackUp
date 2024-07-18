@@ -120,19 +120,27 @@ class tyle(entiti):  # tile blocks
         #     self.changed = True
         #     self.age = 0
 
-    def onRightDrag(self):
-        pass
-        # if self.ident == "dirt":
-        #     self.map.data["tileMap"][
-        #         f"loc_({self.position[0]},{self.position[1]},{1})"
-        #     ] = tyle(
-        #         name=f"earth_at_loc_({self.position[0]},{self.position[1]},{1})",
-        #         position=(self.position[0], self.position[1], 1),
-        #         ident="seed",
-        #         blobResid=self,
-        #         tiletype="tile031",
-        #     )
-        #     self.changed = True
+    def onRightDrag(self, drone=None):
+        if (
+            f"loc_({self.position[0]},{self.position[1]},{1})"
+            in self.blobRes.data["tileMap"]
+        ):
+            if (
+                self.blobRes.data["tileMap"][
+                    f"loc_({self.position[0]},{self.position[1]},{1})"
+                ].ident
+                == "seed"
+                and self.blobRes.data["tileMap"][
+                    f"loc_({self.position[0]},{self.position[1]},{1})"
+                ].age
+                >= 30
+            ):
+                print("PRINT_age>30")
+                self.blobRes.data["tileMap"].pop(
+                    f"loc_({self.position[0]},{self.position[1]},{1})"
+                )
+                rd = random.randint(1, 5)
+                drone.giveYtem("fastFruit", rd)
 
 
 class ytem(entiti):  # unified scattering items
@@ -169,6 +177,29 @@ class ytem(entiti):  # unified scattering items
             tile.ident = "dirt"
             tile.tiletype = "tile012"
             tile.age = 0
+            self.num -= 1
+
+    def onRightDrag(self, tile: tyle):
+        print("PRINT_YTEM_ONrIGHTclick")
+        if (
+            self.ident == "seed"
+            and tile.ident == "dirt"
+            and (
+                f"loc_({tile.position[0]},{tile.position[1]},{1})"
+                not in tile.blobRes.data["tileMap"]
+            )
+        ):
+            print("PRINT_grassIdent")
+            tile.blobRes.data["tileMap"][
+                f"loc_({tile.position[0]},{tile.position[1]},{1})"
+            ] = tyle(
+                name=f"earth_at_loc_({tile.position[0]},{tile.position[1]},{1})",
+                position=(tile.position[0], tile.position[1], 1),
+                ident="seed",
+                blobResid=tile.blobRes,
+                tiletype="tile031",
+                age=0,
+            )
             self.num -= 1
 
 
@@ -277,6 +308,12 @@ class dron(entiti):  # floating drone
         #     self.tiletype = "tile012"
         #     self.changed = True
         #     self.age = 0
+
+    def onRightDrag(self, key: tyle):
+        print("PRINT_drone_RIGHTclick")
+        if self.data["itemSelected"] in self.data["itemDict"]:
+            self.data["itemDict"][self.data["itemSelected"]].onRightDrag(key)
+            self.itemChanged = True
 
 
 class blob(entiti):  # the space blob
