@@ -31,6 +31,8 @@
 	pdfstartview=Fit,
 	breaklinks=true
 }
+\usepackage{url}
+% \usepackage[colorlinks,linkcolor=blue,anchorcolor=blue,citecolor=blue]{hyperref}
 \titleformat{\chapter}{\raggedright\Huge\bfseries}{第\,\thechapter\,章}{1em}{}
 \titleformat{\section}{\raggedright\Large\bfseries}{\,\thesection\,}{1em}{}
 \titleformat{\subsection}{\raggedright\large\bfseries}{\,\thesubsection\,}{1em}{}
@@ -67,45 +69,66 @@
 }
 \newcommand{\prefacePara}
 {
-现今市面上的线性代数教材非常充足，像我这样一个人
-来写一本教材必然会贻笑大方。但是我并不能放下那些
-我有时候自己脑海中的古怪想法和天马行空的路线。我
-是看面向算子的线性代数入门的，我也感觉非常庆幸能
-够在学生时代读到那样的好书。
+现今市面上的线性代数教材非常充足，像我这样一个无
+名小卒来写一本教材必然会贻笑大方。但是我并不能放
+下那些我有时候自己脑海中的古怪想法和天马行空的路
+线。我是看面向算子的线性代数入门的，我读的是
+Axler, Sheldon写的\cite[Linear algebra done right]{1664}，
+我也感觉非常庆幸能够在学生时代读到那样的好书。
 
-这本书将基于一种面向计算的方式来讲解一般意义上的
+本书将基于一种面向计算的方式来讲解一般意义上的
 线性代数。线性代数，线性是一个非常广阔的话题，我
-非常惶恐地尝试将我在这片非常神奇的领域所学到的东
+非常惶恐地尝试将我在这片非常精彩的领域所学到的东
 西分享在这本书中。
 
 这本书会回答所有我曾经感到非常困惑和未能够得到任
-意一位老师满意答案的问题。包括行列式为什么这么定
-义行向量和列向量到底有什么区别，转置究竟在干什么
+意一位老师满意答案的问题。包括行列式为什么如此定
+义；行向量和列向量到底有什么区别；转置究竟在干什么
 ，为什么转置有和逆一样的性质（乘积的转置等于分别
-转置但是交换相乘），迹又是什么，为什么单单把对角
+转置但是交换相乘）；迹又是什么，为什么单单把对角
 线元素加起来就得到迹，这种搞笑的计算方法为什么有
 那么多神奇的性质，都是那里来的？
 
-In this book, the main goal is to answer all the
-questions about those are not well pondered in the
-traditional linear algebra course of any kind.
-In the computational matrix theory there are plenty
-ways of decompose the matrix, such as LU, QR, and the
-most fundamental SVD decomposition.
-While in the more math oriented linear course
-the main topic are always in the most abstract way
-as they move forward.
-And the main concepts such as the Transpose, dule
-space, determinant, trace and all other fundamental
-but always treated just in a forced memorize level.
+要搞清楚这些事情并不容易，但是在当下这个计算机技术发达的时代，
+其实你会有更多的选择，实际上如果你想要搞明白已经存在的数学知识，
+你其实只需要一个手机和一个有自由知识环境的网络。包括一些非常棒的
+网络课程系列，比如\cite[线性代数的本质]{citee}。我非常建议看完
+这个课程再来看这本书。如果你看完课程发现完全搞懂了所有事情，没有任何疑问
+你其实可以不用看这本书了。因为这本书就是在我看完那个课程的很多年
+，当我解决了所有当年的疑问（原谅我的愚钝，我实在有太多疑问和不满意的地方）
+和未被解答的问题以后才决定写的。为了寻求一个满意的答案，
+我实在是看来太多视频课程，本书也可以看作我的一个学习笔记，
+如果你看到书中的某些例子或者理解，早在一个你知道的课程中出现，那你直接去看那个课程就行了。
+大概率我只是忘了我看过那个课程所以它没有出现再本书的引用当中。
 
-The main goal is to explain all the concepts in a 
-more mathematical natrual and fun way, even the sudden
-expose of a certain defination would be a very hard
-problem to those first expose to the abstract algebra
-world student just like me. So I'll try my best to
-get every defination and notion in a smooth and more
-reasonalbe way. 
+本书主要会有三部分内容，全部以大量例子杂糅在一起。
+分别是张量相关的话题，外代数（几何代数）和传统线性
+代数。相信我，前两个话题对于理解线性代数里面一些看
+起来“凭空”产生的命题和定理有很大帮助。一些看起来完
+美却无厘头的证明——除了线性代数，其他很多代数共同的
+一点——是来自于一些在这些代数大厦建立以前的计算技巧
+的总结。但是大多数却并未再被提及。
+
+% In this book, the main goal is to answer all the
+% questions about those are not well pondered in the
+% traditional linear algebra course of any kind.
+% In the computational matrix theory there are plenty
+% ways of decompose the matrix, such as LU, QR, and the
+% most fundamental SVD decomposition.
+% While in the more math oriented linear course
+% the main topic are always in the most abstract way
+% as they move forward.
+% And the main concepts such as the Transpose, dule
+% space, determinant, trace and all other fundamental
+% but always treated just in a forced memorize level.
+
+% The main goal is to explain all the concepts in a 
+% more mathematical natrual and fun way, even the sudden
+% expose of a certain defination would be a very hard
+% problem to those first expose to the abstract algebra
+% world student just like me. So I'll try my best to
+% get every defination and notion in a smooth and more
+% reasonalbe way. 
 }
 
 \newcommand{\fakesections}{
@@ -265,7 +288,7 @@ reasonalbe way.
     数学并不能防止你受锤，但是在你的黄金时代
     认真地学习数学能防止你睡着，让你醒着受锤，清醒地感受疼痛，和绝望。但同时
     也给予你正确认识和描述世界的语言与改变世界的工具，希望你能用你手里的
-    利剑斩开你的前路，希望创造，毁灭的力量就在你的手里了。
+    利剑斩开你的前路，希望创造，毁灭的力量就在你的手里了。——沃兹基硕得
 
     本章并不会证明地讲解若干中学代数之后可能继续发展代数的方向。
 
@@ -393,6 +416,10 @@ reasonalbe way.
     \subsection{几何代数举例}
     \subsection{二向量和三向量}
     \subsection{点积楔积和三维向量场的通量}
+    \subsection{练习}
+    \section{多项式和求根公式}
+    \subsection{五次多项式没有根式解}
+    \subsection{但是你知道前四个根式解咋写吗？}
     \subsection{练习}
     \foreach \x in {A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z}
         {\index{\x 1}\index{\x 2}}
@@ -584,9 +611,13 @@ reasonalbe way.
     % \chapter{Non-Euclidean Geometry}
     % \chapter{Bibliography}
     % \chapter{General Tendencies}
+    \bibliographystyle{unsrt}
+    \bibliography{std_book_cn_ref}
+
 
     \backmatter
     \addcontentsline{toc}{chapter}{Index}
     \printindex
+
 \end{CJK}
 \end{document}
