@@ -46,20 +46,26 @@ batch2: pyglet.graphics.Batch = pyglet.graphics.Batch()
 grp0: pyglet.graphics.Group = pyglet.graphics.Group(0)
 grp1: pyglet.graphics.Group = pyglet.graphics.Group(1)
 sprite: pyglet.sprite.Sprite = pyglet.sprite.Sprite(
-    mainAssets.dirt, z=3, batch=batch, subpixel=True
+    mainAssets.dirt, group=pyglet.graphics.Group(3), batch=batch#, subpixel=True
 )
 sprite2: pyglet.sprite.Sprite = pyglet.sprite.Sprite(
-    mainAssets.dirt, z=3, batch=batch, subpixel=True, x=100
+    mainAssets.dirt, group=pyglet.graphics.Group(3), batch=batch, x=100#, subpixel=True
 )
 lis: list[pyglet.sprite.Sprite] = [
-    pyglet.sprite.Sprite(mainAssets.dirt, z=3, batch=batch, subpixel=True, x=i * 100)
-    for i in range(1000)
+    pyglet.sprite.Sprite(
+        mainAssets.tree1,
+        group=pyglet.graphics.Group(3),
+        batch=batch,
+        subpixel=True,
+        x=i * 100,
+    )
+    for i in range(10000)
 ]
 for it in lis:
-    it.scale*=10
-    it.opacity=100
+    it.scale *= 10
+    it.opacity = 50
 grass: pyglet.sprite.Sprite = pyglet.sprite.Sprite(
-    mainAssets.grass, batch=batch2, z=1, subpixel=True
+    mainAssets.grass, batch=batch, group=pyglet.graphics.Group(1), subpixel=True
 )
 sprite.scale *= 10
 grass.scale *= 20
