@@ -1,0 +1,10 @@
+the raylib starting point is from a c++ tutorial[1]
+
+the research webpages of raylib are in the aiWorkTree/20240804/
+
+this is the first day I officially enconter the raylib and create a window follow the instructions written on the official github repo
+
+this file
+'gameDev\raylib\fistWindow.cpp' is the src code to open a window
+
+[1]I REMADE My First Game 12 YEARS LATER!_The Cherno_https://youtu.be/rpOzMQbiUVY?si=dZ5N73Z2bhYlEEln
