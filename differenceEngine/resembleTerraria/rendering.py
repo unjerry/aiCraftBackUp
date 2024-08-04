@@ -86,7 +86,6 @@ if __name__ == "__main__":
         color=(0, 0, 0, 128),
     )
 
-    pyglet.gl.glClearColor(0.35, 0.4, 0.65, 0.5)
 
     @window.event
     def on_draw():

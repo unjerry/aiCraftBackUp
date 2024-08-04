@@ -42,8 +42,16 @@ class entiti(object):
     def load(self, dir: str):
         print(f"Start loading the data of {type(self)}:「{self.name}」.")
         with open(dir + self.name + ".pkl", "rb") as file:
-            self: entiti = pickle.load(file)
+            rt: entiti = pickle.load(file)
         print(f"Data of {type(self)}:「{self.name}」 loaded.")
+        return rt
+
+
+class plaier(entiti):
+    def __init__(self, name: str, **karg) -> None:
+        super().__init__(name, **karg)
+        self.apperence = "triDroneFast.gif"
+        self.data = {}
 
 
 class vecti(entiti):
@@ -57,7 +65,7 @@ class tyleMap(entiti):
     def __init__(self, name: str, **karg) -> None:
         super().__init__(name, **karg)
         self.gridMap = {}
-        self.randomGeneration(10, (0, 0), 20)
+        # self.randomGeneration(10, (0, 0), 20)
 
     def randomGeneration(self, radius: int, center: tuple[int, int], num: int):
         for _ in range(num):
@@ -68,16 +76,17 @@ class tyleMap(entiti):
                     center[0] + random.randint(-radius, radius),
                 )
             self.gridMap[f"{x};{y}"] = tyleBlock(
-                f"block_{x};{y}", "dirtOnGrass00000000", "air"
+                f"block_{x};{y}", "dirtOnGrass00000000.png", "air"
             )
         for i in range(-radius, radius + 1):
             for j in range(-radius, radius + 1):
                 if f"{i};{j}" not in self.gridMap:
                     self.gridMap[f"{i};{j}"] = tyleBlock(
                         f"block_{i};{j}",
-                        "grass",
+                        "grass.png",
                         None,
                     )
+
 
 class tyleBlock(entiti):
     def __init__(self, name: str, type: str, possess: str, **karg) -> None:
@@ -94,3 +103,13 @@ if __name__ == "__main__":
     v = vecti("v")
     print(v)
     v.save("./")
+    mp = tyleMap("tylemap")
+    # mp.randomGeneration(10, (0, 0), 10)
+    mp.name = "hxt"
+    # mp.save("./testMap/")
+    # print(mp)
+    mp = mp.load("./testMap/")
+    print(mp)
+    # mp.name = "hxx"
+    # mp.load("./mapData/")
+    # print(mp)
