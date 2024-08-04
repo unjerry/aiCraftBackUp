@@ -51,7 +51,20 @@ class plaier(entiti):
     def __init__(self, name: str, **karg) -> None:
         super().__init__(name, **karg)
         self.apperence = "triDroneFast.gif"
-        self.data = {}
+        self.itemDict = {0: {"ident": "grass.png", "num": 4}}
+
+    def giveYtem(self, ident, num: int = 1):
+        for i in range(30):
+            if i in self.itemDict:
+                if self.itemDict[i]["ident"] == ident:
+                    self.itemDict[i]["num"] += num
+                    self.save()
+                    return
+        for i in range(30):
+            if i not in self.itemDict or self.itemDict == None:
+                self.itemDict[i] = {"ident": ident, "num": num}
+                break
+        # print(self.itemDict)
 
 
 class vecti(entiti):
@@ -65,21 +78,23 @@ class tyleMap(entiti):
     def __init__(self, name: str, **karg) -> None:
         super().__init__(name, **karg)
         self.gridMap = {}
+        self.width = 100
+        self.height = 100
         # self.randomGeneration(10, (0, 0), 20)
 
-    def randomGeneration(self, radius: int, center: tuple[int, int], num: int):
+    def randomGeneration(self, num: int):
         for _ in range(num):
             x, y = (0, 0)
             while f"{x};{y}" in self.gridMap:
                 x, y = (
-                    center[0] + random.randint(-radius, radius),
-                    center[0] + random.randint(-radius, radius),
+                    random.randint(0, self.width - 1),
+                    random.randint(0, self.height - 1),
                 )
             self.gridMap[f"{x};{y}"] = tyleBlock(
                 f"block_{x};{y}", "dirtOnGrass00000000.png", "air"
             )
-        for i in range(-radius, radius + 1):
-            for j in range(-radius, radius + 1):
+        for i in range(0, self.width):
+            for j in range(0, self.height):
                 if f"{i};{j}" not in self.gridMap:
                     self.gridMap[f"{i};{j}"] = tyleBlock(
                         f"block_{i};{j}",
