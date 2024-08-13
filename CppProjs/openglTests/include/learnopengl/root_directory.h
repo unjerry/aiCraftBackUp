@@ -1,1 +1,1 @@
-const char * logl_root = "E:/workspace-git/remotegithub/unjerry/aiCraft/CppProjs";
+const char * logl_root = "E:/workspace-git/remotegithub/unjerry/aiCraft/CppProjs/openglTests";

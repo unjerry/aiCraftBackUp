@@ -1,7 +1,9 @@
-#define GLAD_GL_IMPLEMENTATION
+// #define GLAD_GL_IMPLEMENTATION
 #include <glad/glad.h>
-#define GLFW_INCLUDE_NONE
+// #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+#include <unexisgl.h>
+#include <ue_windao.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -45,24 +47,11 @@ int main()
 {
     // glfw: initialize and configure
     // ------------------------------
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-
+    unexisgl::initialize();
     // glfw window creation
     // --------------------
-    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
-    if (window == NULL)
-    {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
+    unexisgl::windao windao = unexisgl::windao(SCR_WIDTH, SCR_HEIGHT);
+    GLFWwindow *window = windao.getWindow();
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
@@ -246,6 +235,7 @@ int main()
 
         // pass projection matrix to shader (note that in this case it could change every frame)
         glm::mat4 projection = glm::perspective(glm::radians(fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        // std::cout << projection << std::endl;
         ourShader.setMat4("projection", projection);
 
         // camera/view transformation
