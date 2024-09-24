@@ -1,5 +1,8 @@
 print("project autoCluster")
 import torch
+import numpy as np
+
+np.set_printoptions(linewidth=np.inf)
 
 print(torch.__version__)
 print(torch.cuda.is_available())
@@ -30,14 +33,15 @@ class autoCluster(nn.Module):
 
     def forward(self, x):
         D = torch.stack(
-            [normDist(x, self.pointPose[i, :]) for i in range(self.k)],
+            [normDist(x, self.pointPose[i, :]) ** 2 for i in range(self.k)],
             dim=1,
         )
         W = self.FUN(self.pointWeight)
-        Wei = torch.sum(self.FUN(self.pointWeight), dim=0)
+        # W = (W - 1) ** 3 + 1
+        # Wei = torch.sum(self.FUN(self.pointWeight), dim=0)
         imd = torch.einsum("ij,ij->ij", D, W)
-        sum = torch.max(imd, dim=0).values
-        # print(sum)
+        sum = torch.sum(imd, dim=0)
+        # print(sum, imd)
         return sum
 
 
@@ -48,8 +52,8 @@ P = torch.tensor(
     ],
 )
 dPList = [
-    torch.randn([10, 2]) * 0.1 + P[0, :],
-    torch.randn([100, 2]) * 0.1 + P[1, :],
+    torch.randn([20, 2]) * 0.1 + P[0, :],
+    torch.randn([200, 2]) * 0.1 + P[1, :],
 ]
 dP = torch.concatenate(dPList)
 
@@ -60,7 +64,7 @@ dP = torch.concatenate(dPList)
 import torch.optim as optim
 
 
-K = 2
+K = 4
 dP = dP.to("cuda")
 KMEAN = autoCluster(dP, K)
 KMEAN.to("cuda")
@@ -69,10 +73,9 @@ for _ in KMEAN.parameters():
     print(_)
 # print(KMEAN(dP))
 optimizer = optim.Adam(KMEAN.parameters(), lr=0.001)
-for _ in range(2000):
+for _ in range(10000):
     optimizer.zero_grad()
-    ans = torch.max(KMEAN(dP))
-    print(ans)
+    ans = torch.sum(KMEAN(dP))
     ans.backward()
     optimizer.step()
     print(ans)
@@ -88,10 +91,11 @@ fig, ax = plt.subplots(dpi=300)
 ax.set_aspect(1.0)
 ax.set_xlim([-1, 1])
 ax.set_ylim([-1, 1])
-ax.scatter(P[:, 1], P[:, 0])
-ax.scatter(dP[:, 1], dP[:, 0])
-print(L, Wei)
+# ax.scatter(P[:, 0], P[:, 1])
+ax.scatter(dP[:, 0], dP[:, 1])
+fig.savefig("fig/test22.png")
+print(KMEAN.FUN(KMEAN.pointWeight),L, Wei, sep="\n")
 for _ in range(K):
-    ax.add_artist(plt.Circle(P[_, :], L[_], fill=False))
-ax.scatter(P[:, 1], P[:, 0])
-fig.savefig("fig/test200.png")
+    ax.add_artist(plt.Circle(P[_, :], L[_] / Wei[_], fill=False))
+ax.scatter(P[:, 0], P[:, 1])
+fig.savefig("fig/test21.png")
