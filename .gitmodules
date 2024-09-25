@@ -1,0 +1,3 @@
+[submodule "CppProjs/mma"]
+	path = CppProjs/mma
+	url = https://github.com/unjerry/mikuMikuAnimation.git
