@@ -69,11 +69,12 @@ fig.savefig("fig/boxplot_of_{:s}.png".format(name))
 fig = plt.figure(dpi=500)
 plt.boxplot(
     [
-        value_Y[int(len(value_Y)) - int(len(value_Y) / 1) : int(len(value_Y))],
-        value_Y[int(len(value_Y)) - int(len(value_Y) / 2) : int(len(value_Y))],
-        value_Y[int(len(value_Y)) - int(len(value_Y) / 4) : int(len(value_Y))],
+        # value_Y[int(len(value_Y)) - int(len(value_Y) / 1) : int(len(value_Y))],
+        # value_Y[int(len(value_Y)) - int(len(value_Y) / 2) : int(len(value_Y))],
+        # value_Y[int(len(value_Y)) - int(len(value_Y) / 4) : int(len(value_Y))],
         value_Y[int(len(value_Y)) - int(len(value_Y) / 8) : int(len(value_Y))],
         value_Y[int(len(value_Y)) - int(len(value_Y) / 16) : int(len(value_Y))],
+        value_Y[int(len(value_Y)) - int(len(value_Y) / 32) : int(len(value_Y))],
     ]
 )
 plt.xticks(
@@ -81,15 +82,17 @@ plt.xticks(
         1,
         2,
         3,
-        4,
-        5,
+        # 4,
+        # 5,
+        # 6,
     ],
     [
-        "{:d}-{:.2f}".format(int(len(value_Y) / 1), int(len(value_Y) / 1) / 242),
-        "{:d}-{:.2f}".format(int(len(value_Y) / 2), int(len(value_Y) / 2) / 242),
-        "{:d}-{:.2f}".format(int(len(value_Y) / 4), int(len(value_Y) / 4) / 242),
+        # "{:d}-{:.2f}".format(int(len(value_Y) / 1), int(len(value_Y) / 1) / 242),
+        # "{:d}-{:.2f}".format(int(len(value_Y) / 2), int(len(value_Y) / 2) / 242),
+        # "{:d}-{:.2f}".format(int(len(value_Y) / 4), int(len(value_Y) / 4) / 242),
         "{:d}-{:.2f}".format(int(len(value_Y) / 8), int(len(value_Y) / 8) / 242),
         "{:d}-{:.2f}".format(int(len(value_Y) / 16), int(len(value_Y) / 16) / 242),
+        "{:d}-{:.2f}".format(int(len(value_Y) / 32), int(len(value_Y) / 32) / 242),
     ],
 )
 plt.grid()

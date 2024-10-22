@@ -56,3 +56,13 @@ the .h file should have the certain format [REF1][REF2]
 [REF1] https://stackoverflow.com/questions/16423643/creating-dll-from-cuda-using-nvcc
 [REF2] https://zhuanlan.zhihu.com/p/646734746
 
+20241007
+git submodules
+to get the original version that specified in the current project.
+use "git submodules update --init --recursive"
+to get the current latest version of the remote repository
+use "git submodules update --remote --recursive"
+to init the submodules
+use "git submodules init"
+to check all the current submodules
+use "git submodules"

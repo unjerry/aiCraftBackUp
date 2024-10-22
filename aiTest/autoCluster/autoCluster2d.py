@@ -64,7 +64,7 @@ dP = torch.concatenate(dPList)
 import torch.optim as optim
 
 
-K = 4
+K = 2
 dP = dP.to("cuda")
 KMEAN = autoCluster(dP, K)
 KMEAN.to("cuda")
@@ -94,8 +94,8 @@ ax.set_ylim([-1, 1])
 # ax.scatter(P[:, 0], P[:, 1])
 ax.scatter(dP[:, 0], dP[:, 1])
 fig.savefig("fig/test22.png")
-print(KMEAN.FUN(KMEAN.pointWeight),L, Wei, sep="\n")
+print(KMEAN.FUN(KMEAN.pointWeight), L, Wei, sep="\n")
 for _ in range(K):
     ax.add_artist(plt.Circle(P[_, :], L[_] / Wei[_], fill=False))
-ax.scatter(P[:, 0], P[:, 1])
+ax.scatter(P[:, 0], P[:, 1], s=0.5)
 fig.savefig("fig/test21.png")
