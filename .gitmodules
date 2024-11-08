@@ -1,3 +1,6 @@
 [submodule "CppProjs/mma"]
 	path = CppProjs/mma
 	url = https://github.com/unjerry/mikuMikuAnimation.git
+[submodule "hardWareRelated/aiOrnithopter"]
+	path = hardWareRelated/aiOrnithopter
+	url = https://github.com/unjerry/aiOrnithopter.git
