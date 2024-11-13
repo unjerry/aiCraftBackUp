@@ -9,3 +9,13 @@ the .h file should have the certain format [REF1][REF2]
 [REF1] https://stackoverflow.com/questions/16423643/creating-dll-from-cuda-using-nvcc
 [REF2] https://zhuanlan.zhihu.com/p/646734746
 
+20241112
+libtorch with cuda
+1.nvcc tool to msvc[REF1](you just need to copy all the four files from C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.7\extras\visual_studio_integration\MSBuildExtensions, and paste them to C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Microsoft\VC\v160\BuildCustomizations. These paths should be changed to your own.)
+2.nvTool NVXT[REF2](Identical problem encountered.
+Solved by installing CUDA 11.8 (with Nsight NVTX) and CUDA 12.1 (missing Nsight NVTX option).
+Using pytorch 2.1.2 (CUDA 12.1).)
+this page[REF3] contains how to build with any toolchain(maybe)
+[REF1]https://github.com/NVlabs/tiny-cuda-nn/issues/164
+[REF2]https://github.com/pytorch/pytorch/issues/116242
+[REF3]https://gist.github.com/rohit-kumar-j/c42f244f5f3d49c5fd39e15efc09a4a2
