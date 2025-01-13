@@ -4,3 +4,6 @@
 [submodule "hardWareRelated/aiOrnithopter"]
 	path = hardWareRelated/aiOrnithopter
 	url = https://github.com/unjerry/aiOrnithopter.git
+[submodule "aiTest/bnbCAC"]
+	path = aiTest/bnbCAC
+	url = https://github.com/unjerry/bnbCAC.git
