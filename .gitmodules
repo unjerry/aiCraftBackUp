@@ -7,3 +7,6 @@
 [submodule "aiTest/bnbCAC"]
 	path = aiTest/bnbCAC
 	url = https://github.com/unjerry/bnbCAC.git
+[submodule "differenceEngine/InfermonSAGA"]
+	path = differenceEngine/InfermonSAGA
+	url = https://github.com/unjerry/InfermonSAGA.git
