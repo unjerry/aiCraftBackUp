@@ -10,3 +10,6 @@
 [submodule "differenceEngine/InfermonSAGA"]
 	path = differenceEngine/InfermonSAGA
 	url = https://github.com/unjerry/InfermonSAGA.git
+[submodule "novel/storyLoom"]
+	path = novel/storyLoom
+	url = https://github.com/unjerry/storyLoom.git
